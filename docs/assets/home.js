@@ -17,7 +17,7 @@
   var TAGS = [
     { k: 'analyst', n: 1, t: 'Analyst' },
     { k: 'risk', n: 2, t: 'Risk officer' },
-    { k: 'committee', n: 3, t: 'Committee' },
+    { k: 'committee', n: 3, t: 'Committee chair', s: 'Chair' },
     { k: 'sidd', n: 4, t: 'Sidd · portfolio manager', s: 'Sidd · PM' },
     { k: 'record', n: 5, t: 'The record' },
     { k: 'bench', t: 'The bench · not voting yet', quiet: true },
@@ -33,7 +33,7 @@
   function draw() {
     full = FLOOR.build(art, mq.matches, { vetoes: vetoesBefore }).vb.map(Number);
     svg = art.querySelector('svg');
-    svg.style.overflow = 'visible'; svg.style.transformOrigin = '0 0'; svg.style.willChange = 'transform';
+    svg.style.overflow = 'visible'; svg.style.transformOrigin = '0 0';
     shown = '';
   }
   function fit(v) {
@@ -51,10 +51,10 @@
       var cx0 = (AN.record[0] + AN.sidd[0]) / 2, w0 = (AN.sidd[0] - AN.record[0]) * 1.0, cy0 = (AN.record[1] + AN.analyst[1]) / 2 + 20;
       return fit([cx0 - w0 / 2, cy0 - w0 * 0.4, w0, w0 * 0.8]);
     }
-    var z = 0.89, nw = full[2] * z, nh = full[3] * z; // pushed in: the building sits right of the headline and the empty front floor crops away
-    return fit([full[0] + (full[2] - nw) * 0.35 - full[2] * 0.1, full[1] + (full[3] - nh) * 0.3, nw, nh]);
+    var z = 0.95, nw = full[2] * z, nh = full[3] * z; // pushed in: the building sits right of the headline and the empty front floor crops away
+    return fit([full[0] + (full[2] - nw) * 0.35 - full[2] * 0.19, full[1] + (full[3] - nh) * 0.3, nw, nh]);
   }
-  var ZOOM = { record: [0.32, 0.3], veto: [0.3, 0.38], desks: [0.55, 0.66], committee: [0.42, 0.52], sidd: [0.3, 0.38] };
+  var ZOOM = { record: [0.32, 0.3], veto: [0.3, 0.38], desks: [0.55, 0.66], committee: [0.42, 0.52], sidd: [0.22, 0.3] };
   function focusView(k) {
     var desk = P.apply(null, FLOOR.spots.sidd); // the stamp shot frames Sidd and the card he signs
     var p = k === 'desks' ? [(AN.analyst[0] + AN.risk[0]) / 2, (AN.analyst[1] + AN.risk[1]) / 2] : k === 'veto' ? AN.risk : k === 'sidd' ? [(AN.sidd[0] + desk[0]) / 2, (AN.sidd[1] + desk[1]) / 2] : AN[k];
@@ -63,19 +63,22 @@
   }
 
   // ---------- camera: the viewBox is written once per move; the move itself is a CSS transform ----------
-  var cam = { x: 0, y: 0, w: 1, h: 1 }, shown = '';
+  var cam = { x: 0, y: 0, w: 1, h: 1 }, shown = '', chipAt = { x: -10, y: -18 }, ledeHold = true; // chipAt: where the call's chip sits over its card
+  var last = null;
+  function cur() { return last || base; }
   function apply(dest) {
+    last = dest;
     if (!cw || !ch || !cam.w) return; // a hidden or zero-size box: nothing to frame yet (it would write Infinity)
     var key = dest.map(function (n) { return n.toFixed(1); }).join(' ');
     if (shown !== key) { svg.setAttribute('viewBox', key); shown = key; }
     var k = cw / cam.w, s = dest[2] / cam.w, tx = -(cam.x - dest[0]) * k, ty = -(cam.y - dest[1]) * k;
     svg.style.transform = Math.abs(s - 1) < 1e-4 && Math.abs(tx) < 0.05 && Math.abs(ty) < 0.05 ? '' : 'translate(' + tx.toFixed(2) + 'px,' + ty.toFixed(2) + 'px) scale(' + s.toFixed(5) + ')';
     var cg = svg.querySelector('#fx-chip');
-    if (cg) cg.setAttribute('transform', 'scale(' + ((CLIP === 'feed' ? 20 : CLIP ? 13 : 11) / (5.6 * k * (phone ? 1.6 : 1))).toFixed(4) + ') translate(-10,-18)');
+    if (cg) cg.setAttribute('transform', 'scale(' + ((CLIP === 'feed' ? 20 : CLIP ? 13 : 11) / (5.6 * k * CARD())).toFixed(4) + ') translate(' + chipAt.x.toFixed(1) + ',' + chipAt.y.toFixed(1) + ')');
     placeTags();
   }
   function placeTags() {
-    var k = cw / cam.w, show = focus && (SHOWS[focus] || [focus]);
+    var placed = [], k = cw / cam.w, show = focus && (SHOWS[focus] || [focus]);
     [].forEach.call(tags.children, function (li, i) {
       var key = li.getAttribute('data-k'), p = AN[key], x = (p[0] - cam.x) * k, y = (p[1] - cam.y) * k;
       var off = x < 0 || x > cw, quiet = li.classList.contains('quiet');
@@ -84,9 +87,14 @@
       li.classList.toggle('dim', !!show && show.indexOf(key) < 0);
       li.setAttribute('data-dir', x < 0 ? 'l' : 'r');
       var half = tagW[i] / 2, nxp = Math.max(8 + half, Math.min(cw - 8 - half, x));
-      li.style.left = nxp.toFixed(1) + 'px'; li.style.top = y.toFixed(1) + 'px';
       li.style.setProperty('--lx', (x - nxp + half).toFixed(1) + 'px');
+      placed.push({ li: li, x: nxp, y: Math.max(y, 46), w: tagW[i] }); // a tag sits above its anchor: keep it inside the frame
     });
+    // collisions: a tag that would overlap one above it moves up a row, so two labels never stack
+    placed.filter(function (t) { return !t.li.hidden && !t.li.classList.contains('dim'); }).sort(function (a, b) { return a.y - b.y; }).forEach(function (t, j, arr) {
+      for (var m = 0; m < j; m++) { var o = arr[m]; if (Math.abs(o.x - t.x) < (o.w + t.w) / 2 + 6 && Math.abs(o.y - t.y) < 30) t.y = o.y + 30; }
+    });
+    placed.forEach(function (t) { t.li.style.left = t.x.toFixed(1) + 'px'; t.li.style.top = t.y.toFixed(1) + 'px'; });
   }
   function measure() {
     var box = art.getBoundingClientRect();
@@ -111,18 +119,18 @@
   var SAY = {
     'row.closed': function (e, r) { return r.id + ' reaches its ' + r.months + '-month horizon and closes as a ' + r.outcome + '. It stays on the wall, the same size as a win.'; },
     'note.drafted': function () { return 'The analyst flags an unusual move in a short note. Its ticker stays private unless a call publishes.'; },
-    'chain.dropped': function (e) { return (e.stage === 'risk' ? 'The risk officer vetoes an idea.' : 'The committee turns an idea down.') + ' It goes in the No tray. Its ticker is never published.'; },
+    'chain.dropped': function (e) { return (e.stage === 'risk' ? 'The risk officer vetoes an idea.' : 'The committee chair turns an idea down.') + ' It goes in the No tray. Its ticker is never published.'; },
     'memo.drafted': function (e, r) { return 'The analyst writes a memo on ' + r.ticker + '.'; },
     'memo.forwarded': function () { return 'A script forwards it. The risk officer sees every memo, unfiltered.'; },
     'risk.reviewed': function () { return 'The risk officer lets it through, with a written dissent attached.'; },
-    'decision.made': function (e, r) { return 'The committee decides: ' + r.ticker + ' to ' + r.direction + ' SPY and its sector fund over ' + r.months + ' months.'; },
+    'decision.made': function (e, r) { return 'The committee chair decides: ' + r.ticker + ' to ' + r.direction + ' SPY and its sector fund over ' + r.months + ' months.'; },
     'approval.stamped': function () { return 'I sign it. No call publishes without my signature.'; },
     'row.published': function (e, r) { return 'Published as ' + r.id + ', sealed before anyone knows the outcome.'; }
   };
   var SHORT = { // the clip's captions: one idea each, readable in a phone feed
     'row.closed': 'A call closes at a loss. It stays up.', 'chain.dropped': 'Vetoed. Its ticker stays private.',
     'memo.drafted': 'The analyst writes a memo.', 'memo.forwarded': 'A script forwards it to risk.', 'risk.reviewed': 'Risk passes it, with a dissent.',
-    'decision.made': 'The committee decides.', 'approval.stamped': 'I sign. Nothing publishes without it.', 'row.published': 'Published before anyone knows the outcome.'
+    'decision.made': 'The chair decides.', 'approval.stamped': 'I sign. Nothing publishes without it.', 'row.published': 'Published before anyone knows the outcome.'
   };
   var all = SM.events.filter(function (e) { return e.ts >= weekStart && e.ts <= SM.week.end && SAY[e.type]; })
     .map(function (e) { var r = rowOf(e); return { e: e, r: r, when: when(e.ts), what: SAY[e.type](e, r), short: SHORT[e.type] }; });
@@ -152,9 +160,9 @@
       '<polygon points="' + q([[-0.45, -0.58], [0.45, -0.58], [0.45, -0.42], [-0.45, -0.42]]) + '" fill="' + K.ink + '"/>' +
       [-0.22, -0.06, 0.1].map(function (yy) { return '<polygon points="' + q([[-0.38, yy], [0.3, yy], [0.3, yy + 0.05], [-0.38, yy + 0.05]]) + '" fill="#CFC8BB"/>'; }).join('') +
       '<line id="fx-strike" x1="' + strikeA[0].toFixed(1) + '" y1="' + strikeA[1].toFixed(1) + '" x2="' + strikeB[0].toFixed(1) + '" y2="' + strikeB[1].toFixed(1) + '" stroke="' + K.loss + '" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="' + strikeLen.toFixed(1) + '" stroke-dashoffset="' + strikeLen.toFixed(1) + '"/>' +
-      '<g id="fx-ink" opacity="0"><polygon points="' + q(rot([[-0.36, 0.12], [0.36, 0.12], [0.36, 0.52], [-0.36, 0.52]], -4)) + '" fill="none" stroke="' + K.ink + '" stroke-width="1.4"/>' +
-      flat(0, 0.3, 'APPROVED', 2.3, K.ink, -4, 700) + flat(0, 0.44, 'SIDD · SUN 6:14 PM', 1.3, K.ink, -4, 500) + '</g>' +
-      '<polygon id="fx-ring" opacity="0" points="' + q(rot([[-0.4, 0.08], [0.4, 0.08], [0.4, 0.56], [-0.4, 0.56]], -4)) + '" fill="none" stroke="' + K.ink + '" stroke-width="1"/>' +
+      '<g id="fx-ink" opacity="0"><polygon points="' + q(rot([[-0.46, 0.08], [0.46, 0.08], [0.46, 0.58], [-0.46, 0.58]], -4)) + '" fill="none" stroke="' + K.ink + '" stroke-width="0.7"/>' +
+      flat(0, 0.32, 'APPROVED', 2.8, K.ink, -4, 700) + flat(0, 0.49, 'SIDD · SUN 6:14 PM', 1.4, K.ink, -4, 600) + '</g>' +
+      '<polygon id="fx-ring" opacity="0" points="' + q(rot([[-0.48, 0.05], [0.48, 0.05], [0.48, 0.61], [-0.48, 0.61]], -4)) + '" fill="none" stroke="' + K.ink + '" stroke-width="1"/>' +
       '<g id="fx-flecks" opacity="0">' + [[-0.42, 0.05], [0.44, 0.2], [0.3, 0.6], [-0.3, 0.6], [0.47, 0.42], [-0.46, 0.38]].map(function (f, j) { var v = P(f[0], f[1], 0); return '<circle cx="' + v[0].toFixed(1) + '" cy="' + v[1].toFixed(1) + '" r="' + (0.6 + (j % 3) * 0.3) + '" fill="' + K.ink + '"/>'; }).join('') + '</g>' +
       '</g><g id="fx-chip"><rect id="fx-chip-bg" x="-14" y="-6" width="28" height="9" rx="1.5" fill="' + K.paper + '" stroke="#8C8579" stroke-width="0.5"/>' +
       '<rect id="fx-redact" x="-9" y="-3.6" width="18" height="4.4" fill="#1C1B19" opacity="0"/>' +
@@ -171,6 +179,7 @@
     t.textContent = txt; bg.setAttribute('x', -w / 2); bg.setAttribute('width', w); el('fx-redact').setAttribute('opacity', redact ? 1 : 0);
   }
   var pos = { x: 0, y: 0, bz: 1.5, lift: 0 }, grip = { v: 0 };
+  function CARD() { return phone ? 1.6 : 1.4; } // the memo card is drawn larger than the furniture so its stamp reads
   function idle() { // two-frame life while the week plays: model hands type, bench heads turn. Read from the playhead, so it pauses and seeks with everything else.
     var t = tl.time();
     [].forEach.call(svg.querySelectorAll('.ih'), function (n, i) { n.setAttribute('transform', 'translate(0,' + ((Math.floor(t * 5) + i) % 2 ? -1.2 : 0) + ')'); });
@@ -190,7 +199,7 @@
   }
   function placeCard() {
     var p = P(pos.x, pos.y, pos.bz + pos.lift), g = P(pos.x, pos.y, pos.bz), c = el('fx-card'), sh = el('fx-shadow');
-    c.setAttribute('transform', 'translate(' + p[0].toFixed(1) + ',' + p[1].toFixed(1) + ')' + (phone ? ' scale(1.6)' : ''));
+    c.setAttribute('transform', 'translate(' + p[0].toFixed(1) + ',' + p[1].toFixed(1) + ')' + ' scale(' + CARD() + ')');
     var l = Math.max(0, pos.lift);
     sh.setAttribute('cx', g[0].toFixed(1)); sh.setAttribute('cy', g[1].toFixed(1));
     sh.setAttribute('rx', (15 * (1 - l * 0.22)).toFixed(1)); sh.setAttribute('ry', (8 * (1 - l * 0.22)).toFixed(1));
@@ -207,12 +216,14 @@
     pp.classList.toggle('icon', state !== 'replay');
     pp.innerHTML = state === 'replay' ? 'Replay the week' : ICON[state];
     pp.setAttribute('aria-label', state === 'pause' ? 'Pause' : state === 'play' ? 'Play' : 'Replay the week');
-    pp.setAttribute('aria-pressed', state === 'play' ? 'true' : 'false');
+    var nw = document.querySelector('.now'); if (nw) nw.setAttribute('aria-live', state === 'pause' ? 'off' : 'polite'); // quiet while playing
   }
   btn('pause');
   var ticks = document.querySelectorAll('.now .ticks li');
+  var nowEl = document.querySelector('.now');
   function show(s) {
     if (capOn === s) return; capOn = s;
+    if (nowEl) nowEl.setAttribute('aria-live', tl && !tl.paused() && !done ? 'off' : 'polite');
     var n = s.e ? STN[s.e.type] || 0 : 0;
     [].forEach.call(ticks, function (li, i) { li.className = i + 1 === n ? 'on' : i + 1 < n ? 'past' : ''; });
     whenEl.innerHTML = s.when + ' <span>Sample week · preview</span>'; whatEl.textContent = (CLIP && s.short) || s.what;
@@ -223,8 +234,8 @@
   function sync() { var t = tl.time() + 1e-4, c = caps[0]; caps.forEach(function (x) { if (x.t <= t) c = x; }); if (c) show(c.s); }
   function move(k, d, at) { // returns the label where the camera settles
     var dest = k ? fit(focusView(k)) : base;
-    tl.to(cam, { x: dest[0], y: dest[1], w: dest[2], h: dest[3], duration: d, ease: 'power3.inOut', onUpdate: function () { focus = k; apply(dest); } }, at);
-    if (lede && !phone) tl.to(lede, { opacity: k ? 0 : 1, duration: d * 0.6, ease: 'power1.inOut' }, '<');
+    tl.to(cam, { x: dest[0], y: dest[1], w: dest[2], h: dest[3], duration: d, ease: 'power3.inOut', onStart: function () { svg.style.willChange = 'transform'; }, onComplete: function () { svg.style.willChange = 'auto'; }, onReverseComplete: function () { svg.style.willChange = 'auto'; }, onUpdate: function () { focus = k; apply(dest); } }, at); // a layer only while moving, so text re-rasterises sharp at rest
+    if (lede && !phone && !(k && ledeHold)) tl.to(lede, { opacity: k ? 0 : 1, duration: d * 0.6, ease: 'power1.inOut' }, '<'); // the headline stays through the first two beats
     return dest;
   }
   function hop(to, d, lift, at) {
@@ -253,23 +264,24 @@
   var LB = {}; // label times, kept by hand: HyperFrames wraps the timeline and hides its own labels
   function lab(n) { LB[n] = tl.duration(); tl.addLabel(n); return tl; }
   function build() {
-    LB = {};
+    LB = {}; ledeHold = true;
     if (tl) tl.kill();
     done = false; focus = null; rest(base);
     caps = []; capOn = null;
     tl = gsap.timeline({ paused: true, onUpdate: function () { sync(); armSync(); idle(); }, onComplete: function () { done = true; btn('replay'); } });
     var c3 = FLOOR.centers['POL-3'], c6 = FLOOR.centers['POL-6'];
     // the week opens before any of its events: POL-3 still open, POL-6 not yet on the wall, no memo on any desk
+    if (lede) tl.set(lede, { opacity: 1 }, 0);
     tl.set(el('fl-c-POL-3-pre'), { opacity: 1, scaleY: 1, svgOrigin: c3[0] + ' ' + c3[1] }, 0)
       .set(el('fl-c-POL-3'), { scaleY: 0, svgOrigin: c3[0] + ' ' + c3[1] }, 0)
       .set(el('fl-c-POL-6'), { scaleY: 0, svgOrigin: c6[0] + ' ' + c6[1] }, 0)
       .set([el('fl-memo-risk'), el('fl-memo-sidd'), el('fx-card'), el('fx-dissent'), el('fx-ink'), el('fl-veto-new')], { opacity: 0 }, 0)
       .set(el('fx-inner'), { scaleY: 1, rotation: 0, transformOrigin: '50% 50%' }, 0)
-      .set(el('fx-chip'), { opacity: 1 }, 0).set([el('fx-flecks'), el('fx-ring'), el('fl-m3-ring')], { opacity: 0 }, 0).set(grip, { v: 0 }, 0).set([el('fl-rail'), el('fl-sglass')], { opacity: 1 }, 0).set(lede || {}, { opacity: 1 }, 0)
+      .set(el('fx-chip'), { opacity: 1 }, 0).set([el('fx-flecks'), el('fx-ring'), el('fl-m3-ring')], { opacity: 0 }, 0).set(grip, { v: 0 }, 0).set(chipAt, { x: -10, y: -18 }, 0).set([el('fl-rail'), el('fl-sglass')], { opacity: 1 }, 0)
       .set(el('fx-strike'), { attr: { 'stroke-dashoffset': strikeLen } }, 0)
       .set(el('fl-stamp'), { x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1 }, 0)
       
-      .to({}, { duration: 0.8 });
+      .to({}, { duration: 3.5 }); // hold the wide shot with the headline before the first move
     cap(intro, 0);
 
     beats.forEach(function (s, i) {
@@ -284,11 +296,12 @@
         land(SPOT.risk, '', true);
         tl.to(el('fx-strike'), { attr: { 'stroke-dashoffset': 0 }, duration: 0.22, ease: 'power2.out' }).call(function () { chip('VETOED'); }).to({}, { duration: 0.6 });
         hop(TRAY, 0.6, 0.5);
-        tl.to(el('fx-card'), { opacity: 0, duration: 0.2, onUpdate: placeCard }).to(el('fl-veto-new'), { opacity: 1, duration: 0.2 }, '<').to({}, { duration: 1.0 });
+        tl.to(el('fx-card'), { opacity: 0, duration: 0.2, onUpdate: placeCard }).to(el('fl-veto-new'), { opacity: 1, duration: 0.2 }, '<').to({}, { duration: 0.5 });
         tl.set(el('fx-strike'), { attr: { 'stroke-dashoffset': strikeLen } });
       } else if (t === 'memo.drafted') { // analyst, forward and risk play as one shot of the two desks
+        ledeHold = false;
         move('desks', 1.3); cap(s);
-        land(SPOT.analyst, r.ticker); tl.to({}, { duration: 0.8 });
+        land(SPOT.analyst, r.ticker); tl.to({}, { duration: 2.0 }); // the first voting seat gets a beat a reader can see
       } else if (t === 'memo.forwarded') {
         cap(s); hop(SPOT.risk, 1.1, 1.2); tl.to({}, { duration: 0.5 });
       } else if (t === 'risk.reviewed') {
@@ -304,6 +317,7 @@
         var push = [dest[0] + dest[2] * 0.015, dest[1] + dest[3] * 0.015, dest[2] * 0.97, dest[3] * 0.97], a = 3 * dest[2] / cw;
         var px = dest[2] / cw, rail = [el('fl-rail'), el('fl-sglass')]; // one screen pixel, in scene units at this framing
         tl.to(rail, { opacity: 0.15, duration: 0.4 }, 'c' + i + '+=0.6'); // the railing steps back for the beat
+        tl.to(chipAt, { x: phone ? -22 : -44, y: -30, duration: 0.3, ease: 'power2.inOut', onUpdate: function () { apply(cur()); } }, 'c' + i + '+=1.1'); // the call stays readable under his arm
         tl.to(grip, { v: 1, duration: 0.3, ease: 'power2.inOut' }); // his hand goes to the stamp first; from here the stamp moves only in his hand
         lab('t0'); LB.hit = LB.t0 + 0.44;
         tl.to(el('fx-chip'), { opacity: 0, duration: 0.15 }, 't0')
@@ -327,6 +341,7 @@
         cap(s, LB.t0); // the caption names the signature as the stamp lifts
       } else if (t === 'row.published') { // the same card lands on the wall and turns into the record
         var slot = FLOOR.slots[r.id];
+        tl.to(chipAt, { x: -10, y: -18, duration: 0.3, onUpdate: function () { apply(cur()); } });
         lab('c' + i); hop(slot, 1.3, 1.0, 'c' + i); move('record', 1.3, 'c' + i + '+=0.15');
         cap(s);
         tl.to(el('fx-chip'), { opacity: 0, duration: 0.15 }).to(el('fx-inner'), { rotation: -60, duration: 0.2, ease: 'power2.out', transformOrigin: '50% 50%' }) // floor plane to wall plane: a -60° turn in this projection
@@ -351,7 +366,7 @@
     cut.set(ov('end'), { opacity: 0 }, 0).set(ov('cold1'), { opacity: 1 }, 0).set(document.querySelector('.now'), { opacity: 0 }, 0);
     seg(LB.hit - 0.75, LB.hit + 0.7, 1);
     cut.to(ov('cold1'), { opacity: 0, duration: 0.3 }, 1.25).to(document.querySelector('.now'), { opacity: 1, duration: 0.2 }, 1.45);
-    seg(0.25, LB['e' + B['row.closed']] - 0.4, 1.3);
+    seg(LB.s0 - 0.6, LB['e' + B['row.closed']] - 0.4, 1.3);
     seg(LB['s' + B['chain.dropped']], LB['e' + B['chain.dropped']] - 0.3, 1.3);
     seg(LB['s' + B['memo.drafted']], LB['e' + B['risk.reviewed']] - 0.2, 1.35);
     seg(LB['s' + B['decision.made']], LB['e' + B['decision.made']] - 0.4, 1.3);
@@ -364,8 +379,8 @@
     pp.hidden = true; nx.hidden = false;
     document.getElementById('stepsbox').open = true;
     tl.progress(1); rest(base); focus = null; placeTags();
-    say({ when: 'Sample week', what: 'Motion is off. Use Next step, or read the week as a list below.' })();
-    nx.addEventListener('click', function () { at = (at + 1) % beats.length; tl.seek(LB['e' + at] - 0.02, false); });
+    say({ when: 'Motion off', what: 'Motion is off. Use Next step, or read the week as a list below.' })();
+    nx.addEventListener('click', function () { at = (at + 1) % beats.length; tl.seek(LB['e' + at] - 0.02, false); nx.textContent = 'Next step (' + (at + 2 > beats.length ? 1 : at + 2) + ' of ' + beats.length + ')'; });
   } else {
     tl.play();
     pp.addEventListener('click', function () {
@@ -384,6 +399,6 @@
   var rz;
   addEventListener('resize', function () { clearTimeout(rz); rz = setTimeout(function () { rebuild(false); }, 150); });
   if (window.ResizeObserver) { var seen = cw; new ResizeObserver(function () { var w = art.getBoundingClientRect().width; if (w && w !== seen) { seen = w; clearTimeout(rz); rz = setTimeout(function () { rebuild(false); }, 150); } }).observe(art); } // a tab opened in the background lays out at 0 first
-  if (mq.addEventListener) mq.addEventListener('change', function () { rebuild(true); });
+  if (mq.addEventListener) mq.addEventListener('change', function () { rebuild(true); }); else if (mq.addListener) mq.addListener(function () { rebuild(true); });
   window.HLR = { get tl() { return tl; }, get labels() { return LB; }, beats: beats, steps: all };
 })();

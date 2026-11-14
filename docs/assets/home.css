@@ -6,7 +6,7 @@ main{flex:1;display:flex;min-height:calc(100vh - 57px)}
 .art{position:absolute;inset:0}
 .art svg{display:block;width:100%;height:100%}
 
-.lede{position:absolute;left:0;top:0;z-index:2;max-width:calc(23rem + 4 * var(--s5));padding:var(--s5) calc(var(--s5) * 3) var(--s5) var(--s5);background:linear-gradient(90deg,var(--bg) 62%,transparent);pointer-events:none}
+.lede{position:absolute;left:0;top:0;z-index:2;max-width:calc(23rem + 2 * var(--s5));padding:var(--s5) var(--s5) var(--s4);background:var(--bg);border-bottom-right-radius:4px;pointer-events:none}
 .line{font:500 2.2rem/1.08 var(--font-display);color:var(--text)}
 .sub{margin-top:var(--s3);max-width:21rem;font:400 var(--fs-base)/1.45 var(--font-body);color:var(--muted)}
 .pre{margin-top:var(--s3);display:inline-block;font:500 11px/1.3 var(--font-mono);color:var(--warn);background:var(--warn-bg);border:1px solid var(--warn);padding:4px 8px}
@@ -39,7 +39,7 @@ main{flex:1;display:flex;min-height:calc(100vh - 57px)}
 .ticks li.past{background:color-mix(in srgb,var(--ink) 35%,var(--line))}
 .now-btn.icon{width:var(--touch);height:var(--touch);padding:0;display:grid;place-items:center}
 .now-btn.icon svg{width:16px;height:16px}
-.legend{display:none}
+.legend{margin-top:var(--s2);font:500 13px/1.45 var(--font-body);color:var(--muted);max-width:21rem}
 .now-btn{grid-column:2;grid-row:2/4}
 
 .foot{padding:var(--s3) var(--s5);border-top:1px solid var(--line);font-size:var(--fs-xs);color:var(--muted)}
@@ -49,7 +49,7 @@ main{flex:1;display:flex;min-height:calc(100vh - 57px)}
   .lede{position:relative;left:auto;top:auto;max-width:none;padding:var(--s3) var(--s4) 0}
   .art{position:relative;inset:auto;flex:1;min-height:300px;margin-bottom:150px}
   main{min-height:calc(100svh - 49px)}
-  .lede{order:0}.legend{order:1;display:block;position:relative;z-index:3;background:var(--bg);margin:0;padding:var(--s2) var(--s4);font:500 13px/1.45 var(--font-body);color:var(--muted)}.art{order:2}
+  .lede{order:0}.art{order:2}
   .what{font-size:16px}
   .line{font-size:1.9rem}
   .stage{min-height:0}
