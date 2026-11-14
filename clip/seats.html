@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>How a call travels</title>
+<link rel="stylesheet" href="assets/fonts.css">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/site.css">
+<link rel="stylesheet" href="clip.css">
+<style>
+/* 9:16 phone cut of the desk page: the same tabs-and-spotlight code, walked seat to seat by one seekable timeline */
+#hf{width:540px;height:960px}
+#hf .sc-seats{position:absolute;inset:0;margin:0}
+#hf .sc-tabs,#hf .sc-panels,#hf .kicker{display:none!important}
+#hf .sc-grid{margin:0}
+#hf .sc-stage{position:absolute;left:0;right:0;top:266px;height:694px;aspect-ratio:auto;border:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+#hf .sc-lab{font-size:15px;padding:6px 10px;left:16px;top:16px}
+.cap{position:absolute;left:16px;right:16px;top:18px;z-index:4;padding:14px 18px;background:var(--surface);border:1px solid var(--line)}
+.cap .k{font:500 14px/1.4 var(--font-mono);color:var(--muted);text-transform:uppercase}
+.cap .t{margin-top:4px;font:500 27px/1.15 var(--font-display);color:var(--text)}
+.who{position:absolute;left:16px;right:16px;top:158px;z-index:4;display:flex;flex-direction:column;gap:4px}
+.who .badge{align-self:flex-start;display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border:1px solid var(--line);font:500 14px/1 var(--font-mono);text-transform:uppercase;color:var(--text)}
+.who .badge i{width:12px;height:12px;display:inline-block}
+.who .nm{font:600 30px/1.1 var(--font-display);color:var(--text)}
+.who .jb{font:400 17px/1.3 var(--font-body);color:var(--muted)}
+</style>
+</head>
+<body class="portrait" data-clip="seats">
+<div id="hf" data-composition-id="seats" data-start="0" data-duration="18.4" data-width="540" data-height="960" data-fps="30">
+  <section class="sc-seats" data-seats>
+    <div class="sc-tabs" role="tablist"><button type="button" role="tab" data-k="m1" aria-selected="true" aria-controls="none">M1</button></div>
+    <div class="sc-grid"><div class="sc-stage"><div class="sc-floor"></div><span class="sc-lab"></span></div></div>
+  </section>
+  <div class="cap"><p class="k" id="ck">Sample week &middot; paper money &middot; not running yet</p><p class="t" id="ct"></p></div>
+  <div class="who"><span class="badge" id="wb"><i></i><span></span></span><p class="nm" id="wn"></p><p class="jb" id="wj"></p></div>
+  <p class="cold" id="cold1">Three AI models.<br>One human signature.</p>
+  <div class="endcard" id="end">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12.6 21.5 6.4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none"/><path d="M8 11 4 19h8z" fill="currentColor"/></svg>
+    <p class="e2">High Leverage Research</p>
+    <p class="e1">Meet the desk</p>
+    <p class="e4">research.siddharthshah.me</p>
+    <p class="e3">Paper money &middot; sample week &middot; not running yet</p>
+  </div>
+</div>
+<script src="assets/vendor/gsap-3.13.0.min.js"></script>
+<script src="assets/floor.js"></script>
+<script src="assets/seats.js"></script>
+<script>
+(function () {
+  var S = window.HLR_SEATS; if (!S) return;
+  var BEATS = [ // [seat, badge, badge colour, name, job, caption]
+    ['scripts', 'Script · not AI', 'var(--muted)', 'The scripts', 'Do every step that can be code.', 'Scripts pull the data and screen for a candidate. No model.'],
+    ['m1', 'AI model · votes', '#2F64C4', 'M1 · the analyst', 'Writes the case for a call.', 'M1 writes the memo.'],
+    ['m2', 'AI model · votes', '#2F64C4', 'M2 · the risk officer', 'Argues against every memo, and can kill it.', 'M2 argues against it. A veto ends it in the No tray.'],
+    ['m3', 'AI model · votes', '#2F64C4', 'M3 · the committee chair', 'Decides whether it’s worth publishing.', 'The chair reads memo and dissent, and decides.'],
+    ['pm', 'Human · signs', 'var(--ink)', 'Sidd · portfolio manager', 'The committee recommends. My signature decides.', 'Nothing publishes until Sidd signs it.'],
+    ['record', 'Script · not AI', 'var(--muted)', 'The record', 'Sealed before anyone knows the outcome.', 'A script publishes it. Losses stay at full size.']
+  ];
+  var MOVE = 0.8, HOLD = 1.6, COLD = 2.2, BEAT = MOVE + HOLD, N = BEATS.length;
+  var ct = document.getElementById('ct'), wb = document.getElementById('wb'), wn = document.getElementById('wn'), wj = document.getElementById('wj');
+  function show(i) { var b = BEATS[i]; ct.textContent = b[5]; wb.querySelector('span').textContent = b[1]; wb.querySelector('i').style.background = b[2]; wn.textContent = b[3]; wj.textContent = b[4]; }
+  var ease = gsap.parseEase('power2.inOut'), st = { t: 0 };
+  function render() { // everything on screen is a function of st.t, so any frame can be rendered in any order
+    var t = Math.max(0, st.t), i = Math.min(N - 1, Math.floor(t / BEAT)), local = t - i * BEAT;
+    var e = i === 0 ? 1 : Math.min(1, local / MOVE);
+    S.frame(BEATS[Math.max(0, i - 1)][0], BEATS[i][0], ease(e));
+    show(i);
+  }
+  gsap.set('#end', { opacity: 0 }); gsap.set(['.cap', '.who'], { opacity: 0 }); // frame 0 state, outside the timeline
+  var tl = gsap.timeline({ paused: true });
+  tl.set('#end', { opacity: 0 }, 0).set('#cold1', { opacity: 1 }, 0).set(['.cap', '.who'], { opacity: 0 }, 0)
+    .to('#cold1', { opacity: 0, duration: 0.3 }, COLD - 0.3).to(['.cap', '.who'], { opacity: 1, duration: 0.3 }, COLD - 0.2)
+    .fromTo(st, { t: 0 }, { t: N * BEAT, duration: N * BEAT, ease: 'none', immediateRender: false, onUpdate: render }, COLD)
+    .to('#end', { opacity: 1, duration: 0.4 }, COLD + N * BEAT)
+    .to({}, { duration: 1.4 });
+  render();
+  window.__timelines = window.__timelines || {}; window.__timelines.seats = tl;
+  window.HLR_CUT = tl.duration();
+})();
+</script>
+</body>
+</html>

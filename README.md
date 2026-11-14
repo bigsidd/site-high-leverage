@@ -1,18 +1,18 @@
 # High Leverage Research: the site
 
-An AI investment committee, shown as a two-floor office. Three models argue every stock; I sign the calls that survive. Paper money only.
+An AI investment committee, shown as a two-floor office. Three models draft and challenge each call. Nothing publishes until I sign it. Paper money only.
 
-**Live:** https://bigsidd.github.io/site-high-leverage/
+**Live:** https://research.siddharthshah.me (also https://bigsidd.github.io/site-high-leverage/, which redirects there)
 
-**Status:** design preview. The committee is designed but not running. Everything on the site plays a labeled sample week on made-up tickers (XMPL, SMPL). Nothing here is investment advice, and no real money is involved anywhere.
+**Status:** design preview. The desk is designed but not running. Everything on the site plays a labeled sample week on made-up tickers (XMPL, SMPL). Nothing here is investment advice, and no real money is involved anywhere.
 
 ## What you're looking at
 
-- **The office.** Upstairs: the glass committee room, my office and a library of the rules each seat works under. Downstairs: the logo wall, the double-height record wall, the desk pod and the server room where the scripts run.
-  - The three figures with blue face plates are the voting model seats: M1 the analyst who writes the memo, M2 the risk officer who can veto it, M3 the committee that decides.
-  - The grey, outlined figures are the bench: five roles that run as scripts and hold no vote until each clears its bar (two clean runs, its own tests and a written decision record).
+- **The office.** Upstairs: the glass committee room, my office and a library of the rules each seat works under. Downstairs: the logo wall, the double-height record wall, the desk pod and the server room where the scripts will run.
+  - The three figures with blue face plates are the voting model seats: M1 the analyst who writes the memo, M2 the risk officer who can veto it, M3 the committee chair, who decides.
+  - The grey, outlined figures are the bench: five roles that will run as scripts, with no vote, until each clears its bar (two clean runs, its own tests and a written decision record).
   - I'm the only person on the floor. The portfolio manager is a person, not a model.
-- **The replay.** Once the committee runs, every animation replays a published event from the public log, and nothing moves without a record behind it. The only stamp is my signature, which comes before any call is published.
+- **The replay.** Once the desk runs, every animation replays a published event from the public log, and nothing moves without a record behind it. The only stamp is my signature, which comes before any call is published.
 - **The record.** Every call, signature, veto and loss on one dated rail. Losses stay up at the same size as wins. No edge is claimed until 100 closed calls and six months, whichever comes later.
 
 ## How this repo fits
@@ -28,18 +28,20 @@ The site will read the ledger. A redesign here can never touch the record.
 ## Built with
 
 - Static HTML, CSS and plain JavaScript. No framework, no build step, no trackers, no third-party requests.
-- Original isometric SVG art, drawn in code from floor coordinates (`assets/floor.js`).
-- GSAP 3.13.0 for the replay, vendored in `assets/vendor/` and served from this site. GSAP is free to use under its Standard "no charge" license.
-- Fonts are self-hosted from Google Fonts' open-licensed families (SIL Open Font License 1.1): Newsreader, Public Sans and IBM Plex Mono.
+- Original isometric SVG art, drawn in code from floor coordinates (`docs/assets/floor.js`).
+- GSAP 3.13.0 for the replay, vendored in `docs/assets/vendor/` and served from this site. GSAP is free to use under its Standard "no charge" license.
+- Fonts are self-hosted from Google Fonts' open-licensed families (SIL Open Font License 1.1): Newsreader, Public Sans and IBM Plex Mono. Newsreader and Public Sans are variable fonts cut to weights 400–600 and Latin with fontTools (Newsreader 132 KB to 34 KB); Newsreader is preloaded.
+- Only `docs/` is published: GitHub Pages serves that folder, so `clip/`, `tests/`, `tools/` and this README stay in the repo, not on the site.
+- Every asset URL carries `?v=` and a content hash, since Pages caches files for ten minutes. Run `python3 tools/stamp.py` after changing an asset.
 - Accessibility:
-  - contrast computed at 5.67:1 or better;
+  - text contrast of 4.5:1 or better (WCAG AA);
   - touch targets of 44 px or more;
   - focus order that follows reading order;
   - a reduced-motion mode that swaps the animation for a stepped list.
 
 ## The clip
 
-`clip/` renders the homepage replay to video from the same scene code: `assets/floor.js` draws the office and `assets/home.js` builds the one GSAP timeline the page plays. In a clip, `home.js` adds a cut on top of that timeline: a cold open on the signature, the week replayed in segments at 1.25–1.6× speed with short captions, and an end card. About 25 s. Three outputs:
+`clip/` renders the homepage replay to video from the same scene code: `docs/assets/floor.js` draws the office and `docs/assets/home.js` builds the one GSAP timeline the page plays. In a clip, `home.js` adds a cut on top of that timeline: a cold open on the signature, the week replayed in segments at 1.25–1.6× speed with short captions, and an end card. About 25 s. Three outputs:
 
 - `a-week-at-the-desk-4x5.mp4`: 1080×1350, the LinkedIn feed master.
 - `a-week-at-the-desk-16x9.mp4`: 1920×1080, for the site and wide players.
@@ -56,12 +58,20 @@ They are rendered with [HyperFrames](https://github.com/heygen-com/hyperframes),
 site/clip/render.sh
 ```
 
-The videos land in `site/clip/out/`, which git ignores.
+The videos land in `clip/out/`, which git ignores.
+
+## Checks
+
+```bash
+python3 tests/seek-check.py
+```
+
+Seeks the replay to every label from both ends and fails if any part of Sidd's signature shows before the stamp lands. The clips and reduced motion both jump the playhead backward, which is how that bug got in once.
 
 ## Run it locally
 
 ```bash
-python3 -m http.server 8000
+python3 -m http.server 8000 --directory docs
 ```
 
 Then open http://localhost:8000.

@@ -3,10 +3,11 @@
   var MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   var PX = {
     fmtDate: function (iso, withTime) {
-      var d = iso.slice(0, 10).split('-'), out = MON[+d[1] - 1] + ' ' + (+d[2]);
-      if (withTime && iso.length > 10) out += ' · ' + iso.slice(11, 16) + ' UTC';
-      return out;
+      if (withTime && iso.length > 10) return PX.et(iso); // times read in New York, like the homepage
+      var d = iso.slice(0, 10).split('-');
+      return MON[+d[1] - 1] + ' ' + (+d[2]);
     },
+    et: function (iso) { return new Date(iso).toLocaleString('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }).replace(',', ' ·') + ' ET'; },
     money: function (n) { return (n < 0 ? '−' : n > 0 ? '+' : '') + '$' + Math.abs(n).toLocaleString('en-US'); }
   };
   var D = window.SAMPLE, $ = function (s) { return document.getElementById(s); };
@@ -53,7 +54,7 @@
   function ledger(on) {
     var tb = $('tb'); tb.textContent = '';
     if (!on || !ROWS.length) {
-      var tr = el('tr'), td = el('td', 'empty', '0 calls. The first row appears only after Sidd signs a committee decision. The model never publishes.');
+      var tr = el('tr'), td = el('td', 'empty', '0 calls. The first row appears only after Sidd signs a decision from the committee chair. The model never publishes.');
       td.colSpan = 4; tr.appendChild(td); tb.appendChild(tr); return;
     }
     ROWS.slice().reverse().forEach(function (r) {
@@ -65,12 +66,12 @@
       var hz = el('td'); hz.appendChild(el('span', '', r.months + ' months')); hz.appendChild(el('span', 'sub', 'to ' + PX.fmtDate(r.horizon_end) + ', ' + r.horizon_end.slice(0, 4))); tr.appendChild(hz);
       tr.appendChild(el('td', 'res', status(r)));
       var dr = el('tr', 'sealed'), dc = el('td'); dr.id = did; dr.hidden = true; dc.colSpan = 4;
-      dc.appendChild(el('h3', '', 'Sealed before the outcome'));
+      dc.appendChild(el('h3', '', r.id + ': sealed before the outcome'));
       var dl = el('dl');
-      [['Approved', r.approved_at.replace('T', ' ').replace(':00Z', ' UTC') + ' (approval.stamped)'],
-       ['Committed', r.committed_at.replace('T', ' ').replace(':00Z', ' UTC') + ' (row.published)'],
+      [['Approved', PX.et(r.approved_at) + ' (approval.stamped)'],
+       ['Committed', PX.et(r.committed_at) + ' (row.published)'],
        ['Horizon end', r.horizon_end + ', ' + r.months + ' months'],
-       ['Outcome', r.outcome ? 'Closed at horizon ' + r.closed_at.replace('T', ' ').replace(':00Z', ' UTC') + '. ' + (r.outcome === 'win' ? 'Win.' : 'Loss.') : 'Not known yet. It closes at the ' + PX.fmtDate(r.horizon_end) + ' close.'],
+       ['Outcome', r.outcome ? 'Closed at horizon ' + PX.et(r.closed_at) + '. ' + (r.outcome === 'win' ? 'Win.' : 'Loss.') : 'Not known yet. It closes at the ' + PX.fmtDate(r.horizon_end) + ' close.'],
        ['Chain', r.chain.join(', ')],
        ['Commit', r.sha + ' (placeholder)']].forEach(function (p) { dl.appendChild(el('dt', '', p[0])); dl.appendChild(el('dd', '', p[1])); });
       dc.appendChild(dl);
@@ -84,7 +85,7 @@
   // timeline
   var ROUTINE = { 'digest.sent': 1, 'week.quiet': 1, 'row.scored': 1, 'anomaly.flagged': 1, 'thesis.checked': 1 };
   var FOLD = { 'anomaly.flagged': 1, 'row.scored': 1, 'thesis.checked': 1 };
-  var STAGE = { note: 'the note', risk: 'the risk officer', committee: 'the committee', sidd: 'Sidd' };
+  var STAGE = { note: 'the note', risk: 'the risk officer', committee: 'the committee chair', sidd: 'Sidd' };
   function text(e, n) {
     var r = e.ref && rowOf(e.ref);
     switch (e.type) {
@@ -96,13 +97,13 @@
       case 'memo.drafted': return 'Memo drafted from a script screen, covering value-scout.';
       case 'memo.forwarded': return 'A script handed the memo to the risk officer.';
       case 'risk.reviewed': return 'Pass, with a dissent attached.';
-      case 'decision.made': return 'Committee decided to publish: ' + rowOf(e._row).months + ' months, ' + rowOf(e._row).confidence_bucket + ' confidence.';
+      case 'decision.made': return 'The committee chair decided to publish: ' + rowOf(e._row).months + ' months, ' + rowOf(e._row).confidence_bucket + ' confidence.';
       case 'approval.stamped': return 'Sidd stamped ' + r.id + '.';
       case 'row.published': return r.id + ' ' + r.ticker + ', ' + r.direction + ', ' + r.months + ' months, ' + r.confidence_bucket + ' confidence.';
       case 'chain.dropped': return 'A chain stopped at ' + (STAGE[e.stage] || e.stage) + '. Stage and date only. No ticker, now or later.';
       case 'row.closed': return r.id + ' ' + r.ticker + ' closed at its horizon. ' + (r.outcome === 'win' ? 'Win.' : 'Loss.');
       case 'digest.sent': return 'Weekly digest sent. Ticker-less events released in one batch.';
-      case 'week.quiet': return 'Quiet week. Nothing reached the committee.';
+      case 'week.quiet': return 'Quiet week. Nothing reached the chair.';
       case 'agent.hired': return 'A role was hired.';
     }
     return '';
@@ -195,6 +196,7 @@
     document.documentElement.dataset.state = s;
     [].forEach.call(document.querySelectorAll('[data-set]'), function (b) { b.setAttribute('aria-pressed', String(b.dataset.set === s)); });
     progress(on); ticks(on); ledger(on);
+    if (window.HLRVignette) window.HLRVignette(on ? { vetoes: 3 } : { vetoes: 0, empty: true }); // the real wall is empty too
     if (on && !built) { timeline(); book(); feed(); built = true; }
   }
   [].forEach.call(document.querySelectorAll('[data-set]'), function (b) { b.addEventListener('click', function () { apply(b.dataset.set); }); });

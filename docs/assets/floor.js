@@ -308,7 +308,7 @@
     var RY0 = 9.9, RY1 = 18.1, SW = 2.5, SH = 1.62, GW = 0.35, GH = 0.3, RT = 9.7; // slot size, gaps, top of row 1 (z)
     var lw = poly([[0.02, RY0 - 0.4, RT - 3 * SH - 2 * GH - 0.45], [0.02, RY1 + 0.4, RT - 3 * SH - 2 * GH - 0.45], [0.02, RY1 + 0.4, RT + 1.35], [0.02, RY0 - 0.4, RT + 1.35]], K.recordWall);
     lw += planeText('x', 0.04, RY1, RT + 0.55, 'THE RECORD', 10, '#E9E1D3', 'IBM Plex Mono, monospace', 600);
-    var cards = [['POL-1', 'WIN', K.win], ['POL-2', 'LOSS', K.loss], ['POL-3', 'LOSS', K.loss], ['POL-4', 'OPEN', '#5C574F'], ['POL-5', 'OPEN', '#5C574F'], ['POL-6', 'OPEN', '#5C574F']];
+    var cards = opt.empty ? [] : [['POL-1', 'WIN', K.win], ['POL-2', 'LOSS', K.loss], ['POL-3', 'LOSS', K.loss], ['POL-4', 'OPEN', '#5C574F'], ['POL-5', 'OPEN', '#5C574F'], ['POL-6', 'OPEN', '#5C574F']];
     function card(id, res, col, y0, zt, suffix, hide) { // y0..y0+w along the wall, zt is the top; one group per card so the replay can pin or close it
       var w = SW * 0.9, h = SH * 0.9, g = '<g id="fl-c-' + id + (suffix || '') + '"' + (hide ? ' opacity="0"' : '') + '>';
       g += poly([[0.04, y0, zt - h], [0.04, y0 + w, zt - h], [0.04, y0 + w, zt], [0.04, y0, zt]], K.paper);
@@ -395,9 +395,9 @@
     add(5.6 + 4.4, box(4.6, 3.9, 0, 1.2, 1.1, 0.7, K.walnut, { left: '#5f412a', right: '#513623' }) + box(4.9, 4.1, 0.7, 0.6, 0.45, 0.08, K.paper));
 
     // the committee room
-    add(19 + 4.2 - 0.6, chair(16.6, 2.4, '+y') + chair(19.1, 2.2, '+y') + chair(21.6, 2.4, '+y'));
+    add(19 + 4.2 - 0.6, chair(16.6, 2.4, '+y') + chair(18.5, 2.2, '+y') + chair(21.6, 2.4, '+y'));
     add(19 + 4.2, shadow(19, 4.4, 2.6, 0.08) + box(15, 3.2, 1.3, 8, 2.4, 0.16, K.walnut, { left: '#5f412a', right: '#513623' }) + box(16, 3.9, 0, 0.3, 1.0, 1.3, '#3a3f47') + box(21.7, 3.9, 0, 0.3, 1.0, 1.3, '#3a3f47'));
-    add(19 + 4.2 + 0.1, personSeated(19.1, 2.05, 'front', { kind: 'model', seat: 'M3', ring: 'fl-m3-ring', reach: [[18.75, 3.55, 1.47], [19.45, 3.55, 1.47]] }));
+    add(19 + 4.2 + 0.1, personSeated(18.5, 2.05, 'front', { kind: 'model', seat: 'M3', ring: 'fl-m3-ring', reach: [[18.15, 3.55, 1.47], [18.85, 3.55, 1.47]] }));
     add(19 + 4.3, poly([[17.6, 4.1, 1.47], [18.6, 4.1, 1.47], [18.6, 4.8, 1.47], [17.6, 4.8, 1.47]], K.paper) + poly([[20.2, 4.0, 1.47], [20.9, 4.0, 1.47], [20.9, 4.6, 1.47], [20.2, 4.6, 1.47]], '#E6DFD0'));
     add(19 + 7.0, chair(16.6, 6.2, '-y') + chair(19.1, 6.4, '-y') + chair(21.6, 6.2, '-y'));
     add(25 + 8, glassWall('x', 13.2, 25, 8, 4.6, { door: [13.6, 15.2] }));
@@ -459,7 +459,7 @@
     var tray = box(RX + 0.6, 14.5, 1.46, 1.15, 1.0, 0.12, '#CFC3AE', { left: '#bfb39e', right: '#ab9f8a' });
     for (var v = 0; v < (opt.vetoes || 0); v++) tray += box(RX + 0.68, 14.58, 1.58 + v * 0.045, 0.99, 0.84, 0.035, v % 2 ? K.paper : '#EFE9DD', { left: '#d9d2c4', right: '#cbc3b4' });
     tray += '<g id="fl-veto-new" opacity="0">' + box(RX + 0.68, 14.58, 1.58 + (opt.vetoes || 0) * 0.045, 0.99, 0.84, 0.035, K.paper, { left: '#d9d2c4', right: '#cbc3b4' }) + '</g>';
-    tray += labelText('y', RX + 0.7, 15.51, 1.48, 'NO', 7, K.loss);
+    tray += labelText('y', RX + 0.66, 15.51, 1.47, 'NO', 10, K.loss);
     trayTop = 1.58 + ((opt.vetoes || 0) + 1) * 0.045;
     add(RX + 1.2 + 15.0 + 0.4, tray);
     add(RX + 1.2 + 13.7, '<g id="fl-memo-risk">' + box(RX + 1.0, 13.0, 1.46, 0.9, 1.2, 0.03, K.paper) + poly([[RX + 1.02, 13.08, 1.5], [RX + 1.8, 13.08, 1.5], [RX + 1.8, 13.2, 1.5], [RX + 1.02, 13.2, 1.5]], K.ink) + '</g>' + poly([[RX + 1.5, 13.75, 1.51], [RX + 1.6, 13.75, 1.51], [RX + 1.95, 14.3, 1.51], [RX + 1.85, 14.3, 1.51]], K.loss));
@@ -484,7 +484,7 @@
 
     var minX = P(0, D, 0)[0] - 30, maxX = P(W, 0, 0)[0] + 30, minY = P(0, 0, H)[1] - 30, maxY = P(W, D, -0.9)[1] + 30;
     var vb = [minX, minY, maxX - minX, maxY - minY].map(f1);
-    el.innerHTML = '<svg class="floor" xmlns="http://www.w3.org/2000/svg" viewBox="' + vb.join(' ') + '" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="fl-t"><title id="fl-t">The office, on two floors. Downstairs: the logo wall and reception, the double-height wall of every call, the desk pod where the analyst works beside the five bench roles, which run as scripts, the risk desk at its head, the server room and a lounge. Upstairs on the mezzanine: the glass committee room, a library of rulebooks, and Sidd\'s corner office, where he signs as portfolio manager.</title><defs>' + defs + AOD + '</defs>' + back + floor + body + '<g id="fl-fx"></g></svg>';
+    el.innerHTML = '<svg class="floor" xmlns="http://www.w3.org/2000/svg" viewBox="' + vb.join(' ') + '" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="fl-t"><title id="fl-t">The office, on two floors. Downstairs: the logo wall and reception, the double-height wall of every call, the desk pod where the analyst works beside the five bench roles, which will run as scripts once the desk runs, the risk desk at its head, the server room and a lounge. Upstairs on the mezzanine: the glass committee room, a library of rulebooks, and Sidd\'s corner office, where he signs as portfolio manager.</title><defs>' + defs + AOD + '</defs>' + back + floor + body + '<g id="fl-fx"></g></svg>';
     return { vb: vb };
   }
 
@@ -492,7 +492,7 @@
   window.FLOOR = {
     build: build, P: P, S: S, arm: ARM, slots: slots, centers: centers, spots: SP, K: K, trayTop: function () { return trayTop; },
     anchors: {
-      analyst: A(23.05, 16.45, 3.35), risk: A(29.15, 13.9, 3.35), committee: A(19.1, 2.05, MZ + 3.35),
+      analyst: A(23.05, 16.45, 3.35), risk: A(29.15, 13.9, 3.35), committee: A(18.5, 2.05, MZ + 3.35),
       sidd: A(39.2, 1.95, MZ + 3.4), record: A(0, 14.0, 12.0), bench: A(14.45, 12.6, 4.4),
       scripts: A(3.8, 8.6, 3.4)
     }

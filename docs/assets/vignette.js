@@ -13,10 +13,11 @@
   var c = CROPS[host.getAttribute('data-vignette')];
   if (!c) return;
   host.setAttribute('aria-hidden', 'true');
-  var mq = window.matchMedia('(prefers-color-scheme: dark)');
+  var mq = window.matchMedia('(prefers-color-scheme: dark)'), opt = { vetoes: 3 };
+  window.HLRVignette = function (o) { opt = o; draw(); }; // the record page redraws an empty wall for the real ledger
   function draw() {
     if (!host.clientWidth) return; // laid out at zero (a background tab): the resize below draws it later
-    F.build(host, mq.matches, { vetoes: 3 });
+    F.build(host, mq.matches, opt);
     var svg = host.querySelector('svg'); if (!svg) return;
     svg.removeAttribute('role'); svg.removeAttribute('aria-labelledby');
     var t = svg.querySelector('title'); if (t) t.remove();
