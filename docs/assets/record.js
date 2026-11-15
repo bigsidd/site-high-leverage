@@ -1,9 +1,11 @@
-/* The record page: ledger, single-rail timeline, paper book and raw feed, all from sample.js. */
+/* The record page: scoreboard, numbered calls, heartbeat, event log, paper book and raw feed, all from sample.js.
+   Every time on the page is New York time, marked ET. */
 (function () {
   var MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  var DOW = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   var PX = {
     fmtDate: function (iso, withTime) {
-      if (withTime && iso.length > 10) return PX.et(iso); // times read in New York, like the homepage
+      if (withTime && iso.length > 10) return PX.et(iso);
       var d = iso.slice(0, 10).split('-');
       return MON[+d[1] - 1] + ' ' + (+d[2]);
     },
@@ -17,108 +19,138 @@
   var EV = D.events.filter(function (e) { return key(e) <= END; });
   var ROWS = D.rows.filter(function (r) { return r.committed_at <= END; });
   var rowOf = function (id) { return ROWS.filter(function (r) { return r.id === id; })[0]; };
+  var evOf = function (id) { return EV.filter(function (e) { return e.id === id; })[0]; };
+  var no = function (r) { return 'No. ' + r.id.slice(2); };
   function etDate(ts) { // calendar date in New York for a UTC timestamp
     if (ts.length === 10) return ts;
     var t = new Date(ts), y = t.getUTCFullYear(), dstStart = Date.UTC(2026, 2, 8, 7), dstEnd = Date.UTC(2026, 10, 1, 6);
     var off = (y === 2026 && t >= dstStart && t < dstEnd) ? 4 : 5;
     return new Date(t - off * 3600000).toISOString().slice(0, 10);
   }
-  var status = function (r) { return r.outcome ? 'Closed · ' + r.outcome : 'Open'; };
   var long = function (iso) { return PX.fmtDate(iso) + ', ' + iso.slice(0, 4); };
+  var stepWhen = function (ts) { return DOW[new Date(etDate(ts) + 'T12:00:00Z').getUTCDay()] + ' ' + PX.et(ts); };
 
-  // progress
-  function progress(on) {
-    var closed = on ? ROWS.filter(function (r) { return r.outcome; }) : [];
+  // scoreboard: counts, and per-confidence counts until 30 calls have closed (design/07)
+  function scoreboard(on) {
+    var rows = on ? ROWS : [], closed = rows.filter(function (r) { return r.outcome; });
     $('n-closed').textContent = closed.length;
     $('n-month').textContent = 'Month ' + (on ? D.monthsElapsed : 0) + ' of 6.';
     $('meter').style.width = closed.length + '%';
     $('n-win').textContent = closed.filter(function (r) { return r.outcome === 'win'; }).length;
     $('n-loss').textContent = closed.filter(function (r) { return r.outcome === 'loss'; }).length;
-    $('n-open').textContent = on ? ROWS.length - closed.length : 0;
+    $('n-open').textContent = rows.length - closed.length;
     $('n-tray').textContent = on ? EV.filter(function (e) { return e.type === 'chain.dropped'; }).length : 0;
-  }
-
-  // ticks: 56 days ending on the sample Sunday
-  function ticks(on) {
-    var box = $('ticks'), days = [], pub = {}, ran = {}, n = 0;
-    box.textContent = '';
-    for (var k = 55; k >= 0; k--) days.push(D.add(D.week.sunday, -k));
-    if (on) EV.forEach(function (e) { var d = etDate(e.ts); if (e.type === 'row.published' || e.type === 'row.closed') pub[d] = 1; else ran[d] = 1; });
-    days.forEach(function (d) { var i = el('i'); if (pub[d]) { i.className = 'p'; n++; } else if (ran[d]) i.className = 'a'; box.appendChild(i); });
-    $('t0').textContent = on ? PX.fmtDate(days[0]) : '8 weeks ago';
-    $('t1').textContent = on ? PX.fmtDate(days[55]) : 'Today';
-    box.setAttribute('aria-label', on ? 'Per-day activity from ' + PX.fmtDate(days[0]) + ' to ' + PX.fmtDate(days[55]) + '. ' + n + ' days with a call published or closed; ' + Object.keys(ran).filter(function (d) { return d >= days[0] && !pub[d]; }).length + ' days the desk ran without publishing.' : 'Per-day activity for the last 8 weeks. Nothing recorded yet.');
-  }
-
-  // ledger
-  function ledger(on) {
-    var tb = $('tb'); tb.textContent = '';
-    if (!on || !ROWS.length) {
-      var tr = el('tr'), td = el('td', 'empty', '0 calls. The first row appears only after Sidd signs a decision from the committee chair. The model never publishes.');
-      td.colSpan = 4; tr.appendChild(td); tb.appendChild(tr); return;
-    }
-    ROWS.slice().reverse().forEach(function (r) {
-      var tr = el('tr'), th = el('th'), b = el('button', 'id', r.id), did = 'seal-' + r.id;
-      th.scope = 'row'; b.type = 'button'; b.setAttribute('aria-expanded', 'false'); b.setAttribute('aria-controls', did);
-      b.setAttribute('aria-label', r.id + ', show when it was sealed');
-      th.appendChild(b); tr.appendChild(th);
-      var call = el('td'); call.appendChild(el('b', '', r.ticker + ' ' + r.direction)); call.appendChild(el('span', 'sub', r.confidence_bucket + ' confidence')); tr.appendChild(call);
-      var hz = el('td'); hz.appendChild(el('span', '', r.months + ' months')); hz.appendChild(el('span', 'sub', 'to ' + PX.fmtDate(r.horizon_end) + ', ' + r.horizon_end.slice(0, 4))); tr.appendChild(hz);
-      tr.appendChild(el('td', 'res', status(r)));
-      var dr = el('tr', 'sealed'), dc = el('td'); dr.id = did; dr.hidden = true; dc.colSpan = 4;
-      dc.appendChild(el('h3', '', r.id + ': sealed before the outcome'));
-      var dl = el('dl');
-      [['Approved', PX.et(r.approved_at) + ' (approval.stamped)'],
-       ['Committed', PX.et(r.committed_at) + ' (row.published)'],
-       ['Horizon end', r.horizon_end + ', ' + r.months + ' months'],
-       ['Outcome', r.outcome ? 'Closed at horizon ' + PX.et(r.closed_at) + '. ' + (r.outcome === 'win' ? 'Win.' : 'Loss.') : 'Not known yet. It closes at the ' + PX.fmtDate(r.horizon_end) + ' close.'],
-       ['Chain', r.chain.join(', ')],
-       ['Commit', r.sha + ' (placeholder)']].forEach(function (p) { dl.appendChild(el('dt', '', p[0])); dl.appendChild(el('dd', '', p[1])); });
-      dc.appendChild(dl);
-      dc.appendChild(el('p', 'xs muted', 'On the real ledger this links to the commit and its timestamp proof. In this preview there is nothing to verify.'));
-      dr.appendChild(dc);
-      b.addEventListener('click', function () { var o = b.getAttribute('aria-expanded') === 'true'; b.setAttribute('aria-expanded', String(!o)); dr.hidden = o; });
-      tb.appendChild(tr); tb.appendChild(dr);
+    var tb = $('cal'); tb.textContent = '';
+    ['high', 'medium', 'low'].forEach(function (b) {
+      var rs = rows.filter(function (r) { return r.confidence_bucket === b; }), cs = rs.filter(function (r) { return r.outcome; });
+      var tr = el('tr'), th = el('th', '', b[0].toUpperCase() + b.slice(1)); th.scope = 'row'; tr.appendChild(th);
+      [rs.length, cs.length, cs.filter(function (r) { return r.outcome === 'win'; }).length, cs.filter(function (r) { return r.outcome === 'loss'; }).length]
+        .forEach(function (n) { tr.appendChild(el('td', 'n', String(n))); });
+      tb.appendChild(tr);
     });
+    $('cal-note').textContent = 'Hit rate by confidence shows once 30 calls have closed (' + closed.length + ' so far). Until then, counts only.';
   }
 
-  // timeline
-  var ROUTINE = { 'digest.sent': 1, 'week.quiet': 1, 'row.scored': 1, 'anomaly.flagged': 1, 'thesis.checked': 1 };
-  var FOLD = { 'anomaly.flagged': 1, 'row.scored': 1, 'thesis.checked': 1 };
+  // calls: one line each, newest first; the dated steps fold underneath as the proof
+  var STEP = {
+    'memo.drafted': 'The analyst drafted the memo',
+    'memo.forwarded': 'A script passed it to the risk officer',
+    'risk.reviewed': 'The risk officer passed it, with a dissent attached',
+    'decision.made': 'The committee chair voted to publish',
+    'approval.stamped': 'Sidd signed it. The call carries this event id as its approval',
+    'row.published': 'Published and sealed'
+  };
+  function calls(on) {
+    var box = $('calllist'); box.textContent = '';
+    if (on) ROWS.slice().reverse().forEach(function (r) {
+      var li = el('li', 'call'), det = el('details'), sum = el('summary'), line = el('span', 'cl');
+      line.appendChild(el('b', 'cn', no(r)));
+      line.appendChild(document.createTextNode(' · ' + r.ticker + ' · ' + r.direction + ' · ' + r.confidence_bucket + ' · ' + (r.outcome ? 'closed ' : 'closes ') + long(r.horizon_end)));
+      sum.appendChild(line);
+      sum.appendChild(el('span', 'st ' + (r.outcome ? 's-' + r.outcome : 's-open'), r.outcome ? (r.outcome === 'win' ? 'Win' : 'Loss') : 'Open'));
+      det.appendChild(sum);
+      var ol = el('ol', 'steps');
+      r.chain.forEach(function (id) {
+        var e = evOf(id), s = el('li'), t = el('time', '', stepWhen(e.ts)), p = el('p');
+        t.setAttribute('datetime', e.ts);
+        p.textContent = STEP[e.type] + (e.type === 'row.published' ? ' (commit ' + r.sha + ', placeholder)' : '') + '.';
+        p.appendChild(el('span', 'eid', ' ' + e.type + ' · ' + e.id));
+        s.appendChild(t); s.appendChild(p); ol.appendChild(s);
+      });
+      var last = el('li', r.outcome ? '' : 'later'), lt = el('time'), lp = el('p');
+      if (r.outcome) { lt.textContent = stepWhen(r.closed_at); lt.setAttribute('datetime', r.closed_at); lp.textContent = 'Closed at its ' + r.months + '-month horizon: a ' + r.outcome + ' against both benchmarks.'; }
+      else { lt.textContent = long(r.horizon_end); lp.textContent = 'Closes at that day’s close, ' + r.months + ' months after publishing. Not known yet.'; }
+      last.appendChild(lt); last.appendChild(lp); ol.appendChild(last);
+      det.appendChild(ol);
+      det.appendChild(el('p', 'xs muted', 'On the real ledger each step links to its commit and timestamp proof. In this preview there is nothing to verify.'));
+      li.appendChild(det); box.appendChild(li);
+    });
+    else box.appendChild(el('li', 'call none', 'No calls yet. No. 1 appears only after the committee chair decides and Sidd signs. The model never publishes.'));
+    // day 0: the rules are sealed before the first call (design/16)
+    var d0 = el('li', 'call day0'), dl = el('p', 'cl');
+    dl.appendChild(el('b', 'cn', 'Day 0'));
+    dl.appendChild(document.createTextNode(on ? ' · ' + long(D.cutover) + ' · rules sealed' : ' · not dated yet · rules seal here'));
+    d0.appendChild(dl);
+    d0.appendChild(el('p', 'small muted', on
+      ? 'The prompts, the test suite, the scoring rule and the 100-call rule were committed and anchored before No. 1. Changing any of them adds a new dated entry. Nothing here is rewritten.'
+      : 'The prompts, the test suite, the scoring rule and the 100-call rule get committed and anchored before No. 1. Any later change adds a new dated entry.'));
+    box.appendChild(d0);
+  }
+
+  // heartbeat: one dot per night since day 0, gaps for missed nights (design/16)
+  function heartbeat(on) {
+    var box = $('beat'); box.textContent = '';
+    if (!on) {
+      box.setAttribute('aria-label', 'No nights yet.'); $('t0').textContent = 'Day 0'; $('t1').textContent = 'Today';
+      $('beat-note').textContent = 'The first dot appears the night after cutover.'; return;
+    }
+    var ran = {}, days = [];
+    EV.forEach(function (e) { if (e.type === 'day.ran') ran[etDate(e.ts)] = 1; });
+    for (var d = D.cutover; d <= D.week.sunday; d = D.add(d, 1)) days.push(d);
+    var missed = days.filter(function (x) { return !ran[x]; });
+    days.forEach(function (x) { var i = el('i', ran[x] ? '' : 'gap'); i.title = PX.fmtDate(x) + (ran[x] ? ': ran' : ': missed'); box.appendChild(i); });
+    $('t0').textContent = 'Day 0 · ' + PX.fmtDate(days[0]); $('t1').textContent = PX.fmtDate(days[days.length - 1]);
+    var txt = (days.length - missed.length) + ' of ' + days.length + ' nights since ' + long(days[0]) + '. Missed: ' + (missed.length ? missed.map(function (x) { return PX.fmtDate(x); }).join(' and ') : 'none') + '.';
+    box.setAttribute('aria-label', txt);
+    $('beat-note').textContent = txt + ' Each night is one dated event with no tickers in it.';
+  }
+
+  // the full event log
+  var ROUTINE = { 'digest.sent': 1, 'week.quiet': 1, 'row.scored': 1, 'anomaly.flagged': 1, 'thesis.checked': 1, 'day.ran': 1 };
+  var FOLD = { 'anomaly.flagged': 1, 'row.scored': 1, 'thesis.checked': 1, 'day.ran': 1 };
   var STAGE = { note: 'the note', risk: 'the risk officer', committee: 'the committee chair', sidd: 'Sidd' };
   function text(e, n) {
     var r = e.ref && rowOf(e.ref);
     switch (e.type) {
+      case 'day.ran': return 'The desk ran ' + n + (n > 1 ? ' nights' : ' night') + '. Date and status only.';
       case 'anomaly.flagged': return n + (n > 1 ? ' anomalies' : ' anomaly') + ' flagged by threshold. Count only.';
-      case 'row.scored': return 'Scorer ran ' + n + (n > 1 ? ' nights' : ' night') + '. Scores regenerate; rows never change.';
-      case 'thesis.checked': return n + ' open ' + (n > 1 ? 'calls' : 'call') + ' re-checked against the thesis. Count only.';
-      case 'note.drafted': return 'Analyst note on a flag, covering market-sentinel. No ticker.';
-      case 'note.decided': return 'Sidd triaged the week’s notes.';
-      case 'memo.drafted': return 'Memo drafted from a script screen, covering value-scout.';
-      case 'memo.forwarded': return 'A script handed the memo to the risk officer.';
-      case 'risk.reviewed': return 'Pass, with a dissent attached.';
-      case 'decision.made': return 'The committee chair decided to publish: ' + rowOf(e._row).months + ' months, ' + rowOf(e._row).confidence_bucket + ' confidence.';
-      case 'approval.stamped': return 'Sidd stamped ' + r.id + '.';
-      case 'row.published': return r.id + ' ' + r.ticker + ', ' + r.direction + ', ' + r.months + ' months, ' + r.confidence_bucket + ' confidence.';
-      case 'chain.dropped': return 'A chain stopped at ' + (STAGE[e.stage] || e.stage) + '. Stage and date only. No ticker, now or later.';
-      case 'row.closed': return r.id + ' ' + r.ticker + ' closed at its horizon. ' + (r.outcome === 'win' ? 'Win.' : 'Loss.');
-      case 'digest.sent': return 'Weekly digest sent. Ticker-less events released in one batch.';
+      case 'row.scored': return 'Scorer ran ' + n + (n > 1 ? ' nights' : ' night') + '. Scores are recomputed; calls never change.';
+      case 'thesis.checked': return n + ' open ' + (n > 1 ? 'calls' : 'call') + ' re-checked against the memo. Count only.';
+      case 'note.drafted': return 'The analyst wrote a note on a flag. No ticker.';
+      case 'note.decided': return 'Sidd read the week’s notes.';
+      case 'memo.drafted': return 'The analyst drafted a memo from a script screen.';
+      case 'memo.forwarded': return 'A script passed the memo to the risk officer.';
+      case 'risk.reviewed': return 'Passed, with a dissent attached.';
+      case 'decision.made': var dr = rowOf(e._row); return 'The committee chair voted to publish: ' + dr.months + ' months, ' + dr.confidence_bucket + ' confidence.';
+      case 'approval.stamped': return 'Sidd signed ' + no(r) + '.';
+      case 'row.published': return no(r) + ' · ' + r.ticker + ', ' + r.direction + ', ' + r.months + ' months, ' + r.confidence_bucket + ' confidence.';
+      case 'chain.dropped': return 'A memo stopped at ' + (STAGE[e.stage] || e.stage) + '. Stage and date only, no ticker.';
+      case 'row.closed': return no(r) + ' · ' + r.ticker + ' closed at its horizon. ' + (r.outcome === 'win' ? 'Win.' : 'Loss.');
+      case 'digest.sent': return 'Weekly digest sent. The week’s events went out in one batch.';
       case 'week.quiet': return 'Quiet week. Nothing reached the chair.';
-      case 'agent.hired': return 'A role was hired.';
     }
     return '';
   }
   function tag(e) {
     var r = e.ref && rowOf(e.ref);
     if (e.type === 'row.published') return ['Call', 't-call'];
-    if (e.type === 'approval.stamped') return ['Stamp', 't-stamp'];
-    if (e.type === 'chain.dropped') return [e.stage === 'risk' ? 'Veto' : 'Declined', 't-drop'];
+    if (e.type === 'approval.stamped') return ['Signed', 't-stamp'];
+    if (e.type === 'chain.dropped') return ['No', 't-drop'];
     if (e.type === 'row.closed') return r.outcome === 'win' ? ['Win', 't-win'] : ['Loss', 't-loss'];
     return null;
   }
   function timeline() {
     var box = $('weeks'); box.textContent = '';
-    // tie each decision.made to its row through the row's chain
     ROWS.forEach(function (r) { EV.forEach(function (e) { if (r.chain.indexOf(e.id) >= 0) Object.defineProperty(e, '_row', { value: r.id, configurable: true }); }); });
     var weeks = {};
     EV.forEach(function (e) {
@@ -129,10 +161,11 @@
       var li = el('li', 'wk' + (sun === D.week.sunday ? '' : ' earlier')), h = el('h3', '', 'Week ending Sunday ' + long(sun)), ol = el('ol', 'rail');
       var list = weeks[sun].slice().reverse(), seen = {};
       list.forEach(function (e) {
-        if (FOLD[e.type]) { if (seen[e.type]) { seen[e.type].n++; seen[e.type].first = e; return; } }
+        if (FOLD[e.type] && seen[e.type]) { seen[e.type].n++; seen[e.type].first = e; return; }
         var item = { e: e, n: 1, first: e }; if (FOLD[e.type]) seen[e.type] = item;
-        item.li = el('li', ROUTINE[e.type] ? 'routine' : ''); ol.appendChild(item.li); item.render = function () {
-          var x = item.e, t = el('time'), body = el('div'), tg = tag(x), p = el('p', tg ? 'big' : '');
+        item.li = el('li', ROUTINE[e.type] ? 'routine' : ''); ol.appendChild(item.li);
+        item.render = function () {
+          var x = item.e, t = el('time'), body = el('div'), tg = tag(x), p = el('p', tg && tg[1] !== 't-drop' ? 'big' : '');
           t.setAttribute('datetime', x.ts);
           t.textContent = item.n > 1 ? PX.fmtDate(item.first.ts) + ' to ' + PX.fmtDate(x.ts) : PX.fmtDate(x.ts, true) + (x.ts.length === 10 ? ' · date only' : '');
           if (tg) p.appendChild(el('span', 'tag ' + tg[1], tg[0]));
@@ -164,7 +197,7 @@
     be.setAttribute('aria-expanded', String(showEarlier));
     be.textContent = showEarlier ? 'Hide ' + older + ' earlier weeks' : 'Show ' + older + ' earlier weeks';
     br.setAttribute('aria-pressed', String(showRoutine));
-    $('tl-note').textContent = (showEarlier ? 'Showing all ' + (older + 1) + ' weeks' : 'Showing the sample week, ' + PX.fmtDate(D.week.start) + ' to ' + PX.fmtDate(D.week.sunday)) + (showRoutine ? ', with routine events.' : ', without routine events (digest, quiet weeks, scorer runs, counts).');
+    $('tl-note').textContent = (showEarlier ? 'Showing all ' + (older + 1) + ' weeks' : 'Showing the sample week, ' + PX.fmtDate(D.week.start) + ' to ' + PX.fmtDate(D.week.sunday)) + (showRoutine ? ', with routine events.' : ', without routine events (nightly runs, digest, scorer, counts).');
   }
   $('b-earlier').addEventListener('click', function () { showEarlier = !showEarlier; view(); });
   $('b-routine').addEventListener('click', function () { showRoutine = !showRoutine; view(); });
@@ -172,7 +205,7 @@
   function book() {
     var tb = $('bk'), total = D.book.start; tb.textContent = '';
     ROWS.slice().reverse().forEach(function (r) {
-      var tr = el('tr'), th = el('th', 'mono', r.id); th.scope = 'row'; tr.appendChild(th);
+      var tr = el('tr'), th = el('th', 'mono', no(r)); th.scope = 'row'; tr.appendChild(th);
       tr.appendChild(el('td', '', r.direction === 'outperform' ? r.ticker + ' against SPY' : 'SPY against ' + r.ticker));
       tr.appendChild(el('td', 'n', '$10,000'));
       tr.appendChild(el('td', 'n', r.book == null ? 'not yet' : PX.money(r.book)));
@@ -182,20 +215,19 @@
     });
     $('bk-total').textContent = '$' + total.toLocaleString('en-US');
     var f = D.fills;
-    $('fills').textContent = 'Broker paper fills: ' + f.mirrored + ' calls mirrored, ' + f.queued + ' queued for the next open, ' + f.notMirrored + ' underperform calls not mirrored. Raw paper P&L, not measured against the benchmark: ' + PX.money(f.pl) + ' (sample).';
+    $('fills').textContent = 'Broker paper fills: ' + f.mirrored + ' calls copied, ' + f.queued + ' waiting for the next open, ' + f.notMirrored + ' underperform calls not copied. Paper P&L ' + PX.money(f.pl) + '. The same dollars in SPY over the same dates: ' + PX.money(f.spy) + '. Sample.';
   }
 
   function feed() {
     $('jsonl').textContent = EV.filter(function (e) { return key(e) >= D.week.start; }).map(function (e) { return JSON.stringify(e); }).join('\n');
   }
 
-  // The sample week is the default view. The real ledger (empty today) is the secondary toggle.
   var built = false;
   function apply(s) {
     var on = s === 'sample';
     document.documentElement.dataset.state = s;
     [].forEach.call(document.querySelectorAll('[data-set]'), function (b) { b.setAttribute('aria-pressed', String(b.dataset.set === s)); });
-    progress(on); ticks(on); ledger(on);
+    scoreboard(on); calls(on); heartbeat(on);
     if (window.HLRVignette) window.HLRVignette(on ? { vetoes: 3 } : { vetoes: 0, empty: true }); // the real wall is empty too
     if (on && !built) { timeline(); book(); feed(); built = true; }
   }
