@@ -308,14 +308,14 @@
     var RY0 = 9.9, RY1 = 18.1, SW = 2.5, SH = 1.62, GW = 0.35, GH = 0.3, RT = 9.7; // slot size, gaps, top of row 1 (z)
     var lw = poly([[0.02, RY0 - 0.4, RT - 3 * SH - 2 * GH - 0.45], [0.02, RY1 + 0.4, RT - 3 * SH - 2 * GH - 0.45], [0.02, RY1 + 0.4, RT + 1.35], [0.02, RY0 - 0.4, RT + 1.35]], K.recordWall);
     lw += planeText('x', 0.04, RY1, RT + 0.55, 'THE RECORD', 10, '#E9E1D3', 'IBM Plex Mono, monospace', 600);
-    var cards = opt.empty ? [] : [['POL-1', 'WIN', K.win], ['POL-2', 'LOSS', K.loss], ['POL-3', 'LOSS', K.loss], ['POL-4', 'OPEN', '#5C574F'], ['POL-5', 'OPEN', '#5C574F'], ['POL-6', 'OPEN', '#5C574F']];
+    var cards = opt.empty ? [] : [['C-1', 'WIN', K.win], ['C-2', 'LOSS', K.loss], ['C-3', 'LOSS', K.loss], ['C-4', 'OPEN', '#5C574F'], ['C-5', 'OPEN', '#5C574F'], ['C-6', 'OPEN', '#5C574F']];
     function card(id, res, col, y0, zt, suffix, hide) { // y0..y0+w along the wall, zt is the top; one group per card so the replay can pin or close it
       var w = SW * 0.9, h = SH * 0.9, g = '<g id="fl-c-' + id + (suffix || '') + '"' + (hide ? ' opacity="0"' : '') + '>';
       g += poly([[0.04, y0, zt - h], [0.04, y0 + w, zt - h], [0.04, y0 + w, zt], [0.04, y0, zt]], K.paper);
       g += poly([[0.05, y0, zt - 0.22], [0.05, y0 + w, zt - 0.22], [0.05, y0 + w, zt], [0.05, y0, zt]], col);
       g += poly([[0.055, y0 + w - 0.75, zt - 0.22], [0.055, y0 + w - 0.2, zt - 0.22], [0.055, y0 + w - 0.2, zt - 0.4], [0.055, y0 + w - 0.75, zt - 0.4]], K.tab); // the dissent tab, inside the card
-      g += labelText('x', 0.06, y0 + w - 0.15, zt - 0.62, id, 8, '#1C1B19');
-      g += labelText('x', 0.06, y0 + w - 0.15, zt - 1.05, res, 8, col);
+      // one numeral, sized to read at 11 px or more on a phone; the band's colour carries win, loss or open
+      g += labelText('x', 0.06, y0 + w - 0.3, zt - 1.08, id.slice(2), 20, '#1C1B19');
       return g + '</g>';
     }
     for (var ci = 0; ci < 9; ci++) {
@@ -324,7 +324,7 @@
       var cy = y0 + SW * 0.45, cz = zt - SH * 0.45;
       slots[c[0]] = [0.3, cy, cz]; centers[c[0]] = P(0.04, cy, cz);
       lw += card(c[0], c[1], c[2], y0, zt);
-      if (c[0] === 'POL-3') lw += card(c[0], 'OPEN', '#5C574F', y0, zt, '-pre', true); // before its horizon close
+      if (c[0] === 'C-3') lw += card(c[0], 'OPEN', '#5C574F', y0, zt, '-pre', true); // before its horizon close
     }
     if (K.night) { var rw = P(0.05, (RY0 + RY1) / 2, RT - 1.2); back += lw + '<ellipse cx="' + f1(rw[0]) + '" cy="' + f1(rw[1]) + '" rx="' + f1(S * 5.5) + '" ry="' + f1(S * 4) + '" fill="url(#fl-warm)" opacity="0.55"/>'; } else back += lw;
 

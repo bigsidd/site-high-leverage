@@ -13,12 +13,12 @@
 
   // One committee decision a week at most; one Sidd stamp per published call, on Sunday.
   var ROWS = [
-    { id: 'POL-1', ticker: 'XMPL', direction: 'outperform', months: 3, horizon_end: '2026-10-05', confidence_bucket: 'medium', week: '2026-07-05', outcome: 'win', book: 640 },
-    { id: 'POL-2', ticker: 'SMPL', direction: 'underperform', months: 3, horizon_end: '2026-10-19', confidence_bucket: 'low', week: '2026-07-19', outcome: 'loss', book: -410 },
-    { id: 'POL-3', ticker: 'XMPL', direction: 'outperform', months: 3, horizon_end: '2026-11-02', confidence_bucket: 'medium', week: '2026-08-02', outcome: 'loss', book: -880 },
-    { id: 'POL-4', ticker: 'SMPL', direction: 'outperform', months: 6, horizon_end: '2027-02-23', confidence_bucket: 'high', week: '2026-08-23', outcome: null, book: 120 },
-    { id: 'POL-5', ticker: 'XMPL', direction: 'underperform', months: 12, horizon_end: '2027-09-27', confidence_bucket: 'low', week: '2026-09-27', outcome: null, book: -60 },
-    { id: 'POL-6', ticker: 'SMPL', direction: 'outperform', months: 3, horizon_end: '2027-02-08', confidence_bucket: 'medium', week: '2026-11-08', outcome: null, book: null }
+    { id: 'C-1', ticker: 'XMPL', direction: 'outperform', months: 3, horizon_end: '2026-10-05', confidence_bucket: 'medium', week: '2026-07-05', outcome: 'win', book: 640 },
+    { id: 'C-2', ticker: 'SMPL', direction: 'underperform', months: 3, horizon_end: '2026-10-19', confidence_bucket: 'low', week: '2026-07-19', outcome: 'loss', book: -410 },
+    { id: 'C-3', ticker: 'XMPL', direction: 'outperform', months: 3, horizon_end: '2026-11-02', confidence_bucket: 'medium', week: '2026-08-02', outcome: 'loss', book: -880 },
+    { id: 'C-4', ticker: 'SMPL', direction: 'outperform', months: 6, horizon_end: '2027-02-23', confidence_bucket: 'high', week: '2026-08-23', outcome: null, book: 120 },
+    { id: 'C-5', ticker: 'XMPL', direction: 'underperform', months: 12, horizon_end: '2027-09-27', confidence_bucket: 'low', week: '2026-09-27', outcome: null, book: -60 },
+    { id: 'C-6', ticker: 'SMPL', direction: 'outperform', months: 3, horizon_end: '2027-02-08', confidence_bucket: 'medium', week: '2026-11-08', outcome: null, book: null }
   ];
   // Week plan keyed by Sunday. drop = [stage, date the chain stopped].
   var PLAN = {
@@ -28,6 +28,7 @@
     '2026-11-08': ['risk', '2026-11-05']
   };
   var FIRST = '2026-07-05', LAST = '2026-11-08';
+  var CUTOVER = '2026-07-04', MISSED = ['2026-08-17', '2026-10-06']; // day 0, and two nights the desk didn't run (shown as gaps)
 
   var ev = [], seq = 0;
   function push(ts, type, actor, role, rel, ref, stage) {
@@ -45,6 +46,7 @@
       if (d.slice(8) === '01') { // monthly thesis check, count only
         ROWS.forEach(function (r) { if (r.week < d && r.horizon_end >= d) push(utc(d, 10, 0), 'thesis.checked', 'research-analyst', 'thesis-tracker', batch); });
       }
+      if (d >= CUTOVER && MISSED.indexOf(d) < 0) push(utc(d, 23, 30), 'day.ran', 'script', null, 'score:' + d); // design/16 heartbeat: date and status only
       if (dow > 4) continue;
       var n = [2, 0, 1, 0, 1][(di + wi) % 5];
       for (var k = 0; k < n; k++) push(utc(d, 17, 30), 'anomaly.flagged', 'script', 'market-sentinel', batch);
@@ -71,7 +73,7 @@
         push(utc(S, 18, 14), 'approval.stamped', 'sidd', null, rel, row.id),
         push(utc(S, 18, 15), 'row.published', 'script', null, rel, row.id)
       ];
-      row.approved_at = row.chain[4].ts; row.committed_at = row.chain[5].ts;
+      row.approved_at = row.chain[4].ts; row.committed_at = row.chain[5].ts; row.stamp = row.chain[4];
     }
   }
   ev.sort(function (a, b) { return a._k[0] < b._k[0] ? -1 : a._k[0] > b._k[0] ? 1 : a._k[1] - b._k[1]; });
@@ -81,15 +83,15 @@
     return shas[key];
   }
   ev.forEach(function (e, i) { e.id = 'E-' + (i + 1); e.sha = sha(e._k[2]); });
-  ROWS.forEach(function (r) { r.chain = r.chain.map(function (e) { return e.id; }); r.sha = sha('pub:' + r.id); });
+  ROWS.forEach(function (r) { r.approval_id = r.stamp.id; r.chain = r.chain.map(function (e) { return e.id; }); r.sha = sha('pub:' + r.id); });
 
   window.SAMPLE = {
     rows: ROWS, events: ev, utc: utc, add: add,
     week: { start: utc('2026-11-02', 0, 0), end: utc('2026-11-08', 23, 59), sunday: '2026-11-08', label: 'Nov 2 to Nov 8, 2026' },
-    firstRow: '2026-07-05',
+    firstRow: '2026-07-05', cutover: CUTOVER, missed: MISSED,
     monthsElapsed: 4, // Jul 5 to Nov 8
     book: { start: 100000, perCall: 10000 },
     // design/07 "Never published": the paper account shows only as this aggregate line.
-    fills: { mirrored: 3, queued: 1, notMirrored: 2, pl: 860 }
+    fills: { mirrored: 3, queued: 1, notMirrored: 2, pl: 860, spy: 510 } // spy: the same dollars in SPY over the same dates
   };
 })();

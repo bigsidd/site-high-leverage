@@ -117,7 +117,7 @@
     return new Date(ts).toLocaleString('en-US', { timeZone: 'America/New_York', weekday: 'short', hour: 'numeric', minute: '2-digit' }).replace(',', '') + ' ET';
   }
   var SAY = {
-    'row.closed': function (e, r) { return r.id + ' reaches its ' + r.months + '-month horizon and closes as a ' + r.outcome + '. It stays on the wall, the same size as a win.'; },
+    'row.closed': function (e, r) { return 'No. ' + r.id.slice(2) + ' reaches its ' + r.months + '-month horizon and closes as a ' + r.outcome + '. It stays on the wall, the same size as a win.'; },
     'note.drafted': function () { return 'The analyst flags an unusual move in a short note. Its ticker stays private unless a call publishes.'; },
     'chain.dropped': function (e) { return (e.stage === 'risk' ? 'The risk officer vetoes an idea.' : 'The committee chair turns an idea down.') + ' It goes in the No tray. Its ticker is never published.'; },
     'memo.drafted': function (e, r) { return 'The analyst writes a memo on ' + r.ticker + '.'; },
@@ -125,7 +125,7 @@
     'risk.reviewed': function () { return 'The risk officer lets it through, with a written dissent attached.'; },
     'decision.made': function (e, r) { return 'The committee chair decides: ' + r.ticker + ' to ' + r.direction + ' SPY and its sector fund over ' + r.months + ' months.'; },
     'approval.stamped': function () { return 'I sign it. No call publishes without my signature.'; },
-    'row.published': function (e, r) { return 'Published as ' + r.id + ', sealed before anyone knows the outcome.'; }
+    'row.published': function (e, r) { return 'Published as No. ' + r.id.slice(2) + ', sealed before anyone knows the outcome.'; }
   };
   var SHORT = { // the clip's captions: one idea each, readable in a phone feed
     'row.closed': 'A call closes at a loss. It stays up.', 'chain.dropped': 'Vetoed. Its ticker stays private.',
@@ -269,12 +269,12 @@
     done = false; focus = null; rest(base);
     caps = []; capOn = null;
     tl = gsap.timeline({ paused: true, onUpdate: function () { sync(); armSync(); idle(); }, onComplete: function () { done = true; btn('replay'); } });
-    var c3 = FLOOR.centers['POL-3'], c6 = FLOOR.centers['POL-6'];
-    // the week opens before any of its events: POL-3 still open, POL-6 not yet on the wall, no memo on any desk
+    var c3 = FLOOR.centers['C-3'], c6 = FLOOR.centers['C-6'];
+    // the week opens before any of its events: No. 3 still open, No. 6 not yet on the wall, no memo on any desk
     if (lede) tl.set(lede, { opacity: 1 }, 0);
-    tl.set(el('fl-c-POL-3-pre'), { opacity: 1, scaleY: 1, svgOrigin: c3[0] + ' ' + c3[1] }, 0)
-      .set(el('fl-c-POL-3'), { scaleY: 0, svgOrigin: c3[0] + ' ' + c3[1] }, 0)
-      .set(el('fl-c-POL-6'), { scaleY: 0, svgOrigin: c6[0] + ' ' + c6[1] }, 0)
+    tl.set(el('fl-c-C-3-pre'), { opacity: 1, scaleY: 1, svgOrigin: c3[0] + ' ' + c3[1] }, 0)
+      .set(el('fl-c-C-3'), { scaleY: 0, svgOrigin: c3[0] + ' ' + c3[1] }, 0)
+      .set(el('fl-c-C-6'), { scaleY: 0, svgOrigin: c6[0] + ' ' + c6[1] }, 0)
       .set([el('fl-memo-risk'), el('fl-memo-sidd'), el('fx-card'), el('fx-dissent'), el('fx-ink'), el('fl-veto-new')], { opacity: 0 }, 0)
       .set(el('fx-inner'), { scaleY: 1, rotation: 0, transformOrigin: '50% 50%' }, 0)
       .set(el('fx-chip'), { opacity: 1 }, 0).set([el('fx-flecks'), el('fx-ring'), el('fl-m3-ring')], { opacity: 0 }, 0).set(grip, { v: 0 }, 0).set(chipAt, { x: -10, y: -18 }, 0).set([el('fl-rail'), el('fl-sglass')], { opacity: 1 }, 0)
