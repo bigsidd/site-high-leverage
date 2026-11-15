@@ -11,14 +11,15 @@
   }
   function add(d, n) { var t = new Date(d + 'T00:00:00Z'); t.setUTCDate(t.getUTCDate() + n); return t.toISOString().slice(0, 10); }
 
-  // One committee decision a week at most; one Sidd stamp per published call, on Sunday.
+  // Up to two committee decisions a week (one or two is the forecast); one Sidd stamp per published call, on Sunday.
+  // Two confidence levels, standard and high, either direction; high on at most a quarter of calls. 3-month horizon by default.
   var ROWS = [
-    { id: 'C-1', ticker: 'XMPL', direction: 'outperform', months: 3, horizon_end: '2026-10-05', confidence_bucket: 'medium', week: '2026-07-05', outcome: 'win', book: 640 },
-    { id: 'C-2', ticker: 'SMPL', direction: 'underperform', months: 3, horizon_end: '2026-10-19', confidence_bucket: 'low', week: '2026-07-19', outcome: 'loss', book: -410 },
-    { id: 'C-3', ticker: 'XMPL', direction: 'outperform', months: 3, horizon_end: '2026-11-02', confidence_bucket: 'medium', week: '2026-08-02', outcome: 'loss', book: -880 },
-    { id: 'C-4', ticker: 'SMPL', direction: 'outperform', months: 6, horizon_end: '2027-02-23', confidence_bucket: 'high', week: '2026-08-23', outcome: null, book: 120 },
-    { id: 'C-5', ticker: 'XMPL', direction: 'underperform', months: 12, horizon_end: '2027-09-27', confidence_bucket: 'low', week: '2026-09-27', outcome: null, book: -60 },
-    { id: 'C-6', ticker: 'SMPL', direction: 'outperform', months: 3, horizon_end: '2027-02-08', confidence_bucket: 'medium', week: '2026-11-08', outcome: null, book: null }
+    { id: 'C-1', ticker: 'XMPL', direction: 'outperform', months: 3, horizon_end: '2026-10-05', confidence_bucket: 'standard', week: '2026-07-05', outcome: 'win', book: 640 },
+    { id: 'C-2', ticker: 'SMPL', direction: 'underperform', months: 3, horizon_end: '2026-10-19', confidence_bucket: 'standard', week: '2026-07-19', outcome: 'loss', book: -410 },
+    { id: 'C-3', ticker: 'XMPL', direction: 'outperform', months: 3, horizon_end: '2026-11-02', confidence_bucket: 'standard', week: '2026-08-02', outcome: 'loss', book: -880 },
+    { id: 'C-4', ticker: 'SMPL', direction: 'outperform', months: 6, horizon_end: '2027-02-23', confidence_bucket: 'standard', week: '2026-08-23', outcome: null, book: 120 },
+    { id: 'C-5', ticker: 'XMPL', direction: 'underperform', months: 3, horizon_end: '2026-12-28', confidence_bucket: 'high', week: '2026-09-27', outcome: null, book: -60 },
+    { id: 'C-6', ticker: 'SMPL', direction: 'underperform', months: 3, horizon_end: '2027-02-08', confidence_bucket: 'standard', week: '2026-11-08', outcome: null, book: null }
   ];
   // Week plan keyed by Sunday. drop = [stage, date the chain stopped].
   var PLAN = {
@@ -92,6 +93,6 @@
     monthsElapsed: 4, // Jul 5 to Nov 8
     book: { start: 100000, perCall: 10000 },
     // design/07 "Never published": the paper account shows only as this aggregate line.
-    fills: { mirrored: 3, queued: 1, notMirrored: 2, pl: 860, spy: 510 } // spy: the same dollars in SPY over the same dates
+    fills: { mirrored: 3, queued: 0, notMirrored: 3, pl: 860, spy: 510 } // spy: the same dollars in SPY over the same dates
   };
 })();

@@ -45,7 +45,7 @@
 <div class="prose">
   <p class="lede">Three models draft and challenge each call. Nothing publishes until I sign it. Scripts do everything else.</p>
   <p>High Leverage Research is a small AI investment committee I&rsquo;m building in the open. Every step that can be code is code: fetching filings, screening, valuation arithmetic, scoring and publishing. A model is called only where a judgment has to be written down, and each call is a single shot with no tools. A script builds the input, the model returns JSON, and a script checks that JSON before anything moves.</p>
-  <p>Three model seats run in a fixed order. The analyst writes a memo on whether a stock will beat its benchmark. The risk officer argues against it and can veto it. The committee chair decides whether it&rsquo;s worth publishing. Then I approve or discard it, and a script commits it to a public ledger where any edit would show. It&rsquo;s paper money only: no position sizing and no &ldquo;buy at&rdquo; prices.</p>
+  <p>Three model seats run in a fixed order. The analyst writes a memo on whether a stock will beat or trail its benchmark. The risk officer argues against it and can veto it. The committee chair decides whether it&rsquo;s worth publishing. Then I approve or discard it, and a script commits it to a public ledger where any edit would show. It&rsquo;s paper money only: no position sizing and no &ldquo;buy at&rdquo; prices.</p>
   <p>It isn&rsquo;t running yet, on purpose. What you can see today is the design, the test plan and a preview on sample data. The desk waits until I&rsquo;ve cleared a set of gates I set for it, including a legal read.</p>
 </div>
 
@@ -89,7 +89,7 @@
     <li><span class="stn">1</span><div><b>The analyst drafts</b><span>One call per candidate, on Sonnet 5.5.</span>
       <dl class="rw">
         <dt>Reads</dt><dd>Script-built facts, ratio colors, the value range, a valuation bucket instead of a price, filing excerpts as quoted data, and the prior memo if the name has one.</dd>
-        <dt>Writes</dt><dd>A memo: a thesis of up to 120 words, what the market has wrong, a value range inside the script&rsquo;s, a 3, 6 or 12 month horizon, three risks, pillars with what would break each, and labeled claims.</dd>
+        <dt>Writes</dt><dd>A memo: a thesis of up to 120 words, what the market has wrong, a value range inside the script&rsquo;s, a 3-month horizon, three risks, pillars with what would break each, and labeled claims.</dd>
         <dt>Stops if</dt><dd>The memo fails validation, or it can&rsquo;t say what the market has wrong. That makes it ineligible.</dd>
       </dl></div></li>
     <li><span class="stn">2</span><div><b>The risk officer argues</b><span>One call, on Sonnet 5.5. A script hands the memo over; I&rsquo;m not in this step.</span>
@@ -98,10 +98,10 @@
         <dt>Writes</dt><dd>Pass or veto, a dissent that is required even on a pass, and rubric scores. A script then applies hard overrides and a scoring formula, and decides which direction, if any, the call is eligible for.</dd>
         <dt>Stops if</dt><dd>It vetoes, or a script override does. The idea goes to the No tray, and its ticker is never published.</dd>
       </dl></div></li>
-    <li><span class="stn">3</span><div><b>The committee chair decides</b><span>One call, on Opus 5.5. At most weekly to start.</span>
+    <li><span class="stn">3</span><div><b>The committee chair decides</b><span>One call, on Opus 5.5. Up to two decisions a week.</span>
       <dl class="rw">
         <dt>Reads</dt><dd>The memo, the dissent, the script&rsquo;s eligibility gate and the calls already open on the public ledger.</dd>
-        <dt>Writes</dt><dd>Publish or not, outperform or underperform, the horizon, a low, medium or high confidence bucket, an answer to the dissent and a reason code.</dd>
+        <dt>Writes</dt><dd>Publish or not, outperform or underperform, the horizon (3 months by default, 6 or 12 rarely), a standard or high confidence bucket, an answer to the dissent and a reason code.</dd>
         <dt>Stops if</dt><dd>It declines. It can decline any call but can&rsquo;t push one past the script&rsquo;s gate, and a script caps its confidence.</dd>
       </dl></div></li>
     <li><span class="stn">4</span><div><b>I sign it, or don&rsquo;t</b><span>Once per call, threaded under the Sunday digest.</span>
@@ -133,7 +133,7 @@
       <tr><th scope="row">Deep dive</th><td>M1 analyst</td><td>When I pick &ldquo;dig in&rdquo; on a note</td><td>Inside the daily cap</td></tr>
       <tr><th scope="row">On request</th><td>M1 analyst</td><td>When I name a ticker</td><td>2 a week</td></tr>
       <tr><th scope="row">Risk review</th><td>M2 risk officer</td><td>When a memo is drafted</td><td>One call per memo</td></tr>
-      <tr><th scope="row">Committee chair</th><td>M3 chair</td><td>When the risk officer passes</td><td>At most weekly, to start</td></tr>
+      <tr><th scope="row">Committee chair</th><td>M3 chair</td><td>When the risk officer passes</td><td>Up to two a week</td></tr>
       <tr><th scope="row">Thesis check</th><td>M1 analyst</td><td>1st of the month, 10:00 ET</td><td>Up to 8 open calls a run</td></tr>
       <tr><th scope="row">Publish</th><td>Script</td><td>After I sign</td><td>No model calls</td></tr>
       <tr><th scope="row">Scorer</th><td>Script</td><td>Trading days, 22:00 ET</td><td>No model calls</td></tr>
@@ -196,7 +196,7 @@
       <tr><th scope="row">On request</th><td>M1</td><td class="n">20</td><td>A ticker outside the universe. A restricted ticker. A request that carries a direction</td></tr>
       <tr><th scope="row">Weekly memo</th><td>M1</td><td class="n">30</td><td>Nothing passes the screen. An update that has to contradict the prior thesis</td></tr>
       <tr><th scope="row">Risk review</th><td>M2</td><td class="n">30</td><td>A memo with a planted flaw. A clean memo that still needs a dissent. Hidden sizing language</td></tr>
-      <tr><th scope="row">Committee chair</th><td>M3</td><td class="n">30</td><td>A low-confidence pass, where the right answer is often not to publish</td></tr>
+      <tr><th scope="row">Committee chair</th><td>M3</td><td class="n">30</td><td>A conceded point: publish if it breaks no pillar, decline if it does</td></tr>
       <tr><th scope="row">Thesis check</th><td>M1</td><td class="n">25</td><td>One bad period that must not downgrade a pillar</td></tr>
     </tbody>
   </table>
@@ -211,14 +211,14 @@
   <p>One full pass will be 525 model calls, so each seat&rsquo;s activation costs at least 1,575. Those run under their own cap, spread over days.</p>
 
   <h2 id="edge">No edge claimed until it&rsquo;s earned</h2>
-  <p>Every call is committed and timestamped before anyone can know how it turns out. Rows can be closed but never changed. I won&rsquo;t claim an edge until there are 100 closed calls and six months behind it, whichever comes later. At about one decision from the chair a week, that&rsquo;s at least two years. The record is a paper book anyone can recompute from the public ledger: $10,000 of fake money per call, measured against its benchmark.</p>
+  <p>Every call is committed and timestamped before anyone can know how it turns out. Rows can be closed but never changed. I won&rsquo;t claim an edge until there are 100 closed calls and six months behind it, whichever comes later. At one or two decisions from the chair a week, that&rsquo;s at least two years. The record is a paper book anyone can recompute from the public ledger: $10,000 of fake money per call, measured against its benchmark.</p>
 
   <h2 id="open">Still open</h2>
   <ul>
     <li>Whether the publish credential can be kept unreadable to the seats on a real machine.</li>
     <li>Whether reasoning text can be released on real data, and in what wording. That waits for the legal read.</li>
     <li>Whether the risk officer should run on Opus, like the chair. The planted-flaw tests will show whether Sonnet is enough.</li>
-    <li>Whether weekly is enough for the chair once proving ends.</li>
+    <li>Whether two decisions a week is the right ceiling once proving ends.</li>
     <li>Every threshold, cap and time estimate above, until real runs measure them.</li>
   </ul>
 </div>
