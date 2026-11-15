@@ -41,7 +41,7 @@
     $('n-open').textContent = rows.length - closed.length;
     $('n-tray').textContent = on ? EV.filter(function (e) { return e.type === 'chain.dropped'; }).length : 0;
     var tb = $('cal'); tb.textContent = '';
-    ['high', 'medium', 'low'].forEach(function (b) {
+    ['high', 'standard'].forEach(function (b) {
       var rs = rows.filter(function (r) { return r.confidence_bucket === b; }), cs = rs.filter(function (r) { return r.outcome; });
       var tr = el('tr'), th = el('th', '', b[0].toUpperCase() + b.slice(1)); th.scope = 'row'; tr.appendChild(th);
       [rs.length, cs.length, cs.filter(function (r) { return r.outcome === 'win'; }).length, cs.filter(function (r) { return r.outcome === 'loss'; }).length]
@@ -215,7 +215,7 @@
     });
     $('bk-total').textContent = '$' + total.toLocaleString('en-US');
     var f = D.fills;
-    $('fills').textContent = 'Broker paper fills: ' + f.mirrored + ' calls copied, ' + f.queued + ' waiting for the next open, ' + f.notMirrored + ' underperform calls not copied. Paper P&L ' + PX.money(f.pl) + '. The same dollars in SPY over the same dates: ' + PX.money(f.spy) + '. Sample.';
+    $('fills').textContent = 'Broker paper fills: ' + f.mirrored + ' calls copied, ' + (f.queued ? f.queued + ' waiting for the next open, ' : '') + f.notMirrored + ' underperform calls not copied. Paper P&L ' + PX.money(f.pl) + '. The same dollars in SPY over the same dates: ' + PX.money(f.spy) + '. Sample.';
   }
 
   function feed() {
