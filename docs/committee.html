@@ -66,7 +66,7 @@
       <tr><th scope="row" class="mono">Data pull</th><td>Drops restricted names from the universe first. Pulls filings, macro series and prices. Flags anomalies by threshold.</td><td>Trading days, 17:30 ET</td></tr>
       <tr><th scope="row" class="mono">Publish</th><td>Commits a signed call, its reasoning file and its events. Re-checks the universe and the restricted list. Refuses anything without my signature.</td><td>After I sign</td></tr>
       <tr><th scope="row" class="mono">Scorer</th><td>Scores every call against SPY and its sector fund. Closes calls at their horizon.</td><td>Trading days, 22:00 ET</td></tr>
-      <tr><th scope="row" class="mono">Digest</th><td>Counts, calls against the cap and open approvals. Releases the week&rsquo;s ticker-less events.</td><td>Sunday, 18:00 ET</td></tr>
+      <tr><th scope="row" class="mono">Digest</th><td>Counts, calls against the cap and how many approvals are open, never the approvals themselves. Releases the week&rsquo;s ticker-less events.</td><td>Sunday, 18:00 ET</td></tr>
     </tbody>
   </table>
   </div><p class="small" data-gap="3">Their output lands on <a href="record.html">the record</a>.</p></details>
@@ -126,13 +126,13 @@
       <span class="sc-badge b-human"><i></i>Human · signs</span>
       <h3><span class="sc-no">PM</span>Sidd, portfolio manager</h3>
       <p class="sc-job">The committee recommends. My signature decides.</p>
-      <dl class="sc-facts"><dt>Reads</dt><dd>The row and reasoning file exactly as they&rsquo;d publish.</dd><dt>Writes</dt><dd>Approve or discard, once per call, on Sunday.</dd><dt>Can&rsquo;t</dt><dd>Change a direction, relax a gate, or size a position.</dd><dt>Time</dt><dd>About 19 minutes a week, estimated, not measured.</dd></dl>
+      <dl class="sc-facts"><dt>Reads</dt><dd>The row and reasoning file exactly as they&rsquo;d publish.</dd><dt>Writes</dt><dd>Approve or discard, once per call, within 72 hours of its email.</dd><dt>Can&rsquo;t</dt><dd>Change a direction, relax a gate, or size a position.</dd><dt>Time</dt><dd>About 37 minutes a week, estimated, not measured.</dd></dl>
       <p class="sc-wk"><b>In the sample week</b>Sun 6:14 PM ET · signed No. 6</p>
       <details class="sc-spec"><summary>Full spec</summary><dl>
-        <dt>Signs</dt><dd>Each call the chair wants to publish, once, threaded under the Sunday digest. I see the row and its reasoning file exactly as the script would commit them, and my signature covers both.</dd>
-        <dt>Choices</dt><dd>Approve, discard, or change the horizon or confidence bucket to another of their fixed options.</dd>
+        <dt>Signs</dt><dd>Each call the chair wants to publish, once, from its own approval email. A reminder comes at 48 hours, and an unsigned call expires at 72. I see the row and its reasoning file exactly as the script would commit them, and my signature covers both.</dd>
+        <dt>Choices</dt><dd>Approve, discard, move the horizon to another of its fixed options, or lower the confidence from high to standard. Never up.</dd>
         <dt>Also decides</dt><dd>&ldquo;Dig in&rdquo; or skip on anomaly notes. Any proposed upgrade to a thesis pillar, since upgrades are the direction that flatters the desk. Early closes, after the chair. Which tickers to request, one bare ticker at a time.</dd>
-        <dt>Time</dt><dd>About 19 minutes a week, by my estimate. It hasn&rsquo;t been measured yet.</dd>
+        <dt>Time</dt><dd>About 37 minutes a week, by my estimate. It hasn&rsquo;t been measured yet.</dd>
         <dt>Can&rsquo;t</dt><dd>Change a call&rsquo;s direction, relax a gate, or size a position. Every call is the same $10,000 on paper. I can&rsquo;t pass a thesis to the seats through a request, and my own holdings stay in a private tool that never publishes.</dd>
         <dt>Doesn&rsquo;t sign</dt><dd>Scores and horizon closes. Those run by rule.</dd>
       </dl><p class="small" data-gap="3">The portfolio manager is a person, not a model. An AI portfolio manager is off the table.</p></details>
