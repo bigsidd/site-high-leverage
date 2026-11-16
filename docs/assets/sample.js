@@ -93,6 +93,29 @@
     monthsElapsed: 4, // Jul 5 to Nov 8
     book: { start: 100000, perCall: 10000 },
     // design/07 "Never published": the paper account shows only as this aggregate line.
-    fills: { mirrored: 3, queued: 0, notMirrored: 3, pl: 860, spy: 510 } // spy: the same dollars in SPY over the same dates
+    fills: { mirrored: 3, queued: 0, notMirrored: 3, pl: 860, spy: 510 }, // spy: the same dollars in SPY over the same dates
+    // design/07 "Reasoning for published calls": the shape of ledger/reasoning/C-n.json, kind 'call'.
+    // Hand-written placeholder text on a placeholder ticker, so a reader can see what a published call carries. Not model output.
+    reasoning: {
+      'C-6': {
+        kind: 'call', horizon: '3m',
+        thesis: 'SMPL\u2019s latest quarterly filing shows inventory up 31% on the year while sales grew 4%, and management left full-year guidance unchanged. A company holding that much unsold stock usually discounts within two quarters, and discounting lands on gross margin. The sector fund holds peers that cleared their inventory last year, so the gap should show against both benchmarks.',
+        why_now: 'The quarterly filing of Nov 5 is the first to show the build at this size, and the next report falls inside the 3-month horizon.',
+        pillars: [
+          { id: 'P1', must_remain_true: 'Inventory keeps growing faster than sales.', would_break_if: 'Next quarter\u2019s inventory growth falls below sales growth.' },
+          { id: 'P2', must_remain_true: 'Clearing the stock costs gross margin.', would_break_if: 'Gross margin holds or rises in the next report.' },
+          { id: 'P3', must_remain_true: 'Sector peers don\u2019t carry the same build.', would_break_if: 'Two or more large peers in the sector fund report a similar build.' }
+        ],
+        falsifiers: [
+          { pillar_id: 'P1', falsifier: 'A disclosed bulk sale or write-down clears the excess before the next report.' },
+          { pillar_id: 'P2', falsifier: 'The next report shows gross margin flat or up.' },
+          { pillar_id: 'P3', falsifier: 'The sector fund\u2019s largest holdings show the same inventory trend.' }
+        ],
+        dissent: {
+          counter_case: 'The build may be deliberate. The filing says the company bought ahead of a supplier price rise, and the holiday quarter could clear it at full price. If it does, margin holds and the stock tracks its sector. Three months is also a short window to bet against a sector that has been rising.',
+          counter_falsifier: 'Inventory falls back in line with sales by the next report, with no drop in gross margin.'
+        }
+      }
+    }
   };
 })();
