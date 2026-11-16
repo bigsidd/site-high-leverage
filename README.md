@@ -4,13 +4,13 @@ An AI investment committee, shown as a two-floor office. Three models draft and 
 
 **Live:** https://research.siddharthshah.me (also https://bigsidd.github.io/site-high-leverage/, which redirects there)
 
-**Status:** design preview. The desk is designed but not running. Everything on the site plays a labeled sample week on made-up tickers (XMPL, SMPL). Nothing here is investment advice, and no real money is involved anywhere.
+**Status:** design preview. The desk is designed but not running. Everything on the site plays a labeled sample week on made-up placeholder tickers. Nothing here is investment advice, and no real money is involved anywhere.
 
 ## What you're looking at
 
 - **The office.** Upstairs: the glass committee room, my office and a library of the rules each seat works under. Downstairs: the logo wall, the double-height record wall, the desk pod and the server room where the scripts will run.
-  - The three figures with blue face plates are the voting model seats: M1 the analyst who writes the memo, M2 the risk officer who can veto it, M3 the committee chair, who decides.
-  - The grey, outlined figures are the bench: five roles that will run as scripts, with no vote, until each clears its bar (two clean runs, its own tests and a written decision record).
+  - The three figures with blue face plates are the model seats: M1 the analyst who writes the memo, M2 the risk officer who can veto it, M3 the committee chair, who decides.
+  - The grey, outlined figures are the bench: five roles that will run as scripts, with no seat, until each clears its bar (two clean runs, its own tests and a written decision record).
   - I'm the only person on the floor. The portfolio manager is a person, not a model.
 - **The replay.** Once the desk runs, every animation replays a published event from the public log, and nothing moves without a record behind it. The only stamp is my signature, which comes before any call is published.
 - **The record.** Every call, signature, veto and loss on one dated rail. Losses stay up at the same size as wins. No edge is claimed until 100 closed calls and six months, whichever comes later.
@@ -41,7 +41,7 @@ The site will read the ledger. A redesign here can never touch the record.
 
 ## The clip
 
-`clip/` renders the homepage replay to video from the same scene code: `docs/assets/floor.js` draws the office and `docs/assets/home.js` builds the one GSAP timeline the page plays. In a clip, `home.js` adds a cut on top of that timeline: a cold open on the signature, the week replayed in segments at 1.25–1.6× speed with short captions, and an end card. About 25 s. Three outputs:
+`clip/` renders the homepage replay to video from the same scene code: `docs/assets/floor.js` draws the office and `docs/assets/home.js` builds the one GSAP timeline the page plays. In a clip, `home.js` adds a cut on top of that timeline: a cold open on the signature, the week replayed in segments at 1.15–1.35× speed with short captions, and an end card. About 25 s. Three outputs:
 
 - `a-week-at-the-desk-4x5.mp4`: 1080×1350, the LinkedIn feed master.
 - `a-week-at-the-desk-16x9.mp4`: 1920×1080, for the site and wide players.
@@ -55,7 +55,7 @@ They are rendered with [HyperFrames](https://github.com/heygen-com/hyperframes),
 - **Telemetry:** the CLI reports usage to PostHog by default. The script turns it off (`DO_NOT_TRACK=1`, `HYPERFRAMES_NO_TELEMETRY=1`).
 
 ```bash
-site/clip/render.sh
+clip/render.sh
 ```
 
 The videos land in `clip/out/`, which git ignores.

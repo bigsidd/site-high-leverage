@@ -1,5 +1,5 @@
 /* Labeled sample data for the design preview. Not a ledger, never read from one.
-   XMPL and SMPL are placeholder tickers. Event shape and types follow design/07 events.v1:
+   Every ticker (XMPL, PLHD, MOCK, FAUX, DUMY, SMPL) is an invented placeholder, one per call, so no company ever has two open calls (the desk allows one per company). Event shape and types follow design/07 events.v1:
    {v, id, ts, type, actor, role, sha, stage?, ref?}. role is null for actions no roster role owns (stamp, publish, scorer, digest).
    chain.dropped carries a date only, role null, and stage = where the chain stopped. */
 (function () {
@@ -15,10 +15,10 @@
   // Two confidence levels, standard and high, either direction; high on at most a quarter of calls. 3-month horizon by default.
   var ROWS = [
     { id: 'C-1', ticker: 'XMPL', direction: 'outperform', months: 3, horizon_end: '2026-10-05', confidence_bucket: 'standard', week: '2026-07-05', outcome: 'win', book: 640 },
-    { id: 'C-2', ticker: 'SMPL', direction: 'underperform', months: 3, horizon_end: '2026-10-19', confidence_bucket: 'standard', week: '2026-07-19', outcome: 'loss', book: -410 },
-    { id: 'C-3', ticker: 'XMPL', direction: 'outperform', months: 3, horizon_end: '2026-11-02', confidence_bucket: 'standard', week: '2026-08-02', outcome: 'loss', book: -880 },
-    { id: 'C-4', ticker: 'SMPL', direction: 'outperform', months: 6, horizon_end: '2027-02-23', confidence_bucket: 'standard', week: '2026-08-23', outcome: null, book: 120 },
-    { id: 'C-5', ticker: 'XMPL', direction: 'underperform', months: 3, horizon_end: '2026-12-28', confidence_bucket: 'high', week: '2026-09-27', outcome: null, book: -60 },
+    { id: 'C-2', ticker: 'PLHD', direction: 'underperform', months: 3, horizon_end: '2026-10-19', confidence_bucket: 'standard', week: '2026-07-19', outcome: 'loss', book: -410 },
+    { id: 'C-3', ticker: 'MOCK', direction: 'outperform', months: 3, horizon_end: '2026-11-02', confidence_bucket: 'standard', week: '2026-08-02', outcome: 'loss', book: -880 },
+    { id: 'C-4', ticker: 'FAUX', direction: 'outperform', months: 6, horizon_end: '2027-02-23', confidence_bucket: 'standard', week: '2026-08-23', outcome: null, book: 120 },
+    { id: 'C-5', ticker: 'DUMY', direction: 'underperform', months: 3, horizon_end: '2026-12-28', confidence_bucket: 'high', week: '2026-09-27', outcome: null, book: -60 },
     { id: 'C-6', ticker: 'SMPL', direction: 'underperform', months: 3, horizon_end: '2027-02-08', confidence_bucket: 'standard', week: '2026-11-08', outcome: null, book: null }
   ];
   // Week plan keyed by Sunday. drop = [stage, date the chain stopped].
@@ -90,6 +90,7 @@
     rows: ROWS, events: ev, utc: utc, add: add,
     week: { start: utc('2026-11-02', 0, 0), end: utc('2026-11-08', 23, 59), sunday: '2026-11-08', label: 'Nov 2 to Nov 8, 2026' },
     firstRow: '2026-07-05', cutover: CUTOVER, missed: MISSED,
+    trayCount: ev.filter(function (e) { return e.type === 'chain.dropped' && (e.ts.length === 10 ? e.ts + 'T12:00:00Z' : e.ts) <= utc('2026-11-08', 23, 59); }).length, // chain.dropped events up to the sample cutoff: the No tray cutover: CUTOVER, missed: MISSED,
     monthsElapsed: 4, // Jul 5 to Nov 8
     book: { start: 100000, perCall: 10000 },
     // design/07 "Never published": the paper account shows only as this aggregate line.

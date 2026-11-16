@@ -405,11 +405,11 @@
     add(25 + 8 + 0.01, glassWall('y', 0, 8, 25, 4.6));
 
     // Sidd's corner office
-    add(39 + 1.8, chair(39.2, 1.9, '+y', { tall: true, col: '#3B2B22', seat: '#4A372C' }));
-    add(39 + 4.05, personSeated(39.2, 1.95, 'front', { arm: true, shirt: '#2B3A55', collar: '#F3EFE6', skin: K.skin1, hair: K.hair1, reach: [[38.8, 3.15, 1.49], [39.65, 3.15, 1.49]] }));
+    add(39 + 1.8, chair(39.2, 2.2, '+y', { tall: true, col: '#3B2B22', seat: '#4A372C' }));
+    add(39 + 4.05, personSeated(39.2, 2.25, 'front', { arm: true, shirt: '#2B3A55', collar: '#F3EFE6', skin: K.skin1, hair: K.hair1, reach: [[38.8, 3.15, 1.49], [39.65, 3.15, 1.49]] }));
     add(39 + 4, box(36.8, 3, 0, 4.8, 2.1, 1.48, K.walnut, { left: '#5f412a', right: '#513623' }));
-    var desk = '<g id="fl-memo-sidd">' + box(37.7, 3.35, 1.48, 1.2, 1.0, 0.03, K.paper) + '</g>';
-    desk += '<g id="fl-stamp">' + box(38.95, 3.45, 1.48, 0.36, 0.36, 0.2, '#2E3138') + box(39.05, 3.55, 1.68, 0.16, 0.16, 0.3, '#2E3138') + box(38.98, 3.48, 1.98, 0.3, 0.3, 0.1, K.ink) + '</g>';
+    var desk = '<g id="fl-memo-sidd">' + box(37.9, 3.0, 1.48, 1.2, 1.0, 0.03, K.paper) + '</g>';
+    desk += '<g id="fl-stamp">' + box(38.95, 3.1, 1.48, 0.36, 0.36, 0.2, '#2E3138') + box(39.05, 3.2, 1.68, 0.16, 0.16, 0.3, '#2E3138') + box(38.98, 3.13, 1.98, 0.3, 0.3, 0.1, K.ink) + '</g>';
     desk += box(37.05, 4.6, 1.48, 0.08, 0.08, 0.75, '#2E3138') + box(36.92, 4.47, 2.2, 0.34, 0.34, 0.16, '#2E3138');
     add(39 + 4.1, desk);
     add(39 + 4.13, glow(39.6, 3.9, 1.49, 2.6, true, 0.9));
@@ -465,7 +465,7 @@
     add(RX + 1.2 + 13.7, '<g id="fl-memo-risk">' + box(RX + 1.0, 13.0, 1.46, 0.9, 1.2, 0.03, K.paper) + poly([[RX + 1.02, 13.08, 1.5], [RX + 1.8, 13.08, 1.5], [RX + 1.8, 13.2, 1.5], [RX + 1.02, 13.2, 1.5]], K.ink) + '</g>' + poly([[RX + 1.5, 13.75, 1.51], [RX + 1.6, 13.75, 1.51], [RX + 1.95, 14.3, 1.51], [RX + 1.85, 14.3, 1.51]], K.loss));
     add(RX + 3.0 + 14, chair(RX + 3.2, 13.9, '-x', { low: true }) + personSeated(RX + 3.15, 13.9, 'back', { kind: 'model', seat: 'M2', face: '-x', reach: [[RX + 1.85, 13.45, 1.47], [RX + 1.85, 14.3, 1.47]] }));
     SP.risk = [RX + 1.35, 13.55, 1.5]; SP.tray = [RX + 1.18, 15.0];
-    SP.committee = [18.1, 4.45, MZ + 1.48]; SP.sidd = [38.3, 3.85, MZ + 1.5]; SP.stamp = [39.13, 3.63, MZ + 1.48];
+    SP.committee = [18.1, 4.45, MZ + 1.48]; SP.sidd = [38.5, 3.5, MZ + 1.5]; SP.stamp = [39.13, 3.28, MZ + 1.48]; // within a seated arm's reach
 
     // stools at the bar
     add(37 + 9.4, stool(36.2, 9.5) + stool(37.9, 9.5) + stool(39.6, 9.5));

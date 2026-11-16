@@ -30,6 +30,8 @@
   var long = function (iso) { return PX.fmtDate(iso) + ', ' + iso.slice(0, 4); };
   var stepWhen = function (ts) { return DOW[new Date(etDate(ts) + 'T12:00:00Z').getUTCDay()] + ' ' + PX.et(ts); };
 
+  function trayCount() { return EV.filter(function (e) { return e.type === 'chain.dropped'; }).length; } // the No tray: the scoreboard count and the sheets drawn beside it
+
   // scoreboard: counts, and per-confidence counts until 30 calls have closed (design/07)
   function scoreboard(on) {
     var rows = on ? ROWS : [], closed = rows.filter(function (r) { return r.outcome; });
@@ -39,7 +41,7 @@
     $('n-win').textContent = closed.filter(function (r) { return r.outcome === 'win'; }).length;
     $('n-loss').textContent = closed.filter(function (r) { return r.outcome === 'loss'; }).length;
     $('n-open').textContent = rows.length - closed.length;
-    $('n-tray').textContent = on ? EV.filter(function (e) { return e.type === 'chain.dropped'; }).length : 0;
+    $('n-tray').textContent = on ? trayCount() : 0;
     var tb = $('cal'); tb.textContent = '';
     ['high', 'standard'].forEach(function (b) {
       var rs = rows.filter(function (r) { return r.confidence_bucket === b; }), cs = rs.filter(function (r) { return r.outcome; });
@@ -204,7 +206,7 @@
         item.render = function () {
           var x = item.e, t = el('time'), body = el('div'), tg = tag(x), p = el('p', tg && tg[1] !== 't-drop' ? 'big' : '');
           t.setAttribute('datetime', x.ts);
-          t.textContent = item.n > 1 ? PX.fmtDate(item.first.ts) + ' to ' + PX.fmtDate(x.ts) : PX.fmtDate(x.ts, true) + (x.ts.length === 10 ? ' · date only' : '');
+          t.textContent = item.n > 1 ? PX.fmtDate(etDate(item.first.ts)) + (etDate(item.first.ts) === etDate(x.ts) ? '' : ' to ' + PX.fmtDate(etDate(x.ts))) : PX.fmtDate(x.ts, true) + (x.ts.length === 10 ? ' · date only' : '');
           if (tg) p.appendChild(el('span', 'tag ' + tg[1], tg[0]));
           p.appendChild(el('code', '', x.type + (item.n > 1 ? ' ×' + item.n : '')));
           p.appendChild(document.createTextNode(text(x, item.n)));
@@ -234,7 +236,7 @@
     be.setAttribute('aria-expanded', String(showEarlier));
     be.textContent = showEarlier ? 'Hide ' + older + ' earlier weeks' : 'Show ' + older + ' earlier weeks';
     br.setAttribute('aria-pressed', String(showRoutine));
-    $('tl-note').textContent = (showEarlier ? 'Showing all ' + (older + 1) + ' weeks' : 'Showing the sample week, ' + PX.fmtDate(D.week.start) + ' to ' + PX.fmtDate(D.week.sunday)) + (showRoutine ? ', with routine events.' : ', without routine events (nightly runs, digest, scorer, counts).');
+    $('tl-note').textContent = (showEarlier ? 'Showing all ' + (older + 1) + ' weeks' : 'Showing the sample week, ' + PX.fmtDate(etDate(D.week.start)) + ' to ' + PX.fmtDate(D.week.sunday)) + (showRoutine ? ', with routine events.' : ', without routine events (nightly runs, digest, scorer, counts).');
   }
   $('b-earlier').addEventListener('click', function () { showEarlier = !showEarlier; view(); });
   $('b-routine').addEventListener('click', function () { showRoutine = !showRoutine; view(); });
@@ -265,7 +267,7 @@
     document.documentElement.dataset.state = s;
     [].forEach.call(document.querySelectorAll('[data-set]'), function (b) { b.setAttribute('aria-pressed', String(b.dataset.set === s)); });
     scoreboard(on); calls(on); heartbeat(on);
-    if (window.HLRVignette) window.HLRVignette(on ? { vetoes: 3 } : { vetoes: 0, empty: true }); // the real wall is empty too
+    if (window.HLRVignette) window.HLRVignette(on ? { vetoes: trayCount() } : { vetoes: 0, empty: true }); // the real wall is empty too
     if (on && !built) { timeline(); book(); feed(); built = true; }
   }
   [].forEach.call(document.querySelectorAll('[data-set]'), function (b) { b.addEventListener('click', function () { apply(b.dataset.set); }); });
