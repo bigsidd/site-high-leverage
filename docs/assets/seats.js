@@ -15,7 +15,7 @@
     m2: ['risk', 'M2 · the risk officer', 300, 70, 60],
     m3: ['committee', 'M3 · the chair', 340, 120, 80],
     pm: ['sidd', 'Sidd · portfolio manager', 340, 110, 80],
-    bench: ['bench', 'The bench · not voting yet', 460, 190, 110],
+    bench: ['bench', 'The bench · no seat yet', 460, 190, 110],
     record: ['record', 'The record', 440, 150, 130] // no tab: the clip ends its walk here
   };
   var svg, hole, cam, spot, cur = 'm1', raf = 0;

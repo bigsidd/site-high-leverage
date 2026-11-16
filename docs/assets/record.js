@@ -56,19 +56,56 @@
     'memo.drafted': 'The analyst drafted the memo',
     'memo.forwarded': 'A script passed it to the risk officer',
     'risk.reviewed': 'The risk officer passed it, with a dissent attached',
-    'decision.made': 'The committee chair voted to publish',
+    'decision.made': 'The committee chair decided to publish',
     'approval.stamped': 'Sidd signed it. The call carries this event id as its approval',
     'row.published': 'Published and sealed'
   };
+  // the published reasoning for one call (design/07): the case, the case against it, and what would prove each wrong
+  function reasoning(w) {
+    var box = el('div', 'rs');
+    box.appendChild(el('p', 'rs-tag', 'Sample reasoning \u00b7 hand-written placeholder, not model output'));
+    var two = el('div', 'rs-two'), a = el('section', 'rs-case'), b = el('section', 'rs-dis');
+    a.appendChild(el('h3', 'rs-h', 'The case'));
+    a.appendChild(el('p', '', w.thesis));
+    var wn = el('p', 'small'); wn.appendChild(el('b', '', 'Why now. ')); wn.appendChild(document.createTextNode(w.why_now)); a.appendChild(wn);
+    b.appendChild(el('h3', 'rs-h', 'The risk officer\u2019s dissent'));
+    b.appendChild(el('p', '', w.dissent.counter_case));
+    var cf = el('p', 'small'); cf.appendChild(el('b', '', 'The dissent is right if: ')); cf.appendChild(document.createTextNode(w.dissent.counter_falsifier)); b.appendChild(cf);
+    two.appendChild(a); two.appendChild(b); box.appendChild(two);
+    box.appendChild(el('h3', 'rs-h', 'What would break it'));
+    var tw = el('div', 'tw'), tb = el('table', 'rs-p'), hd = el('tr');
+    ['Pillar', 'Must stay true', 'Breaks if', 'Proved wrong by'].forEach(function (h) { var th = el('th', '', h); th.setAttribute('scope', 'col'); hd.appendChild(th); });
+    var th0 = el('thead'); th0.appendChild(hd); tb.appendChild(th0);
+    var bd = el('tbody');
+    w.pillars.forEach(function (p) {
+      var tr = el('tr'), f = w.falsifiers.filter(function (x) { return x.pillar_id === p.id; }).map(function (x) { return x.falsifier; }).join(' ');
+      [p.id, p.must_remain_true, p.would_break_if, f].forEach(function (t, i) { tr.appendChild(el(i ? 'td' : 'th', '', t)); });
+      tr.firstChild.setAttribute('scope', 'row'); bd.appendChild(tr);
+    });
+    tb.appendChild(bd); tw.appendChild(tb); box.appendChild(tw);
+    box.appendChild(el('p', 'xs muted', 'On the real ledger this text is ledger/reasoning/C-n.json, published in the same commit as the row. Its public_sha256 lets you recompute, from the ledger alone, that this is the text Sidd signed. In this preview there is nothing to verify.'));
+    return box;
+  }
+  function openFromHash() { // record.html#C-6 opens that call
+    var id = location.hash.slice(1); if (!/^C-\d+$/.test(id)) return;
+    var li = document.getElementById(id); if (!li) return;
+    var d = li.querySelector('details'); if (d) d.open = true;
+    li.scrollIntoView({ block: 'start' });
+  }
+  addEventListener('hashchange', openFromHash);
   function calls(on) {
     var box = $('calllist'); box.textContent = '';
     if (on) ROWS.slice().reverse().forEach(function (r) {
       var li = el('li', 'call'), det = el('details'), sum = el('summary'), line = el('span', 'cl');
+      li.id = r.id;
       line.appendChild(el('b', 'cn', no(r)));
       line.appendChild(document.createTextNode(' · ' + r.ticker + ' · ' + r.direction + ' · ' + r.confidence_bucket + ' · ' + (r.outcome ? 'closed ' : 'closes ') + long(r.horizon_end)));
       sum.appendChild(line);
       sum.appendChild(el('span', 'st ' + (r.outcome ? 's-' + r.outcome : 's-open'), r.outcome ? (r.outcome === 'win' ? 'Win' : 'Loss') : 'Open'));
       det.appendChild(sum);
+      var why = (D.reasoning || {})[r.id];
+      if (why) det.appendChild(reasoning(why));
+      if (why) det.appendChild(el('h3', 'rs-h', 'How it got here'));
       var ol = el('ol', 'steps');
       r.chain.forEach(function (id) {
         var e = evOf(id), s = el('li'), t = el('time', '', stepWhen(e.ts)), p = el('p');
@@ -131,7 +168,7 @@
       case 'memo.drafted': return 'The analyst drafted a memo from a script screen.';
       case 'memo.forwarded': return 'A script passed the memo to the risk officer.';
       case 'risk.reviewed': return 'Passed, with a dissent attached.';
-      case 'decision.made': var dr = rowOf(e._row); return 'The committee chair voted to publish: ' + dr.months + ' months, ' + dr.confidence_bucket + ' confidence.';
+      case 'decision.made': var dr = rowOf(e._row); return 'The committee chair decided to publish: ' + dr.months + ' months, ' + dr.confidence_bucket + ' confidence.';
       case 'approval.stamped': return 'Sidd signed ' + no(r) + '.';
       case 'row.published': return no(r) + ' · ' + r.ticker + ', ' + r.direction + ', ' + r.months + ' months, ' + r.confidence_bucket + ' confidence.';
       case 'chain.dropped': return 'A memo stopped at ' + (STAGE[e.stage] || e.stage) + '. Stage and date only, no ticker.';
@@ -233,4 +270,5 @@
   }
   [].forEach.call(document.querySelectorAll('[data-set]'), function (b) { b.addEventListener('click', function () { apply(b.dataset.set); }); });
   apply('sample');
+  openFromHash();
 })();
