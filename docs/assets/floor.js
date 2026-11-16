@@ -127,8 +127,8 @@
     }
     return s;
   }
-  // a seated figure. o.kind: 'human' (Sidd, the only person on the floor), 'model' (a voting model seat: a flat signal-blue
-  // face plate and its seat number), or 'bench' (an unbuilt seat: ghosted and outlined, no vote). o.reach: desk points the hands rest on.
+  // a seated figure. o.kind: 'human' (Sidd, the only person on the floor), 'model' (a model seat: a flat signal-blue
+  // face plate and its seat number), or 'bench' (an unbuilt seat: ghosted and outlined, no seat). o.reach: desk points the hands rest on.
   var ARM = {}; // Sidd's stamping arm, so the replay can move his hand to the stamp
   function armPath(sh, e) { var el = [sh[0] * 0.55 + e[0] * 0.45, Math.max(sh[1], e[1]) + S * 0.22]; return [el, 'M' + f1(sh[0]) + ',' + f1(sh[1]) + ' L' + f1(el[0]) + ',' + f1(el[1]) + ' L' + f1(e[0]) + ',' + f1(e[1])]; }
   function personSeated(x, y, view, o) { // view: 'back' or 'front'

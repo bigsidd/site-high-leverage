@@ -10,7 +10,7 @@
   var CLIP = document.body.getAttribute('data-clip'); // set on the HyperFrames compositions in site/clip: the renderer drives the timeline, frame by frame
   if (CLIP) reduce = false;
   var P = FLOOR.P, AN = FLOOR.anchors, SM = window.SAMPLE, lede = document.querySelector('.lede');
-  var svg, full, base, cw = 0, ch = 0, phone = false, focus = null, tagW = [];
+  var svg, full, base, cw = 0, ch = 0, phone = false, focus = null, tagW = [], ledeBox = null;
   var weekStart = SM ? SM.week.start.slice(0, 10) : '';
   var vetoesBefore = SM ? SM.events.filter(function (e) { return e.type === 'chain.dropped' && e.ts < weekStart; }).length : 0;
 
@@ -18,9 +18,9 @@
     { k: 'analyst', n: 1, t: 'Analyst' },
     { k: 'risk', n: 2, t: 'Risk officer' },
     { k: 'committee', n: 3, t: 'Committee chair', s: 'Chair' },
-    { k: 'sidd', n: 4, t: 'Sidd · portfolio manager', s: 'Sidd · PM' },
+    { k: 'sidd', n: 4, t: 'Sidd · portfolio manager', s: 'Sidd · signs' },
     { k: 'record', n: 5, t: 'The record' },
-    { k: 'bench', t: 'The bench · not voting yet', quiet: true },
+    { k: 'bench', t: 'The bench · no seat yet', quiet: true },
     { k: 'scripts', t: 'Scripts', quiet: true }
   ];
   tags.innerHTML = TAGS.map(function (g) {
@@ -94,10 +94,18 @@
     placed.filter(function (t) { return !t.li.hidden && !t.li.classList.contains('dim'); }).sort(function (a, b) { return a.y - b.y; }).forEach(function (t, j, arr) {
       for (var m = 0; m < j; m++) { var o = arr[m]; if (Math.abs(o.x - t.x) < (o.w + t.w) / 2 + 6 && Math.abs(o.y - t.y) < 30) t.y = o.y + 30; }
     });
+    // the headline block wins: a tag it would cover stays hidden while the headline shows (read from the cached box, never per frame)
+    var lo = ledeBox && lede && !phone ? +(window.gsap ? gsap.getProperty(lede, 'opacity') : 1) : 0;
+    if (lo > 0.05) placed.forEach(function (t) {
+      if (t.li.hidden) return;
+      var edge = t.li.classList.contains('edge'), top = edge ? t.y - 12 : t.y - 40, bot = edge ? t.y + 12 : t.y - 16;
+      if (t.x - t.w / 2 < ledeBox[2] && t.x + t.w / 2 > ledeBox[0] && top < ledeBox[3] && bot > ledeBox[1]) t.li.hidden = true;
+    });
     placed.forEach(function (t) { t.li.style.left = t.x.toFixed(1) + 'px'; t.li.style.top = t.y.toFixed(1) + 'px'; });
   }
   function measure() {
     var box = art.getBoundingClientRect();
+    if (lede) { var lb = lede.getBoundingClientRect(); ledeBox = [lb.left - box.left - 6, lb.top - box.top - 6, lb.right - box.left + 6, lb.bottom - box.top + 6]; }
     cw = box.width; ch = box.height; phone = cw < 640;
     tags.style.left = art.offsetLeft + 'px'; tags.style.top = art.offsetTop + 'px'; tags.style.width = cw + 'px'; tags.style.height = ch + 'px';
     tags.classList.toggle('phone', phone);
@@ -138,8 +146,9 @@
   var by = function (t) { return beats.filter(function (s) { return s.e.type === t; }); };
   var lossN = by('row.closed').filter(function (s) { return s.r.outcome === 'loss'; }).length, closeN = by('row.closed').length;
   var intro = { when: 'Nov 2–8', what: 'One week, Monday to Sunday.', short: 'One week, Monday to Sunday.' };
-  var outro = { when: 'The week', what: closeN + (closeN === 1 ? ' call' : ' calls') + ' closed' + (lossN === closeN && lossN ? (lossN === 1 ? ' as a loss' : ' as losses') : '') + ', ' +
-    by('chain.dropped').length + (by('chain.dropped').length === 1 ? ' idea' : ' ideas') + ' vetoed, ' + by('row.published').length + ' published.' };
+  var plural = function (n, one, many) { return n + ' ' + (n === 1 ? one : many); }, vetoN = by('chain.dropped').length, signN = by('approval.stamped').length;
+  var outro = { when: 'The week', what: 'This week: ' + plural(vetoN, 'idea', 'ideas') + ' vetoed, ' +
+    (lossN ? plural(lossN, 'loss', 'losses') + ' left up' : plural(closeN, 'call', 'calls') + ' closed') + ', ' + plural(signN, 'call', 'calls') + ' signed.' };
   stepsEl.innerHTML = all.map(function (s) { return '<li><span class="mono">' + s.when + '</span> ' + s.what + ' <span class="muted xs">' + s.e.type + ' &middot; ' + s.e.id + '</span></li>'; }).join('');
 
   // ---------- the memo card: it collects its history as it moves ----------
@@ -219,6 +228,11 @@
     var nw = document.querySelector('.now'); if (nw) nw.setAttribute('aria-live', state === 'pause' ? 'off' : 'polite'); // quiet while playing
   }
   btn('pause');
+  var endEl = document.getElementById('endcard');
+  function ended(on) { // the week is over: the card offers the next page and the person behind it
+    if (!endEl || CLIP) return;
+    endEl.hidden = !on; var nw = document.querySelector('.now'); if (nw) nw.classList.toggle('ended', on);
+  }
   var ticks = document.querySelectorAll('.now .ticks li');
   var nowEl = document.querySelector('.now');
   function show(s) {
@@ -266,9 +280,9 @@
   function build() {
     LB = {}; ledeHold = true;
     if (tl) tl.kill();
-    done = false; focus = null; rest(base);
+    done = false; ended(false); focus = null; rest(base);
     caps = []; capOn = null;
-    tl = gsap.timeline({ paused: true, onUpdate: function () { sync(); armSync(); idle(); }, onComplete: function () { done = true; btn('replay'); } });
+    tl = gsap.timeline({ paused: true, onUpdate: function () { sync(); armSync(); idle(); }, onComplete: function () { done = true; btn('replay'); ended(true); } });
     var c3 = FLOOR.centers['C-3'], c6 = FLOOR.centers['C-6'];
     // the week opens before any of its events: No. 3 still open, No. 6 not yet on the wall, no memo on any desk
     if (lede) tl.set(lede, { opacity: 1 }, 0);
@@ -301,7 +315,7 @@
       } else if (t === 'memo.drafted') { // analyst, forward and risk play as one shot of the two desks
         ledeHold = false;
         move('desks', 1.3); cap(s);
-        land(SPOT.analyst, r.ticker); tl.to({}, { duration: 2.0 }); // the first voting seat gets a beat a reader can see
+        land(SPOT.analyst, r.ticker); tl.to({}, { duration: 2.0 }); // the first model seat gets a beat a reader can see
       } else if (t === 'memo.forwarded') {
         cap(s); hop(SPOT.risk, 1.1, 1.2); tl.to({}, { duration: 0.5 });
       } else if (t === 'risk.reviewed') {
@@ -380,6 +394,7 @@
     document.getElementById('stepsbox').open = true;
     tl.progress(1); rest(base); focus = null; placeTags();
     say({ when: 'Motion off', what: 'Motion is off. Use Next step, or read the week as a list below.' })();
+    ended(true); // nothing to wait for: the way on is there from the start
     nx.addEventListener('click', function () { at = (at + 1) % beats.length; tl.seek(LB['e' + at] - 0.02, false); nx.textContent = 'Next step (' + (at + 2 > beats.length ? 1 : at + 2) + ' of ' + beats.length + ')'; });
   } else {
     tl.play();
@@ -394,6 +409,8 @@
     var t = tl.time(), wasPaused = tl.paused() || done;
     if (redraw) { draw(); buildFx(); lift(); }
     measure(); build(); tl.seek(t, false);
+    if (reduce) ended(true);
+    else if (t >= tl.duration() - 1e-3) { done = true; btn('replay'); ended(true); }
     if (!wasPaused && !reduce) tl.play();
   }
   var rz;

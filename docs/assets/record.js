@@ -56,7 +56,7 @@
     'memo.drafted': 'The analyst drafted the memo',
     'memo.forwarded': 'A script passed it to the risk officer',
     'risk.reviewed': 'The risk officer passed it, with a dissent attached',
-    'decision.made': 'The committee chair voted to publish',
+    'decision.made': 'The committee chair decided to publish',
     'approval.stamped': 'Sidd signed it. The call carries this event id as its approval',
     'row.published': 'Published and sealed'
   };
@@ -131,7 +131,7 @@
       case 'memo.drafted': return 'The analyst drafted a memo from a script screen.';
       case 'memo.forwarded': return 'A script passed the memo to the risk officer.';
       case 'risk.reviewed': return 'Passed, with a dissent attached.';
-      case 'decision.made': var dr = rowOf(e._row); return 'The committee chair voted to publish: ' + dr.months + ' months, ' + dr.confidence_bucket + ' confidence.';
+      case 'decision.made': var dr = rowOf(e._row); return 'The committee chair decided to publish: ' + dr.months + ' months, ' + dr.confidence_bucket + ' confidence.';
       case 'approval.stamped': return 'Sidd signed ' + no(r) + '.';
       case 'row.published': return no(r) + ' · ' + r.ticker + ', ' + r.direction + ', ' + r.months + ' months, ' + r.confidence_bucket + ' confidence.';
       case 'chain.dropped': return 'A memo stopped at ' + (STAGE[e.stage] || e.stage) + '. Stage and date only, no ticker.';
