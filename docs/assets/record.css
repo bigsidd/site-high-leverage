@@ -37,7 +37,7 @@ main.rec{max-width:50rem}
 .rec .call .steps{margin:0 0 var(--s3) calc(1ch + var(--s3));padding-left:var(--s4)}
 .rec .call .steps li{grid-template-columns:13rem minmax(0,1fr);max-width:none;font-size:1rem;padding:2px 0}
 .rec .call .steps p{max-width:34rem}
-.rec .call .steps time,.rec .rs-tag,.rec .st{font-size:.875rem}
+.rec .call .steps time,.rec .st{font-size:.875rem}
 .rec .rs-two{gap:var(--s6)}
 .rec .rs-two p{max-width:none;margin:0 0 var(--s3);font-size:1rem}
 .rec .rs-lab{display:block;margin-bottom:2px;font:500 .875rem/1.4 var(--font-mono);color:var(--muted);text-transform:uppercase;letter-spacing:.04em}

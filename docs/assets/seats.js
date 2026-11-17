@@ -25,8 +25,7 @@
     m2: ['risk', '2 · the risk officer', 300, 70, 60],
     m3: ['committee', '3 · the chair', 340, 120, 80],
     pm: ['sidd', '4 · Sidd, portfolio manager', 340, 110, 80],
-    publish: ['record', '5 · the record', 440, 150, 130],
-    bench: ['bench', 'The bench · no seat yet', 460, 190, 110]
+    publish: ['record', '5 · the record', 440, 150, 130]
   };
   var svg, hole, cam, spot, cur = 'm1', raf = 0, first = tabs.length > 1 ? tabs[0].dataset.k : 'm1';
   var bar = tabs.length ? tabs[0].parentNode : null;

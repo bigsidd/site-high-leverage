@@ -41,7 +41,6 @@
     var sc = $('score'); sc.textContent = '';
     [[closed.length, 'closed of 100'], [wins, wins === 1 ? 'win' : 'wins'], [losses, losses === 1 ? 'loss' : 'losses'], [rows.length - closed.length, 'open'], [on ? trayCount() : 0, 'stopped before publishing']]
       .forEach(function (x, i) { var sp = el('span'); sp.appendChild(el('b', '', String(x[0]))); sp.appendChild(el('span', 'lbl', x[1])); sc.appendChild(sp); });
-    var mo = el('span'); mo.appendChild(el('b', '', String(on ? D.monthsElapsed : 0))); mo.appendChild(el('span', 'lbl', 'of 6 months' + (on ? ' (sample)' : ''))); sc.appendChild(mo);
     $('meter').style.width = closed.length + '%';
     var tb = $('cal'); tb.textContent = '';
     ['high', 'standard'].forEach(function (b) {
@@ -60,14 +59,14 @@
     'memo.forwarded': 'A script passed it to the risk officer',
     'risk.reviewed': 'The risk officer passed it, with a dissent attached',
     'decision.made': 'The chair decided to publish',
-    'approval.stamped': 'Sidd signed it, and the call carries this event id as its approval',
+    'approval.stamped': 'I signed it, and the call carries this event id as its approval',
     'row.published': 'Published and sealed'
   };
   // the published reasoning for one call (design/07): the case, the case against it, and what would prove each wrong
   var tabSeq = 0;
   function reasoning(w) {
     var box = el('div', 'rs');
-    box.appendChild(el('p', 'rs-tag', 'Sample reasoning \u00b7 hand-written placeholder, not model output'));
+    box.appendChild(el('p', 'rs-tag', 'Written by hand to show the format. No model wrote this.'));
     var two = el('div', 'rs-two'), a = el('section', 'rs-case'), b = el('section', 'rs-dis');
     a.appendChild(el('h3', 'rs-h', 'The case'));
     a.appendChild(el('p', '', w.thesis));
@@ -158,7 +157,7 @@
       det.appendChild(pr);
       li.appendChild(det); box.appendChild(li);
     });
-    else box.appendChild(el('li', 'call none', 'No calls yet. No. 1 appears only after the chair decides and Sidd signs.'));
+    else box.appendChild(el('li', 'call none', 'No calls yet. No. 1 appears only after the chair decides and I sign.'));
     // day 0: the rules are sealed before the first call (design/16)
     var d0 = el('li', 'call day0'), dl = el('p', 'cl');
     dl.appendChild(el('b', 'cn', 'Day 0'));
@@ -182,15 +181,15 @@
     for (var d = D.cutover; d <= D.week.sunday; d = D.add(d, 1)) days.push(d);
     var missed = days.filter(function (x) { return !ran[x]; });
     days.forEach(function (x) { var i = el('i', ran[x] ? '' : 'gap'); i.title = PX.fmtDate(x) + (ran[x] ? ': ran' : ': missed'); box.appendChild(i); });
-    var txt = 'Ran ' + (days.length - missed.length) + ' of ' + days.length + ' nights since ' + long(days[0]) + '.' + (missed.length ? ' Missed ' + missed.map(function (x) { return PX.fmtDate(x); }).join(' and ') + '.' : ' Missed none.');
+    var txt = 'In this sample, the desk ran ' + (days.length - missed.length) + ' of ' + days.length + ' nights since ' + long(days[0]) + '.' + (missed.length ? ' It missed ' + missed.map(function (x) { return PX.fmtDate(x); }).join(' and ') + '.' : ' It missed none.');
     box.style.gridTemplateColumns = 'repeat(' + days.length + ',1fr)';
-    $('beat-note').textContent = txt + ' A filled dot is a night the nightly run completed; an outlined gap is a night it didn\u2019t run.';
+    $('beat-note').textContent = txt + ' Once it runs, each filled dot is one nightly run, and missed nights stay visible as outlined gaps.';
   }
 
   // the full event log
   var ROUTINE = { 'digest.sent': 1, 'week.quiet': 1, 'row.scored': 1, 'anomaly.flagged': 1, 'thesis.checked': 1, 'day.ran': 1 };
   var FOLD = { 'anomaly.flagged': 1, 'row.scored': 1, 'thesis.checked': 1, 'day.ran': 1 };
-  var STAGE = { note: 'the note', risk: 'the risk officer', committee: 'the chair', sidd: 'Sidd' };
+  var STAGE = { note: 'the note', risk: 'the risk officer', committee: 'the chair', sidd: 'my desk' };
   function text(e, n) {
     var r = e.ref && rowOf(e.ref);
     switch (e.type) {
@@ -199,12 +198,12 @@
       case 'row.scored': return 'The scorer ran ' + plural(n, 'night', 'nights') + '; it recomputes scores and never changes a call.';
       case 'thesis.checked': return plural(n, 'open call', 'open calls') + ' re-checked against the memo, logged as a count only.';
       case 'note.drafted': return 'The analyst wrote a note on a flag, with no ticker.';
-      case 'note.decided': return 'Sidd read the week’s notes.';
+      case 'note.decided': return 'I read the week’s notes.';
       case 'memo.drafted': return 'The analyst drafted a memo from a script screen.';
       case 'memo.forwarded': return 'A script passed the memo to the risk officer.';
       case 'risk.reviewed': return 'The risk officer passed the memo with a dissent attached.';
       case 'decision.made': var dr = rowOf(e._row); return 'The chair decided to publish: ' + dr.months + ' months, ' + dr.confidence_bucket + ' confidence.';
-      case 'approval.stamped': return 'Sidd signed ' + no(r) + '.';
+      case 'approval.stamped': return 'I signed ' + no(r) + '.';
       case 'row.published': return no(r) + ' · ' + r.ticker + ', ' + r.direction + ', ' + r.months + ' months, ' + r.confidence_bucket + ' confidence.';
       case 'chain.dropped': return 'A memo stopped at ' + (STAGE[e.stage] || e.stage) + ', recorded with its stage and date and no ticker.';
       case 'row.closed': return no(r) + ' · ' + r.ticker + ' closed at its horizon as a ' + (r.outcome === 'win' ? 'win.' : 'loss.');
