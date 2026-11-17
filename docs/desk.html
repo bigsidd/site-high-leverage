@@ -46,7 +46,7 @@
   <p class="lede">Three models draft and challenge each call. Nothing publishes until I sign it. Scripts do everything else.</p>
   <p>High Leverage Research is a small AI investment committee I&rsquo;m building in the open. Every step that can be code is code: fetching filings, screening, valuation arithmetic, scoring and publishing. A model is called only where a judgment has to be written down, and each call is a single shot with no tools. A script builds the input, the model returns JSON, and a script checks that JSON before anything moves.</p>
   <p>Three model seats run in a fixed order. The analyst writes a memo on whether a stock will beat or trail its benchmark. The risk officer argues against it and can veto it. The committee chair decides whether it&rsquo;s worth publishing. Then I approve or discard it, and a script commits it to a public ledger where any edit would show. It&rsquo;s paper money only: no position sizing and no &ldquo;buy at&rdquo; prices.</p>
-  <p>It isn&rsquo;t running yet, on purpose. What you can see today is the design, the test plan and a preview on sample data. The desk waits until I&rsquo;ve cleared a set of gates I set for it, including a legal read.</p>
+  <p>It isn&rsquo;t running yet, on purpose. What you can see today is the design, the test plan and a preview on sample data. The desk waits until I&rsquo;ve cleared a set of gates I set for it.</p>
 </div>
 
 <section class="blk" aria-labelledby="h-c">
@@ -149,7 +149,7 @@
   <p>I can ask the desk to look at one ticker in a private channel. The request is a ticker and nothing else. The script rejects anything more, so I can&rsquo;t hand over a thesis, a direction or a reason, and the chair can&rsquo;t anchor on the boss.</p>
   <ul>
     <li><b>Same gates.</b> The name must be in that night&rsquo;s universe and off the restricted list. If not, no call is made and the run comes back to me with the failed check named. The publish script checks both again.</li>
-    <li><b>A conflict check.</b> A name that falls inside the publication window for my own private holdings is held, not called. Whether that check is enough is still an open question for the legal read.</li>
+    <li><b>A conflict check.</b> A name that falls inside the publication window for my own private holdings is held, not called. I confirm privately that it covers my own obligations before the desk goes public.</li>
     <li><b>No shortcut.</b> The memo goes through the risk officer, the chair and my signature like any other. A veto ends it the same way.</li>
     <li><b>The seats never know.</b> No seat&rsquo;s input says a memo was requested.</li>
     <li><b>Marked on the record.</b> The publish script sets an <code>origin</code> field on every row: <code>schedule</code> or <code>request</code>. No seat sets it. Each request also logs a ticker-less <code>request.made</code> event in the Sunday batch, so you can count my requests against the calls they produced and split the record by origin.</li>
@@ -168,8 +168,8 @@
   <p>Every model answer has to parse against its JSON schema, and unknown fields are rejected. A script then checks that every ticker and every number in the answer appears in the input or is labeled as an estimate with a method. Every claim carries a sourced, estimated or unverified label. A fixed deny list blocks sizing, entry, stop, target and holdings language, and the schemas have no fields for any of it. The seats never see a price. Price-based quantities reach them only as script-computed buckets.</p>
 
   <h3>What&rsquo;s published, and what never is</h3>
-  <p><b>Published, for a call I signed:</b> the row (ticker, outperform or underperform, horizon end, confidence bucket, value range, benchmarks, the model behind each seat, a hash of the exact prompts, the package version, my approval id, the chain of events and the origin) and a separate reasoning file. The reasoning file holds the thesis, pillars, falsifiers and the risk officer&rsquo;s dissent, each length-capped and checked again before release. Until the legal read clears it, reasoning appears only on labeled sample data.</p>
-  <p><b>Never published:</b> the ticker of a vetoed or dropped idea, the memos and dissent behind dropped chains, full memos for any chain, the prompts themselves (only their hash), position sizes, entry zones, stops, target prices, holdings, the restricted list, and anything from a proving run. Scores stay counts-only until the price feed&rsquo;s terms and the legal read allow returns.</p>
+  <p><b>Published, for a call I signed:</b> the row (ticker, outperform or underperform, horizon end, confidence bucket, value range, benchmarks, the model behind each seat, a hash of the exact prompts, the package version, my approval id, the chain of events and the origin) and a separate reasoning file. The reasoning file holds the thesis, pillars, falsifiers and the risk officer&rsquo;s dissent, each length-capped and checked again before release. Until the desk runs, reasoning appears only on labeled sample data.</p>
+  <p><b>Never published:</b> the ticker of a vetoed or dropped idea, the memos and dissent behind dropped chains, full memos for any chain, the prompts themselves (only their hash), position sizes, entry zones, stops, target prices, holdings, the restricted list, and anything from a proving run. Scores stay counts-only until the price feed&rsquo;s terms allow returns.</p>
 
   <h2 id="events">The event feed behind the office</h2>
   <p>The homepage office replays a public event feed called <code>events.v1</code>. The same scripts that write the ledger write it, under the same checks, and it&rsquo;s append-only. One JSON line per event:</p>
@@ -216,7 +216,7 @@
   <h2 id="open">Still open</h2>
   <ul>
     <li>Whether the publish credential can be kept unreadable to the seats on a real machine.</li>
-    <li>Whether reasoning text can be released on real data, and in what wording. That waits for the legal read.</li>
+    <li>Whether my signature, the length caps and the deny-pattern scan are enough to keep the publisher safe once it commits reasoning text. The wording is settled; the control still needs a written decision.</li>
     <li>Whether the risk officer should run on Opus, like the chair. The planted-flaw tests will show whether Sonnet is enough.</li>
     <li>Whether two decisions a week is the right ceiling once proving ends.</li>
     <li>Every threshold, cap and time estimate above, until real runs measure them.</li>
