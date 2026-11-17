@@ -15,10 +15,11 @@
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="An isometric two-floor office. Sidd, the portfolio manager, stamps a call approved at his desk.">
 <meta name="twitter:card" content="summary_large_image">
+<script>if(/^#(why|bench|workflows)$/.test(location.hash))location.replace('notes.html'+(location.hash=='#workflows'?'#why':location.hash));</script>
 <link rel="icon" href="assets/favicon.svg?v=e6431b43" type="image/svg+xml">
 <link rel="stylesheet" href="assets/fonts.css?v=cc6ba290">
 <link rel="stylesheet" href="assets/tokens.css?v=758c9adf">
-<link rel="stylesheet" href="assets/site.css?v=4267131c">
+<link rel="stylesheet" href="assets/site.css?v=77429205">
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -29,6 +30,7 @@
     <ul>
       <li><a href="desk.html" aria-current="page">How it works</a></li>
       <li><a href="record.html">The record</a></li>
+      <li><a href="notes.html">Design notes</a></li>
     </ul>
   </nav>
 </header>
@@ -78,7 +80,7 @@
           <dt>Refuses</dt><dd>It refuses to write sizing, entry zones, price targets or &ldquo;buy at&rdquo; language, to name a ticker that isn&rsquo;t in its input, to follow instructions hidden in filing text, or to make a claim without a label.</dd>
           <dt>Test plan</dt><dd>Will be tested on 115 cases across its five routines, each run 3 times, plus at least 2 planted instructions and 2 detector misses per routine.</dd>
           <dt>Can&rsquo;t</dt><dd>It can&rsquo;t publish, use tools, see a price or start its own deep dive. It proposes a change to a thesis&rsquo;s state and a script makes it, and it never knows whether a memo was requested.</dd>
-          <dt>Will cover</dt><dd>The market-sentinel, value-scout and thesis-tracker jobs while those roles are on the bench.</dd>
+          <dt>Will cover</dt><dd>The market-sentinel, value-scout and thesis-tracker jobs while those roles are on <a href="notes.html#bench">the bench</a>.</dd>
         </dl></details>
       <button type="button" class="btn sc-next" data-next="m2">Next: Risk officer &rarr;</button>
     </article>
@@ -138,15 +140,15 @@
       <span class="sc-badge b-script"><i></i>Script · no model</span>
       <h3><span class="sc-no s">5</span>Scripts publish and score</h3>
       <p class="sc-job">Publish the signed call, then score it. No model touches a published call.</p>
-      <dl class="sc-facts"><dt>Reads</dt><dd>The approved fields only, after re-checking the restricted list.</dd><dt>Writes</dt><dd>One ledger entry with its reasoning and events, in one timestamped commit.</dd><dt>Then</dt><dd>Scores each call against SPY and its sector fund on trading days at 10:00 PM ET, and closes it at its horizon by rule.</dd><dt>Stops if</dt><dd>The ticker is restricted, outside the universe or already published.</dd></dl>
-      <p class="sc-wk"><b>Sample week</b>Sun 6:15 PM ET · published No. 6<br>Mon 10:00 PM ET · closed No. 3 as a loss</p>
+      <dl class="sc-facts"><dt>Reads</dt><dd>The approved fields only, after re-checking the restricted list.</dd><dt>Writes</dt><dd>One ledger entry with its reasoning and events, in one timestamped commit.</dd><dt>Then</dt><dd>Scores each call against SPY and its sector fund on trading days at 9:30 PM ET, and closes it at its horizon by rule.</dd><dt>Stops if</dt><dd>The ticker is restricted, outside the universe or already published.</dd></dl>
+      <p class="sc-wk"><b>Sample week</b>Sun 6:15 PM ET · published No. 6<br>Mon 9:30 PM ET · closed No. 3 as a loss</p>
       <details class="sc-spec"><summary>Full spec</summary><div class="tw" role="region" aria-labelledby="cap-p" tabindex="0">
   <table>
     <caption id="cap-p">The scripts after I sign</caption>
     <thead><tr><th scope="col">Script</th><th scope="col">Does</th><th scope="col">When</th></tr></thead>
     <tbody>
       <tr><th scope="row" class="mono">Publish</th><td>Commits a signed call, its capped reasoning file and its events in one commit with an outside timestamp anchor. Re-checks the universe and the restricted list. Sends a restricted, out-of-universe or already published ticker back to me.</td><td>After I sign</td></tr>
-      <tr><th scope="row" class="mono">Scorer</th><td>Scores every call against SPY and its sector fund. Closes calls at their horizon.</td><td>Trading days, 10:00 PM ET</td></tr>
+      <tr><th scope="row" class="mono">Scorer</th><td>Scores every call against SPY and its sector fund. Closes calls at their horizon.</td><td>Trading days, 9:30 PM ET</td></tr>
       <tr><th scope="row" class="mono">Digest</th><td>Counts, calls against the cap and how many approvals are open, never the approvals themselves. Releases the week&rsquo;s ticker-less events.</td><td>Sunday, 6:00 PM ET</td></tr>
     </tbody>
   </table>
@@ -175,12 +177,6 @@
   </div>
 </section>
 
-<section class="blk txt" id="why" aria-labelledby="h-why"><span id="workflows" class="old-anchor"></span>
-  <h2 id="h-why">Why fixed steps, and no agent</h2>
-  <p>I chose fixed steps over an open-ended agent loop for three reasons. Filing text can carry a hidden instruction, and here it never reaches anything that can act. Each step has fixed inputs, so it can be tested case by case. And models are bad at arithmetic and at remembering rules, so both live in code.</p>
-  <p>Each seat runs as its own job. One script chaining all three calls would be one process pretending to be three, and a failure halfway would leave no clean status. Every run ends done, or waiting for me with the reason in the first line. An agent replaces a step only if a test fails because of the single-call shape.</p>
-</section>
-
 <section class="blk txt" id="guardrails" aria-labelledby="h-gr">
   <h2 id="h-gr">Guardrails</h2>
   <div class="acc">
@@ -195,7 +191,7 @@
     </details>
     <details name="guardrails"><summary>A stopped idea stays private. A published call shows its reasoning.</summary>
       <p>Published, for a call I signed: ticker, outperform or underperform, horizon end, confidence, value range, benchmarks, the model behind each seat, a hash of the exact prompts, the package version, my approval id, the events that led to it, and whether it came from the schedule or my request. A separate reasoning file holds the thesis, pillars, falsifiers and the risk officer&rsquo;s dissent, each length-capped and checked again before release.</p>
-      <p>Never published: the ticker of a vetoed or dropped idea, the memos and dissents behind it, full memos for any call, the prompts themselves (only their hash), position sizes, entry zones, stops, target prices, holdings, the restricted list, and anything from a proving run. Scores stay counts-only until the price feed&rsquo;s terms allow returns.</p>
+      <p>Never published: the ticker of a vetoed or dropped idea, the memos and dissents behind it, full memos for any call, the prompts themselves (only their hash), position sizes, entry zones, stops, target prices, holdings, the restricted list, and anything from a proving run. Scores publish as one rounded excess return and a win or loss per closed call, never a price series, daily marks or a price chart.</p>
     </details>
   </div>
 </section>
@@ -245,7 +241,7 @@
           <tr><th scope="row">Chair decision</th><td>Chair</td><td>When the risk officer passes</td><td>Up to 2 a week</td></tr>
           <tr><th scope="row">Thesis check</th><td>Analyst</td><td>1st of the month, 10:00 AM ET</td><td>Up to 8 open calls a run</td></tr>
           <tr><th scope="row">Publish</th><td>Script</td><td>After I sign</td><td>No model calls</td></tr>
-          <tr><th scope="row">Scorer</th><td>Script</td><td>Trading days, 10:00 PM ET</td><td>No model calls</td></tr>
+          <tr><th scope="row">Scorer</th><td>Script</td><td>Trading days, 9:30 PM ET</td><td>No model calls</td></tr>
           <tr><th scope="row">Digest</th><td>Script</td><td>Sunday, 6:00 PM ET</td><td>No model calls</td></tr>
         </tbody>
       </table>
@@ -286,22 +282,6 @@
       <p>The publish script sets an <code>origin</code> field on every call: <code>schedule</code> or <code>request</code>. No seat sets it. Each request also logs a ticker-less <code>request.made</code> event in the Sunday batch, so you can count my requests against the calls they produced and split the record by origin.</p>
       <p>Requests are capped at 2 a week, and a second request for the same name in the same week spends nothing.</p>
     </details>
-    <details id="bench"><summary>The five bench roles</summary>
-      <p>Five more roles could join the three model seats. None has one. Scripts and the analyst cover their work until one earns a seat: two clean runs, its own tests and a written decision. The ceiling is five seats.</p>
-      <div class="tw" role="region" aria-labelledby="cap-o" tabindex="0">
-  <table>
-    <caption id="cap-o">The five bench roles</caption>
-    <thead><tr><th scope="col">Role</th><th scope="col">Covered today by</th><th scope="col">What a hire would add</th><th scope="col">Decision record</th></tr></thead>
-    <tbody>
-      <tr><th scope="row" class="mono">macro-economist<span class="sub">next likely</span></th><td>Macro data pulled by script, not interpreted</td><td>A macro read independent of the analyst&rsquo;s thesis, once macro releases earn their own routine</td><td>Yes. A fourth seat lifts the current cap</td></tr>
-      <tr><th scope="row" class="mono">market-sentinel</th><td>A script threshold, plus an analyst note</td><td>Only if anomaly triage starts needing judgment independent of the memo author</td><td>Yes</td></tr>
-      <tr><th scope="row" class="mono">value-scout</th><td>A script screen, plus an analyst memo</td><td>Only if screening needs judgment rather than rules</td><td>Yes</td></tr>
-      <tr><th scope="row" class="mono">thesis-tracker</th><td>The analyst&rsquo;s monthly check, plus a script that tracks each pillar&rsquo;s state</td><td>Only if thesis upkeep needs to be independent of the original author</td><td>Yes</td></tr>
-      <tr><th scope="row" class="mono">report-writer</th><td>The digest script</td><td>Unlikely ever: the digest is deterministic</td><td>Yes</td></tr>
-    </tbody>
-  </table>
-  </div><p class="small" data-gap="3">Past five seats, coordination would cost more than the independence buys. A hire would show up as a dated <code>agent.hired</code> event.</p>
-    </details>
     <details id="switch-on"><summary>The order the seats switch on</summary>
       <p>One at a time, so a bad memo format can&rsquo;t cascade through two untested seats. Each step has to pass its check before the next seat can depend on it.</p>
       <ol class="sc-track">
@@ -314,6 +294,7 @@
     </details>
   </div>
   <p class="refnote">The full spec for each seat sits under &ldquo;Full spec&rdquo; on each stop of <a href="#path">the diagram above</a>.</p>
+  <p class="refnote">Why the desk is built this way, and what I left out, is on <a href="notes.html">Design notes</a>.</p>
   <p class="refnote">How the event feed works is on the record, under <a href="record.html#feed">Every event</a>.</p>
 </section>
 
@@ -323,7 +304,7 @@
 <footer class="foot">
   <p>Sample data, not advice. Paper money only. Designed and built by <a href="https://siddharthshah.me">Siddharth Shah</a>.</p>
 </footer>
-<script src="assets/sample.js?v=d8291a02"></script>
+<script src="assets/sample.js?v=3184977b"></script>
 <script src="assets/floor.js?v=23644974"></script>
 <script src="assets/seats.js?v=f47a6b80"></script>
 <script src="assets/nav.js?v=57650d35"></script>

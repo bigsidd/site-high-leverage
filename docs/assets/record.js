@@ -274,19 +274,20 @@
   $('b-routine').addEventListener('click', function () { showRoutine = !showRoutine; view(); });
 
   function book() {
-    var tb = $('bk'), total = D.book.start; tb.textContent = '';
+    var tb = $('bk'), pc = function (n) { return (n < 0 ? '\u2212' : '+') + Math.abs(n).toFixed(1) + '%'; }; tb.textContent = '';
+    var closed = ROWS.filter(function (r) { return r.outcome; }), wins = closed.filter(function (r) { return r.outcome === 'win'; }).length;
     ROWS.slice().reverse().forEach(function (r) {
       var tr = el('tr'), th = el('th', 'mono', no(r)); th.scope = 'row'; tr.appendChild(th);
       tr.appendChild(el('td', '', r.direction === 'outperform' ? r.ticker + ' against SPY' : 'SPY against ' + r.ticker));
       tr.appendChild(el('td', 'n', '$10,000'));
-      tr.appendChild(el('td', 'n', r.book == null ? 'not yet' : PX.money(r.book)));
-      tr.appendChild(el('td', 'res', r.book == null ? 'Enters at the next close' : r.outcome ? 'Closed · ' + r.outcome : 'Open, marked'));
-      if (r.book != null) total += r.book;
+      tr.appendChild(el('td', 'n', r.excess ? pc(r.excess.spy) : 'not yet'));
+      tr.appendChild(el('td', 'n', r.excess ? pc(r.excess.sector) : 'not yet'));
+      tr.appendChild(el('td', 'res', r.outcome ? 'Closed \u00b7 ' + r.outcome : r.pending ? 'Enters at the next close' : 'Open, not marked'));
       tb.appendChild(tr);
     });
-    $('bk-total').textContent = '$' + total.toLocaleString('en-US');
-    var f = D.fills;
-    $('fills').textContent = 'Broker paper fills: ' + f.mirrored + ' calls copied, ' + (f.queued ? f.queued + ' waiting for the next open, ' : '') + f.notMirrored + ' underperform calls not copied. Paper P&L ' + PX.money(f.pl) + '. The same dollars in SPY over the same dates: ' + PX.money(f.spy) + '. These are sample values.';
+    $('bk-total').textContent = closed.length + ' of ' + ROWS.length + ' calls closed (' + wins + ' ' + (wins === 1 ? 'win' : 'wins') + ', ' + (closed.length - wins) + ' ' + (closed.length - wins === 1 ? 'loss' : 'losses') + ').';
+    var m = D.mirror;
+    $('mirror').textContent = 'Broker paper mirror: ' + m.closedByScript + ' of ' + m.due + ' signed outperform calls placed and closed by script, ' + m.manualFixes + ' manual fixes. ' + (m.signed - m.due) + ' more ' + (m.signed - m.due === 1 ? 'is' : 'are') + ' open; ' + m.notMirrored + ' underperform calls not placed. These are sample values.';
   }
 
   function feed() {

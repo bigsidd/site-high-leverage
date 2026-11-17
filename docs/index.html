@@ -19,8 +19,11 @@
 <link rel="preload" href="assets/fonts/newsreader.woff2?v=55ca5292" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/fonts.css?v=cc6ba290">
 <link rel="stylesheet" href="assets/tokens.css?v=758c9adf">
-<link rel="stylesheet" href="assets/site.css?v=4267131c">
+<link rel="stylesheet" href="assets/site.css?v=77429205">
 <link rel="stylesheet" href="assets/home.css?v=aa9d2071">
+<link rel="stylesheet" href="assets/cards.css?v=9b969d7f">
+<link rel="stylesheet" href="assets/call.css?v=cc29440d">
+<link rel="stylesheet" href="assets/funnel.css?v=c0f4f4ca">
 </head>
 <body class="home2">
 <a class="skip" href="#office">Skip to the office</a>
@@ -31,6 +34,7 @@
     <ul>
       <li><a href="desk.html">How it works</a></li>
       <li><a href="record.html">The record</a></li>
+      <li><a href="notes.html">Design notes</a></li>
     </ul>
   </nav>
 </header>
@@ -55,8 +59,24 @@
       </div>
     </div>
     <p class="pre">Designed, not yet running. Everything here is a sample.</p>
+    <a class="cue" href="#call">One call, start to finish <span aria-hidden="true">&darr;</span></a>
   </section>
 </main>
+<section class="call2" id="call" aria-labelledby="c2-h">
+  <h2 class="c2-h" id="c2-h">One call, start to finish</h2>
+  <p class="c2-lede">A sample call as it would be published: the case, the argument against it, and who wrote or checked each part.</p>
+  <article class="doc" aria-label="Sample call No. 6">
+    <p class="doc-title">Call No. 6 &middot; SMPL &middot; underperform &middot; 3 months</p>
+    <p class="doc-by">Sample. A placeholder ticker, no real company.</p>
+    <div id="call-doc"></div>
+  </article>
+  <p class="c2-go"><a href="record.html#C-3">See how call No. 3 lost</a> <a href="desk.html#guardrails">What the models can&rsquo;t do</a></p>
+  <div class="c2-fun" id="funnel" aria-labelledby="fn-h">
+    <h2 id="fn-h">Most ideas stop before they publish</h2>
+    <p class="c2-lede">Each stop is a script or a model saying no, or me not signing. The published segment is the only one that reaches the record.</p>
+    <div data-funnel></div>
+  </div>
+</section>
 <section aria-label="The sample week as a list">
 <details class="list wk" id="stepsbox"><summary>Read the week as a list</summary><ol class="steps" id="steps"></ol></details>
 </section>
@@ -65,9 +85,12 @@
   <p>Sample data, not advice. Paper money only. Designed and built by <a href="https://siddharthshah.me">Siddharth Shah</a>.</p>
 </footer>
 <script src="assets/vendor/gsap-3.13.0.min.js?v=5e6e6cba"></script>
-<script src="assets/sample.js?v=d8291a02"></script>
+<script src="assets/sample.js?v=3184977b"></script>
 <script src="assets/floor.js?v=23644974"></script>
-<script src="assets/home.js?v=39512591"></script>
+<script src="assets/home.js?v=21c49e2e"></script>
+<script src="assets/cards.js?v=d360307c"></script>
+<script src="assets/call.js?v=53c2b5f7"></script>
+<script src="assets/funnel.js?v=cc613f2f"></script>
 <script src="assets/nav.js?v=57650d35"></script>
 </body>
 </html>

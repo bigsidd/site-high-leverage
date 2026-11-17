@@ -1,0 +1,32 @@
+/* Seat cards on the homepage office. Tags are buttons; a card holds three lines, refusal first.
+   Desktop: a plain card beside the tag. Phone (coarse pointer or narrow): a bottom sheet with a 44px close button.
+   Tokens only; no motion, so reduced motion needs no special case. */
+.tag{pointer-events:auto}
+.tagbtn{position:relative;display:flex;align-items:center;gap:6px;margin:0;padding:0;background:none;border:0;color:inherit;font:inherit;white-space:nowrap;cursor:pointer;text-align:left}
+.tagbtn::before{content:"";position:absolute;inset:-4px -8px -4px -4px} /* the whole chip is the target */
+.tagbtn:hover span{text-decoration:underline}
+.tagbtn:focus-visible{outline:2px solid var(--ink);outline-offset:6px}
+.tag:has(.tagbtn[aria-expanded=true]){border-color:var(--ink)}
+.tag[inert]{pointer-events:none}
+@media (pointer:coarse),(max-width:640px){
+  .tagbtn::before{inset:-10px -10px -10px -8px} /* chip is about 26px tall: 46px target */
+}
+
+.seatcard{position:absolute;z-index:20;width:21rem;max-width:calc(100% - 16px);box-sizing:border-box;padding:var(--s3) var(--s4) var(--s4);background:var(--surface);color:var(--text);border:1px solid var(--ink);border-radius:3px}
+.seatcard[hidden]{display:none}
+.seatcard-k{margin:0 0 2px;padding-right:var(--touch);font:500 var(--fs-xs)/1.3 var(--font-mono);color:var(--muted)}
+.seatcard-t{margin:0 0 var(--s2);padding-right:var(--touch);font:500 var(--fs-lg)/1.15 var(--font-display);color:var(--text)}
+.seatcard dl{margin:0;display:grid;grid-template-columns:max-content 1fr;gap:var(--s2) var(--s3);align-items:baseline}
+.seatcard dt{margin:0;font:600 var(--fs-xs)/1.5 var(--font-mono);color:var(--ink)}
+.seatcard dd{margin:0;font:400 var(--fs-sm)/1.45 var(--font-body);text-wrap:pretty}
+.seatcard-x{position:absolute;top:0;right:0;width:var(--touch);height:var(--touch);display:grid;place-items:center;margin:0;padding:0;background:none;border:0;color:var(--ink);cursor:pointer}
+.seatcard-x svg{width:14px;height:14px}
+.seatcard-x:hover{background:var(--bg)}
+.seatcard-x:focus-visible{outline:2px solid var(--ink);outline-offset:-4px}
+
+.seatcard.sheet{position:fixed;left:var(--s2);right:var(--s2);width:auto;max-width:none;max-height:calc(100svh - 72px);overflow:auto;z-index:40;padding:var(--s4)}
+.seatcard.sheet dd{font-size:var(--fs-base);line-height:1.4}
+@media (max-width:360px){
+  .seatcard dl{grid-template-columns:1fr;gap:0}
+  .seatcard dd{margin-bottom:var(--s2)}
+}
