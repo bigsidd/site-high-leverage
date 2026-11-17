@@ -179,7 +179,7 @@
   }
   buildFx();
   function lift() { // the stamp must land on top of the card, and his hand stays on top of the stamp
-    var fx = svg.querySelector('#fl-fx'); ['fl-stamp', 'fl-arm', 'fl-hand'].forEach(function (id) { var n = svg.querySelector('#' + id); if (n && n.parentNode !== fx) fx.appendChild(n); });
+    var fx = svg.querySelector('#fl-fx'); ['fl-stamp', 'fl-arm'].forEach(function (id) { var n = svg.querySelector('#' + id); if (n && n.parentNode !== fx) fx.appendChild(n); });
   }
   lift();
   function el(id) { return svg.querySelector('#' + id); }
@@ -189,22 +189,17 @@
   }
   var pos = { x: 0, y: 0, bz: 1.5, lift: 0 }, grip = { v: 0 };
   function CARD() { return phone ? 1.6 : 1.4; } // the memo card is drawn larger than the furniture so its stamp reads
-  function idle() { // two-frame life while the week plays: model hands type, bench heads turn. Read from the playhead, so it pauses and seeks with everything else.
+  function idle() { // two-frame life while the week plays: model hands type. Read from the playhead, so it pauses and seeks with everything else.
     var t = tl.time();
     [].forEach.call(svg.querySelectorAll('.ih'), function (n, i) { n.setAttribute('transform', 'translate(0,' + ((Math.floor(t * 5) + i) % 2 ? -1.2 : 0) + ')'); });
-    [].forEach.call(svg.querySelectorAll('.hd'), function (n, i) { var k = Math.floor(t * 0.6 + i * 0.41) % 3; n.setAttribute('transform', 'translate(' + (k - 1) * 0.9 + ',0)'); });
   }
-  function armSync() { // Sidd's hand: at rest on the desk, or on the stamp handle wherever the stamp is
-    var A = FLOOR.arm, arm = el('fl-arm'), hand = el('fl-hand'), stp = el('fl-stamp');
+  function armSync() { // Sidd's hand: at rest on the desk, or on the stamp handle wherever the stamp is. floor.js draws the arm at a fixed length.
+    var A = FLOOR.arm, arm = el('fl-arm'), stp = el('fl-stamp');
     if (!A.sh || !arm || !stp) return;
     var h = P(SPOT.stamp[0], SPOT.stamp[1], SPOT.stamp[2] + 0.6), sx = +gsap.getProperty(stp, 'x') || 0, sy = +gsap.getProperty(stp, 'y') || 0;
-    var hx = A.rest[0] + (h[0] + sx - A.rest[0]) * grip.v, hy = A.rest[1] + (h[1] + sy - A.rest[1]) * grip.v;
-    // two-bone reach: fixed upper arm and forearm, the elbow bending down and out, like a real arm
-    var L = S * 0.85, dx = hx - A.sh[0], dy = hy - A.sh[1], d = Math.min(Math.hypot(dx, dy), 2 * L - 0.01), ux = dx / (Math.hypot(dx, dy) || 1), uy = dy / (Math.hypot(dx, dy) || 1);
-    var hgt = Math.sqrt(Math.max(0, L * L - d * d / 4)), px = -uy, py = ux; if (py < 0) { px = -px; py = -py; }
-    var ex = A.sh[0] + ux * d / 2 + px * hgt, ey = A.sh[1] + uy * d / 2 + py * hgt;
-    arm.setAttribute('d', 'M' + A.sh[0].toFixed(1) + ',' + A.sh[1].toFixed(1) + ' L' + ex.toFixed(1) + ',' + ey.toFixed(1) + ' L' + hx.toFixed(1) + ',' + hy.toFixed(1));
-    hand.setAttribute('cx', hx.toFixed(1)); hand.setAttribute('cy', hy.toFixed(1));
+    var hx = A.rest[0] + (h[0] + sx - A.rest[0]) * grip.v, hy = A.rest[1] + (h[1] + sy - A.rest[1]) * grip.v, at = hx.toFixed(1) + ',' + hy.toFixed(1);
+    if (arm.getAttribute('data-at') === at) return;
+    arm.setAttribute('data-at', at); arm.innerHTML = FLOOR.armSVG(hx, hy);
   }
   function placeCard() {
     var p = P(pos.x, pos.y, pos.bz + pos.lift), g = P(pos.x, pos.y, pos.bz), c = el('fx-card'), sh = el('fx-shadow');

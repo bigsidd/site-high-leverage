@@ -17,7 +17,8 @@
   var rnd; void (function (s) { return function () { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; }; })(7);
 
   var items = [], L0 = 0; // L0 is the draw layer: under the mezzanine, the mezzanine, then the open floor in front
-  function add(k, s) { items.push({ k: L0 + k, s: s }); }
+  var BODY_FIRST = ''; // a figure facing us hands its body over here, so its desk draws between the body and the forearms
+  function add(k, s) { if (BODY_FIRST) { items.push({ k: L0 + k - 0.15, s: BODY_FIRST }); BODY_FIRST = ''; } items.push({ k: L0 + k, s: s }); }
 
   // box: three visible faces. Light comes through the window wall, so the +x face is the darkest.
   function box(x, y, z, w, d, h, top, o) {
@@ -129,51 +130,98 @@
   }
   // a seated figure. o.kind: 'human' (Sidd, the only person on the floor), 'model' (a model seat: a flat signal-blue
   // face plate and its seat number), or 'bench' (an unbuilt seat: ghosted and outlined, no seat). o.reach: desk points the hands rest on.
-  var ARM = {}; // Sidd's stamping arm, so the replay can move his hand to the stamp
-  function armPath(sh, e) { var el = [sh[0] * 0.55 + e[0] * 0.45, Math.max(sh[1], e[1]) + S * 0.22]; return [el, 'M' + f1(sh[0]) + ',' + f1(sh[1]) + ' L' + f1(el[0]) + ',' + f1(el[1]) + ' L' + f1(e[0]) + ',' + f1(e[1])]; }
-  function personSeated(x, y, view, o) { // view: 'back' or 'front'
-    var kind = o.kind || 'human', model = kind === 'model', bench = kind === 'bench';
+  var ARM = {}; // Sidd's stamping arm: its shoulder and resting hand, so the replay can pose it
+  // a seated figure, built from the furniture's own three-face boxes so it shares the projection and the light. About six heads tall,
+  // shoulders wider than the waist, a bevelled head. o.kind: 'human' (Sidd, the only person, and the only face), 'model' (a voting
+  // model seat: a faceless plate-blue head with a flat visor line), or 'bench' (an unbuilt seat: pale, outlined, no vote).
+  // view: 'front' faces +y (toward us); 'back' faces -y, or -x with o.face '-x'. o.reach: the desk points the hands rest on.
+  function personSeated(x, y, view, o) {
+    var kind = o.kind || 'human', model = kind === 'model', bench = kind === 'bench', human = !model && !bench, front = view === 'front';
     var shirt = model ? K.modelBody : bench ? K.benchBody : o.shirt, skin = model ? K.plate : bench ? K.benchHead : o.skin;
-    var line = bench ? ' stroke="' + K.benchLine + '" stroke-width="1" stroke-dasharray="2 1.6"' : '';
-    var k = 1.15, p = Q(x, y, 1.15), cx = p[0], by = p[1], tw = S * 0.98 * k, th = S * 1.18 * k, s = '', arms = '';
-    var hr = S * 0.34 * 1.1, hx = cx + (o.lean || 0), hy = by - th - hr * 1.05;
-    var sl = dk(shirt, 0.16), hand = model ? K.plate : skin;
-    s += shadow(x, y, 0.55, 0.12);
-    if (view === 'back') { // legs: knees forward under the desk, shins showing beneath the seat
-      var fd = o.face === '-x' ? [-1, 0] : [0, -1], pd = [-fd[1], fd[0]], trou = model ? dk(K.modelBody, 0.25) : bench ? K.benchBody : '#2C2F35';
-      [-0.2, 0.2].forEach(function (sd) {
-        var kx = x + fd[0] * 0.6 + pd[0] * sd, ky = y + fd[1] * 0.6 + pd[1] * sd, a1 = Q(kx, ky, 0.9), a2 = Q(kx + fd[0] * 0.08, ky + fd[1] * 0.08, 0.08);
-        s += '<line x1="' + f1(a1[0]) + '" y1="' + f1(a1[1]) + '" x2="' + f1(a2[0]) + '" y2="' + f1(a2[1]) + '" stroke="' + trou + '" stroke-width="' + f1(S * 0.2) + '" stroke-linecap="round"' + (bench ? ' opacity="0.8"' : '') + '/>';
-        s += '<ellipse cx="' + f1(a2[0] + (fd[0] ? -2 : 2)) + '" cy="' + f1(a2[1]) + '" rx="' + f1(S * 0.16) + '" ry="' + f1(S * 0.08) + '" fill="' + (bench ? K.benchLine : '#1E1F22') + '"/>';
-      });
+    var fd = front ? [0, 1] : o.face === '-x' ? [-1, 0] : [0, -1], pd = [Math.abs(fd[1]), Math.abs(fd[0])], parts = [], FORE = false;
+    function part(cx, cy, z, along, across, h, col, extra) { // a box centred on (cx, cy); 'along' is its size in the facing direction
+      var w = fd[0] ? along : across, d = fd[0] ? across : along, x0 = cx - w / 2, y0 = cy - d / 2;
+      var p = { k: cx + cy, z: z, s: box(x0, y0, z, w, d, h, col) + (extra ? extra(x0, y0, w, d) : ''), fore: FORE };
+      parts.push(p); return p;
     }
-    (o.reach || []).forEach(function (t, i) {
-      var sh = [cx + (i ? 1 : -1) * tw * 0.36, by - th * 0.72], e = Q(t[0], t[1], t[2]), ap = armPath(sh, e);
-      var id = o.arm && i === 0 ? ' id="fl-arm"' : '', hid = o.arm && i === 0 ? ' id="fl-hand"' : '';
-      if (id) { ARM.sh = sh; ARM.rest = e; }
-      arms += '<path' + id + ' d="' + ap[1] + '" fill="none" stroke="' + sl + '" stroke-width="' + f1(S * 0.24) + '" stroke-linecap="round" stroke-linejoin="round"/>';
-      arms += '<ellipse' + hid + (model && !o.arm ? ' class="ih"' : '') + ' cx="' + f1(e[0]) + '" cy="' + f1(e[1]) + '" rx="' + f1(S * 0.15) + '" ry="' + f1(S * 0.11) + '" fill="' + hand + '"/>';
+    var Z0 = 1.15, LW = 0.66, LD = 0.36, LH = 0.6, UW = 0.84, UD = 0.42, UH = 0.4, HW = 0.36, HH = 0.34, BV = 0.08;
+    // sit within reach: a desk further than a forearm pulls the figure in, so hands land on the desk, never in the air
+    var gap = o.reach && o.reach[0] ? (o.reach[0][0] - x) * fd[0] + (o.reach[0][1] - y) * fd[1] : 0.7, pull = Math.max(0, gap - 0.72);
+    var bx = x + fd[0] * (pull - 0.05), by = y + fd[1] * (pull - 0.05), zt = Z0 + LH + UH, hz = zt + 0.08;
+    part(bx + fd[0] * 0.3, by + fd[1] * 0.3, Z0 - 0.2, 0.62, LW - 0.04, 0.22, model ? dk(K.modelBody, 0.25) : bench ? K.benchBody : '#2C2F35'); // thighs, under the desk
+    part(bx, by, Z0, LD, LW, LH, shirt);
+    part(bx, by, Z0 + LH, UD, UW, UH, shirt, function (x0, y0, w, d) { // chest: lapels, shirt and tie on the face toward us
+      if (!front || !human) return '';
+      var yf = y0 + d + 0.002, c = x0 + w / 2;
+      return poly([[c - 0.16, yf, zt], [c + 0.16, yf, zt], [c, yf, zt - 0.3]], o.collar) +
+        poly([[c - 0.035, yf + 0.001, zt - 0.04], [c + 0.035, yf + 0.001, zt - 0.04], [c + 0.025, yf + 0.001, zt - 0.3], [c, yf + 0.001, zt - 0.34], [c - 0.025, yf + 0.001, zt - 0.3]], dk(shirt, 0.35)) +
+        poly([[c - 0.16, yf, zt], [c - 0.2, yf, zt - 0.02], [c - 0.02, yf, zt - 0.4], [c, yf, zt - 0.34]], dk(shirt, 0.12)) +
+        poly([[c + 0.16, yf, zt], [c + 0.2, yf, zt - 0.02], [c + 0.02, yf, zt - 0.4], [c, yf, zt - 0.34]], dk(shirt, 0.12));
     });
-    if (view === 'back') s += arms;
-    s += '<path d="M' + f1(cx - tw / 2) + ',' + f1(by) + ' v' + f1(-th * 0.72) + ' q0,' + f1(-th * 0.28) + ' ' + f1(tw * 0.28) + ',' + f1(-th * 0.28) + ' h' + f1(tw * 0.44) + ' q' + f1(tw * 0.28) + ',0 ' + f1(tw * 0.28) + ',' + f1(th * 0.28) + ' v' + f1(th * 0.72) + 'z" fill="' + shirt + '"' + line + (model && K.night ? ' stroke="' + K.plate + '" stroke-width="1" stroke-opacity="0.6"' : '') + '/>';
-    if (o.collar && !bench && !model) s += '<path d="M' + f1(cx - S * 0.18) + ',' + f1(by - th) + ' l' + f1(S * 0.18) + ',' + f1(S * 0.38) + ' l' + f1(S * 0.18) + ',' + f1(-S * 0.38) + 'z" fill="' + o.collar + '"/>';
-    if (model && o.seat) s += '<text x="' + f1(cx) + '" y="' + f1(by - th * 0.36) + '" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" font-weight="700" fill="' + K.visor + '" stroke="#141820" stroke-width="0.5" paint-order="stroke">' + o.seat + '</text>';
-    if (!model) s += '<rect x="' + f1(cx - S * 0.12) + '" y="' + f1(hy + hr * 0.6) + '" width="' + f1(S * 0.24) + '" height="' + f1(S * 0.3) + '" fill="' + dk(skin, 0.15) + '"/>';
-    s += '<circle' + (bench ? ' class="hd"' : '') + ' cx="' + f1(hx) + '" cy="' + f1(hy) + '" r="' + f1(hr) + '" fill="' + skin + '"' + line + '/>';
-    if (!model && !bench && view === 'front') { // the one face on the floor
-      var ink = dk(skin, 0.55);
-      s += '<circle cx="' + f1(hx - hr * 0.36) + '" cy="' + f1(hy + hr * 0.12) + '" r="' + f1(hr * 0.1) + '" fill="' + ink + '"/><circle cx="' + f1(hx + hr * 0.36) + '" cy="' + f1(hy + hr * 0.12) + '" r="' + f1(hr * 0.1) + '" fill="' + ink + '"/>';
+    if (!model) part(bx, by, zt, 0.14, 0.14, 0.08, dk(skin, 0.12));
+    part(bx, by, hz, HW, HW, HH, skin, function (x0, y0, w, d) {
+      var s = '', yf = y0 + d + 0.002;
+      if (model) { // faceless: a flat visor line when it faces us, a seam when it doesn't
+        if (front) s += poly([[x0 + 0.05, yf, hz + 0.17], [x0 + w - 0.05, yf, hz + 0.17], [x0 + w - 0.05, yf, hz + 0.22], [x0 + 0.05, yf, hz + 0.22]], K.visor);
+        else if (fd[0]) s += poly([[x0 + w + 0.002, y0 + 0.05, hz + 0.19], [x0 + w + 0.002, y0 + d - 0.05, hz + 0.19], [x0 + w + 0.002, y0 + d - 0.05, hz + 0.21], [x0 + w + 0.002, y0 + 0.05, hz + 0.21]], dk(K.plate, 0.22));
+        return s + box(x0 + 0.035, y0 + 0.035, hz + HH, w - 0.07, d - 0.07, BV, K.plate);
+      }
+      if (bench) return box(x0 + 0.035, y0 + 0.035, hz + HH, w - 0.07, d - 0.07, BV, skin);
+      var hair = o.hair, ink = dk(skin, 0.6);
+      if (front) {
+        [x0 + w * 0.3, x0 + w * 0.7].forEach(function (ex) {
+          s += poly([[ex - 0.026, yf, hz + 0.15], [ex + 0.026, yf, hz + 0.15], [ex + 0.026, yf, hz + 0.2], [ex - 0.026, yf, hz + 0.2]], ink);
+          s += poly([[ex - 0.045, yf, hz + 0.235], [ex + 0.04, yf, hz + 0.245], [ex + 0.04, yf, hz + 0.265], [ex - 0.045, yf, hz + 0.255]], hair);
+        });
+        s += poly([[x0 + w * 0.5, yf, hz + 0.15], [x0 + w * 0.56, yf, hz + 0.09], [x0 + w * 0.5, yf, hz + 0.09]], dk(skin, 0.14));
+        s += poly([[x0 + w + 0.002, y0 + d * 0.35, hz + 0.1], [x0 + w + 0.002, y0 + d * 0.6, hz + 0.1], [x0 + w + 0.002, y0 + d * 0.6, hz + 0.22], [x0 + w + 0.002, y0 + d * 0.35, hz + 0.22]], dk(skin, 0.1));
+        s += poly([[x0 + w + 0.003, y0, hz + 0.18], [x0 + w + 0.003, y0 + d * 0.3, hz + 0.18], [x0 + w + 0.003, y0 + d * 0.3, hz + HH], [x0 + w + 0.003, y0, hz + HH]], hair);
+      }
+      s += box(x0 - 0.015, y0 - 0.015, hz + HH - 0.05, w + 0.03, d + 0.03, 0.06, hair) + box(x0 + 0.02, y0 + 0.02, hz + HH + 0.01, w - 0.04, d - 0.04, BV, hair);
+      if (front) s += poly([[x0 - 0.015, y0 + d + 0.017, hz + HH - 0.05], [x0 + w * 0.62, y0 + d + 0.017, hz + HH - 0.05], [x0 + w * 0.45, y0 + d + 0.017, hz + HH - 0.1], [x0 - 0.015, y0 + d + 0.017, hz + HH - 0.09]], hair); // side-parted fringe
+      return s;
+    });
+    var hand = model ? K.plate : skin, sl = dk(shirt, 0.05);
+    [-1, 1].forEach(function (sd, i) {
+      var off = UW / 2 + 0.075, ax = bx + pd[0] * sd * off, ay = by + pd[1] * sd * off;
+      if (o.arm && i === 0) { // the stamping arm is posed by the replay through armSVG, in the effects layer
+        var r = o.reach[0]; ARM.sh = Q(ax, ay, zt - 0.08); ARM.rest = Q(r[0], r[1], r[2] + 0.04); ARM.shirt = sl; ARM.skin = skin; ARM.cuff = o.collar; return;
+      }
+      part(ax, ay, Z0 + 0.42, 0.18, 0.15, zt - Z0 - 0.45, sl);
+      FORE = true;
+      var fl = 0.52, fz = Z0 + 0.36;
+      part(ax + fd[0] * (fl / 2 + 0.02), ay + fd[1] * (fl / 2 + 0.02), fz, fl, 0.15, 0.13, dk(shirt, 0.1));
+      if (human) part(ax + fd[0] * (fl + 0.05), ay + fd[1] * (fl + 0.05), fz, 0.06, 0.16, 0.13, o.collar);
+      var hp = part(ax + fd[0] * (fl + 0.15), ay + fd[1] * (fl + 0.15), fz - 0.01, 0.15, 0.15, 0.09, hand);
+      if (model) hp.ih = 1;
+      FORE = false;
+    });
+    parts.sort(function (a, b) { return a.k - b.k || a.z - b.z; });
+    var wrap = function (t) { return bench ? '<g stroke="' + K.benchLine + '" stroke-width="0.6" stroke-linejoin="round">' + t + '</g>' : t; };
+    var draw = function (list) { return list.map(function (p) { return p.ih ? '<g class="ih">' + p.s + '</g>' : p.s; }).join(''); };
+    if (front) BODY_FIRST = wrap(draw(parts.filter(function (p) { return !p.fore; }))); // facing us: body under the desk's layer, forearms over it
+    var s = draw(front ? parts.filter(function (p) { return p.fore; }) : parts);
+    if (o.ring) { var hc = Q(bx, by, hz + HH / 2); s += '<circle id="' + o.ring + '" cx="' + f1(hc[0]) + '" cy="' + f1(hc[1]) + '" r="' + f1(S * 0.62) + '" fill="none" stroke="' + K.plate + '" stroke-width="2" opacity="0"/>'; }
+    if (o.arm) s += '<g id="fl-arm">' + armSVG(ARM.rest[0], ARM.rest[1]) + '</g>'; // at rest until the replay poses it (the inner-page vignettes never do)
+    return wrap(s);
+  }
+  // Sidd's posed arm, from his shoulder to a hand point: upper arm and forearm as two-tone bars of a fixed length (never stretched), a cuff, a hand
+  function armSVG(hx, hy) {
+    var sh = ARM.sh, L = S * 0.7, dx = hx - sh[0], dy = hy - sh[1], d = Math.hypot(dx, dy) || 1, ux = dx / d, uy = dy / d;
+    if (d > 2 * L - 0.05) { d = 2 * L - 0.05; hx = sh[0] + ux * d; hy = sh[1] + uy * d; }
+    var hg = Math.sqrt(Math.max(0, L * L - d * d / 4)), px = -uy, py = ux; if (py < 0) { px = -px; py = -py; }
+    var e = [sh[0] + ux * d / 2 + px * hg, sh[1] + uy * d / 2 + py * hg], h = [hx, hy];
+    function pts(a) { return a.map(function (p) { return f1(p[0]) + ',' + f1(p[1]); }).join(' '); }
+    function bar(a, b, w0, w1, col) {
+      var vx = b[0] - a[0], vy = b[1] - a[1], l = Math.hypot(vx, vy) || 1, nx = -vy / l, ny = vx / l; if (ny < 0) { nx = -nx; ny = -ny; }
+      return '<polygon points="' + pts([[a[0] - nx * w0 / 2, a[1] - ny * w0 / 2], [b[0] - nx * w1 / 2, b[1] - ny * w1 / 2], b, a]) + '" fill="' + col + '"/>' +
+        '<polygon points="' + pts([a, b, [b[0] + nx * w1 / 2, b[1] + ny * w1 / 2], [a[0] + nx * w0 / 2, a[1] + ny * w0 / 2]]) + '" fill="' + dk(col, 0.2) + '"/>';
     }
-    if (model) { // the face plate: a visor slot when it faces us, a seam when it doesn't
-      if (view === 'front') s += '<path d="M' + f1(hx - hr * 0.65) + ',' + f1(hy - hr * 0.05) + ' q' + f1(hr * 0.65) + ',' + f1(hr * 0.3) + ' ' + f1(hr * 1.3) + ',0" fill="none" stroke="' + K.visor + '" stroke-width="' + f1(hr * 0.22) + '" stroke-linecap="round"/>';
-      else s += '<path d="M' + f1(hx - hr * 0.7) + ',' + f1(hy + hr * 0.1) + ' q' + f1(hr * 0.7) + ',' + f1(hr * 0.35) + ' ' + f1(hr * 1.4) + ',0" fill="none" stroke="' + dk(K.plate, 0.25) + '" stroke-width="1"/>';
-    } else if (!bench) {
-      if (view === 'back') s += '<circle cx="' + f1(hx) + '" cy="' + f1(hy - S * 0.03) + '" r="' + f1(hr * 1.04) + '" fill="' + o.hair + '"/>';
-      else s += '<path d="M' + f1(hx - hr * 1.05) + ',' + f1(hy + S * 0.02) + ' a' + f1(hr * 1.05) + ',' + f1(hr * 1.05) + ' 0 0 1 ' + f1(hr * 2.1) + ',0 q' + f1(-hr * 0.9) + ',' + f1(-hr * 0.5) + ' ' + f1(-hr * 1.8) + ',' + f1(-hr * 0.15) + 'z" fill="' + o.hair + '"/>';
-    }
-    if (o.ring) s += '<circle id="' + o.ring + '" cx="' + f1(hx) + '" cy="' + f1(hy) + '" r="' + f1(hr * 1.75) + '" fill="none" stroke="' + K.plate + '" stroke-width="2" opacity="0"/>';
-    if (view !== 'back') s += arms;
-    return s;
+    var cuff = [e[0] + (h[0] - e[0]) * 0.8, e[1] + (h[1] - e[1]) * 0.8], hs = S * 0.12;
+    return bar(sh, e, S * 0.19, S * 0.17, ARM.shirt) + '<circle cx="' + f1(e[0]) + '" cy="' + f1(e[1]) + '" r="' + f1(S * 0.085) + '" fill="' + ARM.shirt + '"/>' +
+      bar(e, cuff, S * 0.17, S * 0.15, dk(ARM.shirt, 0.05)) + bar(cuff, [e[0] + (h[0] - e[0]) * 0.9, e[1] + (h[1] - e[1]) * 0.9], S * 0.15, S * 0.15, ARM.cuff) +
+      '<polygon points="' + pts([[hx - hs, hy - hs * 0.15], [hx - hs * 0.3, hy - hs * 0.7], [hx + hs * 0.7, hy - hs * 0.45], [hx + hs, hy + hs * 0.2], [hx + hs * 0.2, hy + hs * 0.75], [hx - hs * 0.8, hy + hs * 0.45]]) + '" fill="' + ARM.skin + '"/>' +
+      '<polygon points="' + pts([[hx + hs, hy + hs * 0.2], [hx + hs * 0.2, hy + hs * 0.75], [hx - hs * 0.8, hy + hs * 0.45], [hx - hs * 0.2, hy + hs * 0.3]]) + '" fill="' + dk(ARM.skin, 0.18) + '"/>';
   }
   function personStanding(x, y, o) {
     var p = Q(x, y, 0), cx = p[0], fy = p[1], s = shadow(x, y, 0.5, 0.18);
@@ -405,7 +453,7 @@
     add(25 + 8 + 0.01, glassWall('y', 0, 8, 25, 4.6));
 
     // Sidd's corner office
-    add(39 + 1.8, chair(39.2, 2.2, '+y', { tall: true, col: '#3B2B22', seat: '#4A372C' }));
+    add(39 + 1.8, chair(39.2, 2.2, '+y', { tall: true, col: '#7A6655', seat: '#8A7563' })); // tan leather, so his suit reads against it
     add(39 + 4.05, personSeated(39.2, 2.25, 'front', { arm: true, shirt: '#2B3A55', collar: '#F3EFE6', skin: K.skin1, hair: K.hair1, reach: [[38.8, 3.15, 1.49], [39.65, 3.15, 1.49]] }));
     add(39 + 4, box(36.8, 3, 0, 4.8, 2.1, 1.48, K.walnut, { left: '#5f412a', right: '#513623' }));
     var desk = '<g id="fl-memo-sidd">' + box(37.9, 3.0, 1.48, 1.2, 1.0, 0.03, K.paper) + '</g>';
@@ -490,7 +538,7 @@
 
   function A(x, y, z) { var p = P(x, y, z); return [f1(p[0]), f1(p[1])]; }
   window.FLOOR = {
-    build: build, P: P, S: S, arm: ARM, slots: slots, centers: centers, spots: SP, K: K, trayTop: function () { return trayTop; },
+    build: build, armSVG: armSVG, P: P, S: S, arm: ARM, slots: slots, centers: centers, spots: SP, K: K, trayTop: function () { return trayTop; },
     anchors: {
       analyst: A(23.05, 16.45, 3.35), risk: A(29.15, 13.9, 3.35), committee: A(18.5, 2.05, MZ + 3.35),
       sidd: A(39.2, 1.95, MZ + 3.4), record: A(0, 14.0, 12.0), bench: A(14.45, 12.6, 4.4),
