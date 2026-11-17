@@ -11,7 +11,7 @@
 /* 9:16 phone cut of the desk page: the same tabs-and-spotlight code, walked seat to seat by one seekable timeline */
 #hf{width:540px;height:960px}
 #hf .sc-seats{position:absolute;inset:0;margin:0}
-#hf .sc-tabs,#hf .sc-panels,#hf .kicker{display:none!important}
+#hf .sc-tabs,#hf .sc-panels{display:none!important}
 #hf .sc-grid{margin:0}
 #hf .sc-stage{position:absolute;left:0;right:0;top:266px;height:694px;aspect-ratio:auto;border:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
 #hf .sc-lab{font-size:15px;padding:6px 10px;left:16px;top:16px}
@@ -49,12 +49,12 @@
 (function () {
   var S = window.HLR_SEATS; if (!S) return;
   var BEATS = [ // [seat, badge, badge colour, name, job, caption]
-    ['scripts', 'Script · not AI', 'var(--muted)', 'The scripts', 'Do every step that can be code.', 'Scripts pull the data and screen for a candidate. No model.'],
-    ['m1', 'AI model · votes', '#2F64C4', 'M1 · the analyst', 'Writes the case for a call.', 'M1 writes the memo.'],
-    ['m2', 'AI model · votes', '#2F64C4', 'M2 · the risk officer', 'Argues against every memo, and can kill it.', 'M2 argues against it. A veto ends it in the No tray.'],
-    ['m3', 'AI model · votes', '#2F64C4', 'M3 · the committee chair', 'Decides whether it’s worth publishing.', 'The chair reads memo and dissent, and decides.'],
-    ['pm', 'Human · signs', 'var(--ink)', 'Sidd · portfolio manager', 'The committee recommends. My signature decides.', 'Nothing publishes until Sidd signs it.'],
-    ['record', 'Script · not AI', 'var(--muted)', 'The record', 'Sealed before anyone knows the outcome.', 'A script publishes it. Losses stay at full size.']
+    ['scripts', 'Script · no model', 'var(--muted)', 'The scripts', 'Do every step that can be code.', 'Scripts pull the data and screen for a candidate. No model.'],
+    ['m1', 'AI model · Sonnet 5.5', 'var(--seat)', '1 · the analyst', 'Writes the case for a call.', 'The analyst writes the memo.'],
+    ['m2', 'AI model · Sonnet 5.5', 'var(--seat)', '2 · the risk officer', 'Argues against every memo, and can kill it.', 'The risk officer argues against it. A veto ends it in the No tray.'],
+    ['m3', 'AI model · Opus 5.5', 'var(--seat)', '3 · the chair', 'Decides whether it’s worth publishing.', 'The chair reads memo and dissent, and decides.'],
+    ['pm', 'Person · signs', 'var(--ink)', '4 · Sidd, portfolio manager', 'The chair recommends. My signature decides.', 'Sidd signs, or doesn’t.'],
+    ['publish', 'Script · no model', 'var(--muted)', '5 · The record', 'Sealed before anyone knows the outcome.', 'A script publishes it. Losses stay at full size.']
   ];
   var MOVE = 0.8, HOLD = 1.6, COLD = 2.2, BEAT = MOVE + HOLD, N = BEATS.length;
   var ct = document.getElementById('ct'), wb = document.getElementById('wb'), wn = document.getElementById('wn'), wj = document.getElementById('wj');

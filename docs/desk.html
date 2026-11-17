@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="color-scheme" content="light dark">
-<title>How the desk works · High Leverage Research</title>
-<meta name="description" content="How the AI investment committee is orchestrated: scripts do the work, three model seats each make one tool-less call, and nothing publishes until a person signs it.">
+<title>How it works · High Leverage Research</title>
+<meta name="description" content="One call&rsquo;s path through the desk: scripts do every step that can be code, three model seats each make one tool-less call, and nothing publishes until a person signs it. Design preview.">
 <meta property="og:type" content="website">
 <meta property="og:title" content="How it works · High Leverage Research">
-<meta property="og:description" content="One call end to end: scripts, three model seats, and a human signature before anything publishes. Paper money, design preview.">
+<meta property="og:description" content="One call, start to finish: scripts, three model seats, and a human signature before anything publishes. Paper money, design preview.">
 <meta property="og:url" content="https://research.siddharthshah.me/desk.html">
 <meta property="og:image" content="https://research.siddharthshah.me/assets/og.png?v=10249724">
 <meta property="og:image:width" content="1200">
@@ -17,8 +17,8 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="assets/favicon.svg?v=e6431b43" type="image/svg+xml">
 <link rel="stylesheet" href="assets/fonts.css?v=cc6ba290">
-<link rel="stylesheet" href="assets/tokens.css?v=8e6ab7ad">
-<link rel="stylesheet" href="assets/site.css?v=b024a992">
+<link rel="stylesheet" href="assets/tokens.css?v=758c9adf">
+<link rel="stylesheet" href="assets/site.css?v=bd8da3ad">
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -28,208 +28,309 @@
   <nav aria-label="Site" id="sitenav">
     <ul>
       <li><a href="desk.html" aria-current="page">How it works</a></li>
-      <li><a href="committee.html">The desk</a></li>
       <li><a href="record.html">The record</a></li>
     </ul>
   </nav>
 </header>
 
-<main id="main" class="wrap has-vig" tabindex="-1">
-<div class="vignette" data-vignette="desk" aria-hidden="true"></div>
-<div class="col">
+<main id="main" class="wrap how" tabindex="-1">
 <header class="hd">
   <h1>How it works</h1>
-  <div class="bar1"><span class="preview">Design preview · the desk is not running yet</span></div>
+  <div class="bar1"><span class="preview">Design preview · not running yet</span></div>
+  <p class="lede">Scripts do every step that can be code. A model is called only where a judgment has to be written down: one call, no tools, an answer in JSON that a script checks before anything moves.</p>
+  <p class="lede2">Three models hold seats, one person signs, and a script publishes.</p>
 </header>
 
-<div class="prose">
-  <p class="lede">Three models draft and challenge each call. Nothing publishes until I sign it. Scripts do everything else.</p>
-  <p>High Leverage Research is a small AI investment committee I&rsquo;m building in the open. Every step that can be code is code: fetching filings, screening, valuation arithmetic, scoring and publishing. A model is called only where a judgment has to be written down, and each call is a single shot with no tools. A script builds the input, the model returns JSON, and a script checks that JSON before anything moves.</p>
-  <p>Three model seats run in a fixed order. The analyst writes a memo on whether a stock will beat or trail its benchmark. The risk officer argues against it and can veto it. The committee chair decides whether it&rsquo;s worth publishing. Then I approve or discard it, and a script commits it to a public ledger where any edit would show. It&rsquo;s paper money only: no position sizing and no &ldquo;buy at&rdquo; prices.</p>
-  <p>It isn&rsquo;t running yet, on purpose. What you can see today is the design, the test plan and a preview on sample data. The desk waits until I&rsquo;ve cleared a set of gates I set for it.</p>
-</div>
-
-<section class="blk" aria-labelledby="h-c">
-  <h2 id="h-c" class="kicker">What the desk commits to</h2>
-  <ol class="commit">
-    <li><b>Nine roles, three seats.</b> Three models hold a seat: one drafts, one challenges, one decides. Five more roles sit on the bench as scripts. The ninth role, portfolio manager, is a person: me.</li>
-    <li><b>No call publishes without my signature.</b> The models never publish.</li>
-    <li><b>Losses stay at full size.</b> No edge is claimed until 100 closed calls and 6 months, whichever comes later. Progress is on <a href="record.html">the record</a>.</li>
-  </ol>
+<section class="blk sc-seats" id="path" aria-labelledby="h-path" data-seats><span id="one-call" class="old-anchor"></span><span id="h-c" class="old-anchor"></span>
+  <h2 id="h-path">One call, start to finish</h2>
+  <div class="sc-tabs" role="tablist" aria-label="One call, in the order it moves"><button type="button" role="tab" id="t-scripts" aria-controls="scripts" aria-selected="true" tabindex="0" data-k="scripts">Scripts</button><button type="button" role="tab" id="t-m1" aria-controls="m1" aria-selected="false" tabindex="-1" data-k="m1"><small>1</small>Analyst</button><button type="button" role="tab" id="t-m2" aria-controls="m2" aria-selected="false" tabindex="-1" data-k="m2"><small>2</small>Risk officer</button><button type="button" role="tab" id="t-m3" aria-controls="m3" aria-selected="false" tabindex="-1" data-k="m3"><small>3</small>Chair</button><button type="button" role="tab" id="t-pm" aria-controls="pm" aria-selected="false" tabindex="-1" data-k="pm"><small>4</small>Sidd</button><button type="button" role="tab" id="t-publish" aria-controls="publish" aria-selected="false" tabindex="-1" data-k="publish"><small>5</small>The record</button><button type="button" role="tab" id="t-bench" aria-controls="bench" aria-selected="false" tabindex="-1" data-k="bench">The bench</button></div>
+  <div class="sc-grid">
+    <div class="sc-fig"><div class="sc-stage" aria-hidden="true"><div class="sc-floor"></div><span class="sc-lab"></span></div>
+    <p class="sc-legend">Blue face plates: the three model seats. Grey: the bench. Sidd is the one person.</p></div>
+    <div class="sc-panels">
+    <article class="sc" id="scripts" role="tabpanel" aria-labelledby="t-scripts" tabindex="0">
+      <span class="sc-badge b-script"><i></i>Script · no model</span>
+      <h3>Scripts pull and screen</h3>
+      <p class="sc-job">Fetch the data and pick the week&rsquo;s candidates.</p>
+      <dl class="sc-facts"><dt>Reads</dt><dd>Filings, macro series and end-of-day prices, after restricted names are dropped. Trading days, 5:30 PM ET.</dd><dt>Writes</dt><dd>Up to 2 candidates a week, screened on Saturday at 10:00 AM ET against fixed thresholds.</dd><dt>Stops if</dt><dd>The restricted list can&rsquo;t be read, or nothing passes. A week with no candidate is logged as quiet.</dd></dl>
+      <details class="sc-spec"><summary>Full spec</summary><div class="tw" role="region" aria-labelledby="cap-m" tabindex="0">
+  <table>
+    <caption id="cap-m">The scripts before a model is called</caption>
+    <thead><tr><th scope="col">Script</th><th scope="col">Does</th><th scope="col">When</th></tr></thead>
+    <tbody>
+      <tr><th scope="row" class="mono">Data pull</th><td>Drops restricted names from the universe first. Pulls new company filings, government macro series and end-of-day prices. Flags anomalies by fixed thresholds, and flags carry no prose. If the restricted list can&rsquo;t be read, no seat sees anything that run.</td><td>Trading days, 5:30 PM ET</td></tr>
+      <tr><th scope="row" class="mono">Saturday screen</th><td>Checks stored facts against fixed ratio thresholds and an intrinsic-value range it computes for each name. Picks up to 2 candidates not already open on the ledger and not covered in the last 4 weeks, each with an input file for the analyst. If nothing passes, the week is logged as quiet and no call is made.</td><td>Saturday, 10:00 AM ET</td></tr>
+    </tbody>
+  </table>
+  </div></details>
+      <button type="button" class="btn sc-next" data-next="m1">Next: Analyst &rarr;</button>
+    </article>
+    <article class="sc" id="m1" role="tabpanel" aria-labelledby="t-m1" tabindex="0">
+      <span class="sc-badge b-model"><i></i>AI model · Sonnet 5.5</span>
+      <h3><span class="sc-no">1</span>The analyst</h3>
+      <p class="sc-job">Writes the case for a call.</p>
+      <dl class="sc-facts"><dt>Reads</dt><dd>Facts and quoted filing excerpts that a script prepared. Never a price.</dd><dt>Writes</dt><dd>A memo: the thesis, what the market has wrong, a 3-month horizon, three risks and what would break the thesis.</dd><dt>Stops if</dt><dd>The memo fails a check, or can&rsquo;t say what the market has wrong.</dd></dl>
+      <p class="sc-wk"><b>Sample week</b>Sat 10:04 AM ET · drafted the SMPL memo</p>
+      <details class="sc-spec"><summary>Full spec</summary><dl>
+          <dt>Model</dt><dd>Sonnet 5.5</dd>
+          <dt>Runs</dt><dd>The weekly memo (Saturday, 10:00 AM ET), anomaly notes (up to 3 a week), a deep dive when I pick &ldquo;dig in&rdquo; on a note, a memo on a ticker I name, and the monthly thesis check (the 1st, 10:00 AM ET).</dd>
+          <dt>Reads</dt><dd>Facts from filings built by script, ratio colors (green, yellow, red), the script&rsquo;s intrinsic-value range and a valuation bucket in place of a price, filing excerpts passed in as quoted data, and the prior memo and pillar states if the name has a history.</dd>
+          <dt>Writes</dt><dd>A memo: a thesis of up to 120 words, what the market has wrong, a value range inside the script&rsquo;s, a 3-month horizon, exactly three risks, pillars that must stay true and what would break each, bull, base and bear weights that sum to 100, unknowns, and claims labeled sourced, estimated or unverified. Anomaly notes are 60 words at most, and &ldquo;no cause found&rdquo; is a valid answer.</dd>
+          <dt>Refuses</dt><dd>It refuses to write sizing, entry zones, price targets or &ldquo;buy at&rdquo; language, to name a ticker that isn&rsquo;t in its input, to follow instructions hidden in filing text, or to make a claim without a label.</dd>
+          <dt>Test plan</dt><dd>Will be tested on 115 cases across its five routines, each run 3 times, plus at least 2 planted instructions and 2 detector misses per routine.</dd>
+          <dt>Can&rsquo;t</dt><dd>It can&rsquo;t publish, use tools, see a price or start its own deep dive. It proposes a change to a thesis&rsquo;s state and a script makes it, and it never knows whether a memo was requested.</dd>
+          <dt>Will cover</dt><dd>The market-sentinel, value-scout and thesis-tracker jobs while those roles are on the bench.</dd>
+        </dl></details>
+      <button type="button" class="btn sc-next" data-next="m2">Next: Risk officer &rarr;</button>
+    </article>
+    <article class="sc" id="m2" role="tabpanel" aria-labelledby="t-m2" tabindex="0">
+      <span class="sc-badge b-model"><i></i>AI model · Sonnet 5.5</span>
+      <h3><span class="sc-no">2</span>The risk officer</h3>
+      <p class="sc-job">Argues against every memo and can veto it.</p>
+      <dl class="sc-facts"><dt>Reads</dt><dd>The memo and numbers a script pulled from the filings. Not the filings themselves.</dd><dt>Writes</dt><dd>Pass or veto, with a written dissent even on a pass.</dd><dt>Stops if</dt><dd>It vetoes, or a script&rsquo;s red-flag rule does. The idea&rsquo;s ticker is never published.</dd></dl>
+      <p class="sc-wk"><b>Sample week</b>Thu · vetoed an idea<br>Sat 10:21 AM ET · passed SMPL with a dissent</p>
+      <details class="sc-spec"><summary>Full spec</summary><dl>
+          <dt>Model</dt><dd>Sonnet 5.5, a separate seat. Whether it should run on Opus is open, and the planted-flaw tests will inform it.</dd>
+          <dt>Runs</dt><dd>Whenever the analyst drafts a memo. A script hands it over, with no step from me.</dd>
+          <dt>Reads</dt><dd>The memo, numbers a script pulled from filings, script flags and the scoring rubric, but not the raw filing text, so the untrusted surface doesn&rsquo;t double.</dd>
+          <dt>Writes</dt><dd>A pass or a veto, a dissent that argues against the call (required even on a pass), scores from 1 to 5 on the thesis, loss risk and direction, and a check for hard red flags such as accounting problems or dilution to survive.</dd>
+          <dt>Then a script</dt><dd>Forces a veto if any hard red flag fires, scores the valuation gap itself from the price, and decides which direction the call is eligible for. A script can turn a pass into a veto, never a veto into a pass.</dd>
+          <dt>Refuses</dt><dd>It refuses to approve its own memo or read raw filings, and a dissent under 40 characters, or one that copies the thesis, is withheld as empty.</dd>
+          <dt>Test plan</dt><dd>Will be tested on 30 cases, each run 3 times: a memo with a planted flaw that must draw a veto 3 of 3 times, a clean memo that still needs a real dissent, hidden sizing language, and a value range outside the script&rsquo;s.</dd>
+          <dt>Can&rsquo;t</dt><dd>It can&rsquo;t publish, approve anything, see a price or score valuation.</dd>
+        </dl></details>
+      <button type="button" class="btn sc-next" data-next="m3">Next: Chair &rarr;</button>
+    </article>
+    <article class="sc" id="m3" role="tabpanel" aria-labelledby="t-m3" tabindex="0">
+      <span class="sc-badge b-model"><i></i>AI model · Opus 5.5</span>
+      <h3><span class="sc-no">3</span>The chair</h3>
+      <p class="sc-job">Decides whether a call that survived risk is worth publishing.</p>
+      <dl class="sc-facts"><dt>Reads</dt><dd>The memo with its dissent, the script&rsquo;s eligibility check and the calls already open.</dd><dt>Writes</dt><dd>Publish or not, outperform or underperform, standard or high confidence, and an answer to the dissent.</dd><dt>Stops if</dt><dd>It declines. It can decline any call, but it can&rsquo;t push one past the script&rsquo;s check.</dd><dt>Limit</dt><dd>Up to 2 decisions a week.</dd></dl>
+      <p class="sc-wk"><b>Sample week</b>Sat 10:40 AM ET · publish SMPL, underperform, 3 months</p>
+      <details class="sc-spec"><summary>Full spec</summary><dl>
+          <dt>Model</dt><dd>Opus 5.5, the only Opus seat.</dd>
+          <dt>Runs</dt><dd>When the risk officer passes a memo. Up to 2 decisions a week.</dd>
+          <dt>Reads</dt><dd>The memo with the dissent attached, the script&rsquo;s eligibility check, and the calls already open on the public ledger. Never a memo without the dissent: the script won&rsquo;t build that input.</dd>
+          <dt>Writes</dt><dd>Publish or not. Outperform or underperform, with the same weight either way. A standard or high confidence bucket, in either direction. A written answer to the dissent&rsquo;s strongest point, marked accepted, rebutted or partly accepted, and a reason code such as no edge or dissent stands. It doesn&rsquo;t write a horizon: every call runs 3 months, and only I can move one to 6 or 12 when I sign.</dd>
+          <dt>Then a script</dt><dd>Rejects any call past the check: it can decline, never upgrade. It caps the confidence bucket, requires the value range to match the memo and the horizon to be the fixed 3 months, and allows one open call per company.</dd>
+          <dt>Refuses</dt><dd>It refuses to decide without the dissent attached, and it can&rsquo;t size anything because its output has no field for sizing, a horizon or publishing.</dd>
+          <dt>Test plan</dt><dd>Will be tested on 30 cases, each run 3 times, including a risk veto it can&rsquo;t override quietly, split benchmarks, and a conceded point that does or doesn&rsquo;t break a pillar. With the risk veto forced off, it must still decline the planted-flaw memo in at least 2 of 3 runs.</dd>
+          <dt>Can&rsquo;t</dt><dd>It can&rsquo;t publish, re-estimate the value range, see a price or see my private holdings.</dd>
+        </dl></details>
+      <button type="button" class="btn sc-next" data-next="pm">Next: Sidd &rarr;</button>
+    </article>
+    <article class="sc" id="pm" role="tabpanel" aria-labelledby="t-pm" tabindex="0">
+      <span class="sc-badge b-human"><i></i>Person · signs</span>
+      <h3><span class="sc-no">4</span>Sidd, portfolio manager</h3>
+      <p class="sc-job">Signs each call, or doesn&rsquo;t.</p>
+      <dl class="sc-facts"><dt>Reads</dt><dd>The call and its reasoning exactly as they would publish.</dd><dt>Can</dt><dd>Approve, discard, move the horizon to 6 or 12 months, or lower the confidence.</dd><dt>Can&rsquo;t</dt><dd>Change the direction, raise the confidence, relax a check or size a position.</dd><dt>Stops if</dt><dd>I discard it, or don&rsquo;t sign within 72 hours.</dd><dt>Time</dt><dd>About 37 minutes a week, my estimate.</dd></dl>
+      <p class="sc-wk"><b>Sample week</b>Sun 6:14 PM ET · signed No. 6</p>
+      <details class="sc-spec"><summary>Full spec</summary><dl>
+        <dt>Signs</dt><dd>Each call the chair wants to publish, once. I&rsquo;m asked by email, with a summary and a one-tap link, and the signature of record is a GitHub approving review on a private approvals repo. A reminder comes at 48 hours. I see the call and its reasoning file exactly as the script would commit them, and my signature covers both.</dd>
+        <dt>Choices</dt><dd>I can approve, discard, move the horizon from 3 months to 6 or 12, or lower the confidence from high to standard, but never raise it.</dd>
+        <dt>Also decides</dt><dd>Whether to dig in on an anomaly note, whether to accept a proposed upgrade to a thesis pillar (upgrades are the direction that flatters the desk), early closes after the chair has weighed in, and which tickers to request, one bare ticker at a time.</dd>
+        <dt>Time</dt><dd>The weekly figure in the summary above is an estimate and hasn&rsquo;t been measured yet.</dd>
+        <dt>Can&rsquo;t</dt><dd>Change a call&rsquo;s direction, relax a check, or size a position. Every call is the same $10,000 on paper. I can&rsquo;t pass a thesis to the seats through a request, and my own holdings stay in a private tool that never publishes.</dd>
+        <dt>Doesn&rsquo;t sign</dt><dd>I don&rsquo;t sign scores or horizon closes, which run by rule.</dd>
+      </dl><p class="small" data-gap="3">The portfolio manager is a person. An AI portfolio manager is off the table.</p></details>
+      <button type="button" class="btn sc-next" data-next="publish">Next: The record &rarr;</button>
+    </article>
+    <article class="sc" id="publish" role="tabpanel" aria-labelledby="t-publish" tabindex="0">
+      <span class="sc-badge b-script"><i></i>Script · no model</span>
+      <h3><span class="sc-no s">5</span>Scripts publish and score</h3>
+      <p class="sc-job">Publish the signed call, then score it. No model touches a published call.</p>
+      <dl class="sc-facts"><dt>Reads</dt><dd>The approved fields only, after re-checking the restricted list.</dd><dt>Writes</dt><dd>One ledger entry with its reasoning and events, in one timestamped commit.</dd><dt>Then</dt><dd>Scores each call against SPY and its sector fund on trading days at 10:00 PM ET, and closes it at its horizon by rule.</dd><dt>Stops if</dt><dd>The ticker is restricted, outside the universe or already published.</dd></dl>
+      <p class="sc-wk"><b>Sample week</b>Sun 6:15 PM ET · published No. 6<br>Mon 10:00 PM ET · closed No. 3 as a loss</p>
+      <details class="sc-spec"><summary>Full spec</summary><div class="tw" role="region" aria-labelledby="cap-p" tabindex="0">
+  <table>
+    <caption id="cap-p">The scripts after I sign</caption>
+    <thead><tr><th scope="col">Script</th><th scope="col">Does</th><th scope="col">When</th></tr></thead>
+    <tbody>
+      <tr><th scope="row" class="mono">Publish</th><td>Commits a signed call, its capped reasoning file and its events in one commit with an outside timestamp anchor. Re-checks the universe and the restricted list. Sends a restricted, out-of-universe or already published ticker back to me.</td><td>After I sign</td></tr>
+      <tr><th scope="row" class="mono">Scorer</th><td>Scores every call against SPY and its sector fund. Closes calls at their horizon.</td><td>Trading days, 10:00 PM ET</td></tr>
+      <tr><th scope="row" class="mono">Digest</th><td>Counts, calls against the cap and how many approvals are open, never the approvals themselves. Releases the week&rsquo;s ticker-less events.</td><td>Sunday, 6:00 PM ET</td></tr>
+    </tbody>
+  </table>
+  </div><p class="small" data-gap="3">A monthly analyst check can propose an early close, but that goes back through the chair and me, and lands as a new close entry. The original call never changes. Their output lands on <a href="record.html">the record</a>.</p></details>
+      <button type="button" class="btn sc-next" data-next="bench">Next: The bench &rarr;</button>
+    </article>
+    <article class="sc" id="bench" role="tabpanel" aria-labelledby="t-bench" tabindex="0">
+      <span class="sc-badge b-bench"><i></i>No seat yet</span>
+      <h3>The bench</h3>
+      <p class="sc-job">Five more roles wait here. Scripts and the analyst cover their work until one earns a seat.</p>
+      <dl class="sc-facts"><dt>Roles</dt><dd>Macro-economist, market-sentinel, value-scout, thesis-tracker, report-writer.</dd><dt>To earn a seat</dt><dd>Two clean runs, its own tests and a written decision. The ceiling is five seats.</dd></dl>
+      <details class="sc-spec"><summary>Full spec</summary><div class="tw" role="region" aria-labelledby="cap-o" tabindex="0">
+  <table>
+    <caption id="cap-o">The five bench roles</caption>
+    <thead><tr><th scope="col">Role</th><th scope="col">Covered today by</th><th scope="col">What a hire would add</th><th scope="col">Decision record</th></tr></thead>
+    <tbody>
+      <tr><th scope="row" class="mono">macro-economist<span class="sub">next likely</span></th><td>Macro data pulled by script, not interpreted</td><td>A macro read independent of the analyst&rsquo;s thesis, once macro releases earn their own routine</td><td>Yes. A fourth seat lifts the current cap</td></tr>
+      <tr><th scope="row" class="mono">market-sentinel</th><td>A script threshold, plus an analyst note</td><td>Only if anomaly triage starts needing judgment independent of the memo author</td><td>Yes</td></tr>
+      <tr><th scope="row" class="mono">value-scout</th><td>A script screen, plus an analyst memo</td><td>Only if screening needs judgment rather than rules</td><td>Yes</td></tr>
+      <tr><th scope="row" class="mono">thesis-tracker</th><td>The analyst&rsquo;s monthly check, plus a script that tracks each pillar&rsquo;s state</td><td>Only if thesis upkeep needs to be independent of the original author</td><td>Yes</td></tr>
+      <tr><th scope="row" class="mono">report-writer</th><td>The digest script</td><td>Unlikely ever: the digest is deterministic</td><td>Yes</td></tr>
+    </tbody>
+  </table>
+  </div><p class="small" data-gap="3">Past five seats, coordination would cost more than the independence buys. A hire would show up as a dated <code>agent.hired</code> event.</p></details>
+    </article>
+    </div>
+  </div>
+  <p class="sc-note">The analyst and the risk officer run on the same model. Their independence comes from separate contexts and roles, and the planted-flaw tests will measure whether that is enough.</p>
 </section>
 
-<div class="prose">
-  <h2 id="workflows">Workflows before agents</h2>
-  <p>Every model step follows one pattern: <b>script, then one tool-less model call, then approval, then a script acts.</b></p>
-  <ol class="steps">
-    <li>A script fetches the data and builds the model&rsquo;s input as JSON. Filing text goes in as quoted data, never mixed into the instructions.</li>
-    <li>The model gets that input, no tools and one turn. It answers in JSON against a fixed schema.</li>
-    <li>A script validates the answer. If it fails a check, it&rsquo;s withheld and comes to me with the failed check named.</li>
-    <li>Only a script acts: it opens the next step, or, after my approval, publishes.</li>
-  </ol>
-  <p>I chose this over an open-ended agent loop for three reasons. Filing text can carry a hidden instruction, and here it never reaches anything that can act. Each routine has fixed inputs, so it can be tested case by case. And a model is bad at fixed arithmetic and at remembering a rule, so the arithmetic and the rules live in code.</p>
-  <p>Each seat runs as its own routine with its own work item, cap slot and final status. I rejected one script that chains all three calls: a failure halfway would leave no clean status, and the independence would be one process pretending to be three. An agent gets promoted only if a test fails because of the single-call shape. No test has run yet.</p>
-  <p>Every run ends in one of two states: done, or waiting for me with the reason in the first line. Never stuck. A cap hit, a timeout, bad JSON, a failed check and a crash all land on my desk the same way.</p>
-
-  <h2 id="one-call">One call, end to end</h2>
-  <p>Here is the path of one scheduled call, with who does each step, what it reads, what it writes and where it can stop. Station numbers match the tags on the homepage floor.</p>
-  <ol class="chain" aria-label="The path of one call">
-    <li><span class="stn none">script</span><div><b>The data pull</b><span>Trading days, 17:30 ET. No model.</span>
-      <dl class="rw">
-        <dt>Reads</dt><dd>New company filings, government macro series and end-of-day prices for the universe. The restricted list is applied first.</dd>
-        <dt>Writes</dt><dd>Stored filings and facts, plus anomaly flags set by fixed thresholds. Flags carry no prose.</dd>
-        <dt>Stops if</dt><dd>The restricted list can&rsquo;t be read. Then no seat sees anything that run.</dd>
-      </dl></div></li>
-    <li><span class="stn none">script</span><div><b>The Saturday screen</b><span>Saturday, 10:00 ET. No model.</span>
-      <dl class="rw">
-        <dt>Reads</dt><dd>Stored facts, checked against fixed ratio thresholds and an intrinsic-value range the script computes for each name.</dd>
-        <dt>Writes</dt><dd>Up to 2 candidates not already open on the ledger and not covered in the last 4 weeks, each with an input file for the analyst.</dd>
-        <dt>Stops if</dt><dd>Nothing passes. That&rsquo;s a quiet week: no call, and the week is logged as quiet.</dd>
-      </dl></div></li>
-    <li><span class="stn">1</span><div><b>The analyst drafts</b><span>One call per candidate, on Sonnet 5.5.</span>
-      <dl class="rw">
-        <dt>Reads</dt><dd>Script-built facts, ratio colors, the value range, a valuation bucket instead of a price, filing excerpts as quoted data, and the prior memo if the name has one.</dd>
-        <dt>Writes</dt><dd>A memo: a thesis of up to 120 words, what the market has wrong, a value range inside the script&rsquo;s, a 3-month horizon, three risks, pillars with what would break each, and labeled claims.</dd>
-        <dt>Stops if</dt><dd>The memo fails validation, or it can&rsquo;t say what the market has wrong. That makes it ineligible.</dd>
-      </dl></div></li>
-    <li><span class="stn">2</span><div><b>The risk officer argues</b><span>One call, on Sonnet 5.5. A script hands the memo over; I&rsquo;m not in this step.</span>
-      <dl class="rw">
-        <dt>Reads</dt><dd>The memo and script-extracted numbers. Not the raw filings.</dd>
-        <dt>Writes</dt><dd>Pass or veto, a dissent that is required even on a pass, and rubric scores. A script then applies hard overrides and a scoring formula, and decides which direction, if any, the call is eligible for.</dd>
-        <dt>Stops if</dt><dd>It vetoes, or a script override does. The idea goes to the No tray, and its ticker is never published.</dd>
-      </dl></div></li>
-    <li><span class="stn">3</span><div><b>The committee chair decides</b><span>One call, on Opus 5.5. Up to two decisions a week.</span>
-      <dl class="rw">
-        <dt>Reads</dt><dd>The memo, the dissent, the script&rsquo;s eligibility gate and the calls already open on the public ledger.</dd>
-        <dt>Writes</dt><dd>Publish or not, outperform or underperform, the horizon (3 months by default, 6 or 12 rarely), a standard or high confidence bucket, an answer to the dissent and a reason code.</dd>
-        <dt>Stops if</dt><dd>It declines. It can decline any call but can&rsquo;t push one past the script&rsquo;s gate, and a script caps its confidence.</dd>
-      </dl></div></li>
-    <li><span class="stn">4</span><div><b>I sign it, or don&rsquo;t</b><span>Once per call, from its own approval email. It expires after 72 hours.</span>
-      <dl class="rw">
-        <dt>Reads</dt><dd>The row and its reasoning file exactly as the script would commit them.</dd>
-        <dt>Writes</dt><dd>Approve, discard, move the horizon to another of its fixed options, or lower the confidence from high to standard, never up. I can&rsquo;t change the direction or relax a gate.</dd>
-        <dt>Stops if</dt><dd>I discard it, or never sign. Without my signature nothing moves.</dd>
-      </dl></div></li>
-    <li><span class="stn">5</span><div><b>A script publishes to the record</b><span>Right after I sign. No model.</span>
-      <dl class="rw">
-        <dt>Reads</dt><dd>The approved fields only. It re-checks the universe and the restricted list.</dd>
-        <dt>Writes</dt><dd>One ledger row, its capped reasoning file and the chain&rsquo;s events, in one commit with an outside timestamp anchor.</dd>
-        <dt>Stops if</dt><dd>The ticker is restricted, outside the universe, or already published. It refuses and sends it back to me.</dd>
-      </dl></div></li>
-  </ol>
-  <p>After that, a scorer script runs on trading days at 22:00 ET. It scores each call against SPY and its sector fund and closes it at its horizon by rule. No model touches a published row. A monthly analyst check can propose an early close, but that goes back through the chair and me, and lands as a new close row. The original row never changes.</p>
-  <p>Two other ways into the chain: the analyst can write a short note on a flagged anomaly, and if I pick &ldquo;dig in&rdquo;, it writes a full memo that enters the same path at the risk officer. Or I can ask for a name directly, below.</p>
-
-  <h2 id="schedule">When things run</h2>
-  <p>Times are the planned real cadence. Before anything goes public, each seat runs faster, mostly daily, against a private proving ledger that emits no public events.</p>
-  <div class="tw" role="region" aria-labelledby="cap-s" tabindex="0">
-  <table>
-    <caption id="cap-s">Routines, who runs them, and when</caption>
-    <thead><tr><th scope="col">Routine</th><th scope="col">Run by</th><th scope="col">When</th><th scope="col">Limit</th></tr></thead>
-    <tbody>
-      <tr><th scope="row">Data pull</th><td>Script</td><td>Trading days, 17:30 ET</td><td>No model calls</td></tr>
-      <tr><th scope="row">Anomaly note</th><td>M1 analyst</td><td>When the pull flags a move</td><td>3 a week, largest first. The rest are listed in the digest, unexplained</td></tr>
-      <tr><th scope="row">Weekly memo</th><td>Script screen, then M1</td><td>Saturday, 10:00 ET</td><td>Up to 2 candidates</td></tr>
-      <tr><th scope="row">Deep dive</th><td>M1 analyst</td><td>When I pick &ldquo;dig in&rdquo; on a note</td><td>Inside the daily cap</td></tr>
-      <tr><th scope="row">On request</th><td>M1 analyst</td><td>When I name a ticker</td><td>2 a week</td></tr>
-      <tr><th scope="row">Risk review</th><td>M2 risk officer</td><td>When a memo is drafted</td><td>One call per memo</td></tr>
-      <tr><th scope="row">Committee chair</th><td>M3 chair</td><td>When the risk officer passes</td><td>Up to two a week</td></tr>
-      <tr><th scope="row">Thesis check</th><td>M1 analyst</td><td>1st of the month, 10:00 ET</td><td>Up to 8 open calls a run</td></tr>
-      <tr><th scope="row">Publish</th><td>Script</td><td>After I sign</td><td>No model calls</td></tr>
-      <tr><th scope="row">Scorer</th><td>Script</td><td>Trading days, 22:00 ET</td><td>No model calls</td></tr>
-      <tr><th scope="row">Digest</th><td>Script</td><td>Sunday, 18:00 ET</td><td>No model calls</td></tr>
+<section class="blk txt" id="stop" aria-labelledby="h-stop">
+  <h2 id="h-stop">Who can stop a call</h2>
+  <p>The writer, the checker and the decider are separate, and none of them can publish.</p>
+  <div class="tw" role="region" aria-labelledby="cap-stop" tabindex="0">
+  <table class="sc-matrix" role="table">
+    <caption id="cap-stop" class="sr">What each part of the desk can and can&rsquo;t do</caption>
+    <thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader"><span class="sr">Ability</span></th><th scope="col" role="columnheader">Analyst</th><th scope="col" role="columnheader">Risk officer</th><th scope="col" role="columnheader">Chair</th><th scope="col" role="columnheader">Sidd</th><th scope="col" role="columnheader">Scripts</th></tr></thead>
+    <tbody role="rowgroup">
+      <tr role="row"><th scope="row" role="rowheader">Can stop a call</th><td role="cell" data-seat="Analyst" class="c-no">No<small>it can only fail a check</small></td><td role="cell" data-seat="Risk officer" class="c-yes">Yes<small>by veto</small></td><td role="cell" data-seat="Chair" class="c-yes">Yes<small>by declining</small></td><td role="cell" data-seat="Sidd" class="c-yes">Yes<small>by not signing</small></td><td role="cell" data-seat="Scripts" class="c-yes">Yes<small>by a failed check or the restricted list</small></td></tr>
+      <tr role="row"><th scope="row" role="rowheader">Can publish</th><td role="cell" data-seat="Analyst" class="c-no">No</td><td role="cell" data-seat="Risk officer" class="c-no">No</td><td role="cell" data-seat="Chair" class="c-no">No</td><td role="cell" data-seat="Sidd" class="c-no">No<small>he signs; a script publishes</small></td><td role="cell" data-seat="Scripts" class="c-yes">Yes<small>only after the signature</small></td></tr>
+      <tr role="row"><th scope="row" role="rowheader">Sees a price</th><td role="cell" data-seat="Analyst" class="c-no">No</td><td role="cell" data-seat="Risk officer" class="c-no">No</td><td role="cell" data-seat="Chair" class="c-no">No</td><td role="cell" data-seat="Sidd" class="c-yes">Yes</td><td role="cell" data-seat="Scripts" class="c-yes">Yes<small>in the screen and the scorer</small></td></tr>
+      <tr role="row"><th scope="row" role="rowheader">Holds the write key</th><td role="cell" data-seat="Analyst" class="c-no">No</td><td role="cell" data-seat="Risk officer" class="c-no">No</td><td role="cell" data-seat="Chair" class="c-no">No</td><td role="cell" data-seat="Sidd" class="c-no">No</td><td role="cell" data-seat="Scripts" class="c-yes">Yes<small>the publish script only</small></td></tr>
+      <tr role="row"><th scope="row" role="rowheader">Uses tools</th><td role="cell" data-seat="Analyst" class="c-no">No</td><td role="cell" data-seat="Risk officer" class="c-no">No</td><td role="cell" data-seat="Chair" class="c-no">No</td><td role="cell" data-seat="Sidd" class="c-no">n/a</td><td role="cell" data-seat="Scripts" class="c-yes">Yes</td></tr>
     </tbody>
   </table>
   </div>
-  <p data-gap="3">Every script that can call a model carries a daily model-call cap, 20 calls per day by default. Each call takes a slot before it runs, and a call that fails still counts. Anomaly notes get their own small lane, so a busy news week can&rsquo;t starve the decision chain. Over the cap, no call is made and the run comes to me listing what didn&rsquo;t run. The Sunday digest prints calls against the cap.</p>
-  <p>Each unit of work has one tracked item with a fixed name, such as the week plus the ticker. A retry or a re-fired routine finds that item and never spends a second slot on the same work.</p>
-  <p>All of these numbers are untested starting values. Proving will tune them.</p>
+</section>
 
-  <h2 id="request">Asking for a specific name</h2>
-  <p>I can ask the desk to look at one ticker in a private channel. The request is a ticker and nothing else. The script rejects anything more, so I can&rsquo;t hand over a thesis, a direction or a reason, and the chair can&rsquo;t anchor on the boss.</p>
-  <ul>
-    <li><b>Same gates.</b> The name must be in that night&rsquo;s universe and off the restricted list. If not, no call is made and the run comes back to me with the failed check named. The publish script checks both again.</li>
-    <li><b>A conflict check.</b> A name that falls inside the publication window for my own private holdings is held, not called. I confirm privately that it covers my own obligations before the desk goes public.</li>
-    <li><b>No shortcut.</b> The memo goes through the risk officer, the chair and my signature like any other. A veto ends it the same way.</li>
-    <li><b>The seats never know.</b> No seat&rsquo;s input says a memo was requested.</li>
-    <li><b>Marked on the record.</b> The publish script sets an <code>origin</code> field on every row: <code>schedule</code> or <code>request</code>. No seat sets it. Each request also logs a ticker-less <code>request.made</code> event in the Sunday batch, so you can count my requests against the calls they produced and split the record by origin.</li>
-  </ul>
-  <p>Requests are capped at 2 a week, and a second request for the same name in the same week spends nothing.</p>
+<section class="blk txt" id="why" aria-labelledby="h-why"><span id="workflows" class="old-anchor"></span>
+  <h2 id="h-why">Why fixed steps, and no agent</h2>
+  <p>I chose fixed steps over an open-ended agent loop for three reasons. Filing text can carry a hidden instruction, and here it never reaches anything that can act. Each step has fixed inputs, so it can be tested case by case. And models are bad at arithmetic and at remembering rules, so both live in code.</p>
+  <p>Each seat runs as its own job. One script chaining all three calls would be one process pretending to be three, and a failure halfway would leave no clean status. Every run ends done, or waiting for me with the reason in the first line. An agent replaces a step only if a test fails because of the single-call shape.</p>
+</section>
 
-  <h2 id="guardrails">Guardrails</h2>
-  <h3>The part that reads filings can&rsquo;t act</h3>
-  <p>The rule I design against: no actor may hold all three of untrusted input, a secret and the ability to act outside the system. The three seats read text derived from filings, but they hold no tools, no secrets and no way to write anywhere except a draft. The scripts that publish hold the write credential, but they see only validated schema fields.</p>
-  <p>That only holds if the seats can&rsquo;t reach the publish credential. The plan runs the publisher as a separate operating-system user whose key the seats&rsquo; user can&rsquo;t read. I haven&rsquo;t tested that on a real machine yet, and I won&rsquo;t call it proven until I have.</p>
+<section class="blk txt" id="guardrails" aria-labelledby="h-gr">
+  <h2 id="h-gr">Guardrails</h2>
+  <div class="acc">
+    <details name="guardrails"><summary>The part that reads filings can&rsquo;t act.</summary>
+      <p>The rule I design against: nothing may hold all three of untrusted input, a secret and the ability to act outside the system. The seats read text derived from filings, but they have no tools, no secrets and nowhere to write except a draft. The publish script holds the write key, but it sees only validated fields. The plan runs it as a separate operating-system user whose key the seats&rsquo; user can&rsquo;t read. I haven&rsquo;t tested that on a real machine, and I won&rsquo;t call it proven until I have.</p>
+    </details>
+    <details name="guardrails"><summary>A hidden instruction has five checks to get past.</summary>
+      <p>Filing text enters a model&rsquo;s input only as quoted data. A script scans it for instruction-like patterns before each call, and the model reports its own flag; either one marks the draft. Behind those, the schema rejects any field it doesn&rsquo;t expect, the risk officer argues against the memo, and I read what would publish. A call publishes only if every seat and the scan report no injection.</p>
+    </details>
+    <details name="guardrails"><summary>Models answer in a fixed format, and a script checks every number.</summary>
+      <p>Every answer has to parse against its JSON schema, and unknown fields are rejected. A script checks that each ticker and number appears in the input or is labeled an estimate with a method. Every claim is labeled sourced, estimated or unverified. A deny list blocks sizing, entry, stop, target and holdings language, and the schemas have no fields for any of it. The seats never see a price, only buckets a script computes.</p>
+    </details>
+    <details name="guardrails"><summary>A stopped idea stays private. A published call shows its reasoning.</summary>
+      <p>Published, for a call I signed: ticker, outperform or underperform, horizon end, confidence, value range, benchmarks, the model behind each seat, a hash of the exact prompts, the package version, my approval id, the events that led to it, and whether it came from the schedule or my request. A separate reasoning file holds the thesis, pillars, falsifiers and the risk officer&rsquo;s dissent, each length-capped and checked again before release.</p>
+      <p>Never published: the ticker of a vetoed or dropped idea, the memos and dissents behind it, full memos for any call, the prompts themselves (only their hash), position sizes, entry zones, stops, target prices, holdings, the restricted list, and anything from a proving run. Scores stay counts-only until the price feed&rsquo;s terms allow returns.</p>
+    </details>
+  </div>
+</section>
 
-  <h3>Prompt injection</h3>
-  <p>Filing text enters a model&rsquo;s input only as quoted data blocks. Before each call, a script scans that text for instruction-like patterns, and the model reports its own flag. A draft is treated as flagged if either one fires. When an injection gets past both, the layers behind them still hold: the schema rejects any field it doesn&rsquo;t expect, the risk officer argues against the memo, and I read what would publish. A published call needs every seat and the script scan to report no injection.</p>
-
-  <h3>Schema-only outputs</h3>
-  <p>Every model answer has to parse against its JSON schema, and unknown fields are rejected. A script then checks that every ticker and every number in the answer appears in the input or is labeled as an estimate with a method. Every claim carries a sourced, estimated or unverified label. A fixed deny list blocks sizing, entry, stop, target and holdings language, and the schemas have no fields for any of it. The seats never see a price. Price-based quantities reach them only as script-computed buckets.</p>
-
-  <h3>What&rsquo;s published, and what never is</h3>
-  <p><b>Published, for a call I signed:</b> the row (ticker, outperform or underperform, horizon end, confidence bucket, value range, benchmarks, the model behind each seat, a hash of the exact prompts, the package version, my approval id, the chain of events and the origin) and a separate reasoning file. The reasoning file holds the thesis, pillars, falsifiers and the risk officer&rsquo;s dissent, each length-capped and checked again before release. Until the desk runs, reasoning appears only on labeled sample data.</p>
-  <p><b>Never published:</b> the ticker of a vetoed or dropped idea, the memos and dissent behind dropped chains, full memos for any chain, the prompts themselves (only their hash), position sizes, entry zones, stops, target prices, holdings, the restricted list, and anything from a proving run. Scores stay counts-only until the price feed&rsquo;s terms allow returns.</p>
-
-  <h2 id="events">The event feed behind the office</h2>
-  <p>The homepage office replays a public event feed called <code>events.v1</code>. The same scripts that write the ledger write it, under the same checks, and it&rsquo;s append-only. One JSON line per event:</p>
-  <pre class="jsonl">{"v":1,"id":"E-n","ts":"&lt;UTC time&gt;","type":"approval.stamped","actor":"sidd","role":null,"sha":"&lt;commit&gt;"}</pre>
-  <p data-gap="3">Ids run in sequence, <code>E-1</code>, <code>E-2</code> and on. The actor is a script, one of the three seats, or me. A published row lists the event ids that led to it, so you can walk the chain backwards.</p>
-  <ul>
-    <li><b>A published chain&rsquo;s events ship in the same commit as its row.</b> Memo drafted, risk passed, decision made, my stamp, row published. The replay is a literal replay.</li>
-    <li><b>Dropped chains stay ticker-less forever.</b> A veto, a no from the chair or my discard shows up only as <code>chain.dropped</code> with the stage it stopped at and a date, released in the Sunday batch.</li>
-    <li><b>No ticker before publication.</b> Showing that research is pending on a name would leak it.</li>
-    <li><b>Events never carry</b> model prose, filing text, my private data or anything about the restricted list.</li>
-  </ul>
-  <p>The rule for the office: every replay animation maps to one event type, and nothing replays without a published event behind it. A veto drops a card into the No tray. My signature lands as a stamp. The only other motion is set dressing: typing hands and turning heads while the week plays, and the night sky in dark mode. Today it all plays a labeled sample week on made-up placeholder tickers.</p>
-  <p>The three figures with blue face plates are the model seats: M1 the analyst, M2 the risk officer, M3 the committee chair. The grey, outlined figures are the bench. I&rsquo;m the only person drawn.</p>
-
-  <h2 id="tests">Test plan</h2>
-  <p>In a system like this, the test cases are the spec. If a behavior isn&rsquo;t in a case, I don&rsquo;t promise it. Each model routine gets 20 to 30 cases, and every case will run 3 times against the real model. None has run yet.</p>
-  <div class="tw" role="region" aria-labelledby="cap-t" tabindex="0">
-  <table>
-    <caption id="cap-t">Test cases per model routine</caption>
-    <thead><tr><th scope="col">Routine</th><th scope="col">Seat</th><th scope="col" class="n">Cases</th><th scope="col">Must include</th></tr></thead>
+<section class="blk txt" id="open" aria-labelledby="h-open"><span id="edge" class="old-anchor"></span>
+  <h2 id="h-open">Not proven yet</h2>
+  <p>If a behavior isn&rsquo;t in a test case, I don&rsquo;t promise it.</p>
+  <div class="tw" role="region" aria-labelledby="cap-bar" tabindex="0">
+  <table class="bars">
+    <caption id="cap-bar" class="sr">What has to pass before the desk runs</caption>
+    <thead><tr><th scope="col">Before the desk runs</th><th scope="col">Bar</th></tr></thead>
     <tbody>
-      <tr><th scope="row">Anomaly note</th><td>M1</td><td class="n">20</td><td>A move with no filing at all. A split mistaken for a move</td></tr>
-      <tr><th scope="row">Deep dive</th><td>M1</td><td class="n">20</td><td>A note that turns out to be noise, where the right answer is no memo</td></tr>
-      <tr><th scope="row">On request</th><td>M1</td><td class="n">20</td><td>A ticker outside the universe. A restricted ticker. A request that carries a direction</td></tr>
-      <tr><th scope="row">Weekly memo</th><td>M1</td><td class="n">30</td><td>Nothing passes the screen. An update that has to contradict the prior thesis</td></tr>
-      <tr><th scope="row">Risk review</th><td>M2</td><td class="n">30</td><td>A memo with a planted flaw. A clean memo that still needs a dissent. Hidden sizing language</td></tr>
-      <tr><th scope="row">Committee chair</th><td>M3</td><td class="n">30</td><td>A conceded point: publish if it breaks no pillar, decline if it does</td></tr>
-      <tr><th scope="row">Thesis check</th><td>M1</td><td class="n">25</td><td>One bad period that must not downgrade a pillar</td></tr>
+      <tr><td>175 test cases across seven model routines, each run 3 times against the real model</td><td>100% on the fixed checks and on &ldquo;nothing published without approval&rdquo;; at least 97% on quality</td></tr>
+      <tr><td>Planted instructions in every routine that reads filings</td><td>2 that must be flagged every time; 2 the detector is built to miss, which must never reach a published call</td></tr>
+      <tr><td>A memo with a planted flaw</td><td>A veto in 3 runs of 3. With the veto forced off, the chair declines in at least 2 of 3</td></tr>
+      <tr><td>A week where nothing clears</td><td>Zero calls published</td></tr>
     </tbody>
   </table>
   </div>
-  <ul data-gap="3">
-    <li><b>100% on the deterministic checks</b>, every case, every run: the output parses, every ticker and number is in the input, claims are labeled, the dissent isn&rsquo;t empty, and there&rsquo;s no sizing or entry language.</li>
-    <li><b>100% on &ldquo;nothing published without approval.&rdquo;</b></li>
-    <li><b>At least 97% on quality per pass</b>, over 3 passes. Any safety failure restarts all 3. A model judge grades tone only, never a must or must-not check.</li>
-    <li><b>Injection cases</b> in every routine that reads filings: at least 2 planted instructions, which the final draft must flag every time, and 2 the detector is built to miss, which must never reach a public row.</li>
-    <li><b>Desk-wide tests:</b> a planted-flaw memo must draw a veto in 3 of 3 runs, and with the veto forced off the chair must still decline in at least 2 of 3. A week where nothing clears must publish zero rows. Restricted tickers must be blocked at the pull and again at publish. Schema checks must reject any edit to an existing row, and the event feed must reject a ticker in any pre-publication event.</li>
-  </ul>
-  <p>The suite is 175 cases. Run three times each, that&rsquo;s 525 model calls per pass, and at least 1,575 across three passes for all three seats. Those run under their own cap, spread over days.</p>
+  <p data-gap="5">Still open:</p>
+  <ol class="open">
+    <li>Whether the publish key can be kept unreadable to the seats on a real machine.</li>
+    <li>Whether my signature, the length caps and the deny-pattern scan are enough once the publisher commits reasoning text.</li>
+    <li>Whether the risk officer needs Opus. The planted-flaw tests will show.</li>
+    <li>Whether 2 decisions a week is the right ceiling.</li>
+    <li>Every threshold, cap and time estimate on this page, until real runs measure them.</li>
+  </ol>
+  <p>If you&rsquo;d settle one of these differently, tell me: <a href="https://www.linkedin.com/in/iamsiddharthshah">Message me on LinkedIn</a>.</p>
+</section>
 
-  <h2 id="edge">No edge claimed until it&rsquo;s earned</h2>
-  <p>Every call is committed and timestamped before anyone can know how it turns out. Rows can be closed but never changed. I won&rsquo;t claim an edge until there are 100 closed calls and six months behind it, whichever comes later. The chair makes up to two decisions a week, and not every one publishes. Even at that top rate, 100 calls take about 50 weeks to publish, and the last one needs its full horizon to close. The record is a paper book anyone can recompute from the public ledger: $10,000 of fake money per call, measured against its benchmark.</p>
+<section class="blk txt" id="reference" aria-labelledby="h-ref">
+  <h2 id="h-ref">Reference</h2>
+  <div class="acc ref">
+    <details id="schedule"><summary>Schedule and limits</summary>
+      <p>Times are the planned real cadence. Before anything goes public, each seat runs faster, mostly daily, against a private proving ledger that emits no public events.</p>
+      <div class="tw" role="region" aria-labelledby="cap-s" tabindex="0">
+      <table>
+        <caption id="cap-s">Routines, who runs them, and when</caption>
+        <thead><tr><th scope="col">Routine</th><th scope="col">Run by</th><th scope="col">When</th><th scope="col">Limit</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Data pull</th><td>Script</td><td>Trading days, 5:30 PM ET</td><td>No model calls</td></tr>
+          <tr><th scope="row">Anomaly note</th><td>Analyst</td><td>When the pull flags a move</td><td>3 a week, largest first. The rest are listed in the digest, unexplained</td></tr>
+          <tr><th scope="row">Weekly memo</th><td>Script screen, then the analyst</td><td>Saturday, 10:00 AM ET</td><td>Up to 2 candidates</td></tr>
+          <tr><th scope="row">Deep dive</th><td>Analyst</td><td>When I pick &ldquo;dig in&rdquo; on a note</td><td>Inside the daily cap</td></tr>
+          <tr><th scope="row">On request</th><td>Analyst</td><td>When I name a ticker</td><td>2 a week</td></tr>
+          <tr><th scope="row">Risk review</th><td>Risk officer</td><td>When a memo is drafted</td><td>One call per memo</td></tr>
+          <tr><th scope="row">Chair decision</th><td>Chair</td><td>When the risk officer passes</td><td>Up to 2 a week</td></tr>
+          <tr><th scope="row">Thesis check</th><td>Analyst</td><td>1st of the month, 10:00 AM ET</td><td>Up to 8 open calls a run</td></tr>
+          <tr><th scope="row">Publish</th><td>Script</td><td>After I sign</td><td>No model calls</td></tr>
+          <tr><th scope="row">Scorer</th><td>Script</td><td>Trading days, 10:00 PM ET</td><td>No model calls</td></tr>
+          <tr><th scope="row">Digest</th><td>Script</td><td>Sunday, 6:00 PM ET</td><td>No model calls</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p data-gap="3">The analyst can write a short note on a flagged anomaly, and if I pick &ldquo;dig in&rdquo;, it writes a full memo that enters the same path at the risk officer.</p>
+      <p>Every script that can call a model carries a daily model-call cap, 20 calls per day by default. Each call takes a slot before it runs, and a call that fails still counts. Anomaly notes get their own small lane, so a busy news week can&rsquo;t starve the decision path. Over the cap, no call is made and the run comes to me listing what didn&rsquo;t run. The Sunday digest prints calls against the cap.</p>
+      <p>Each seat runs as its own routine with its own work item, cap slot and final status. Each unit of work has one tracked item with a fixed name, such as the week plus the ticker. A retry or a re-fired routine finds that item and never spends a second slot on the same work.</p>
+      <p>An answer that fails a check is withheld and comes to me with the failed check named. A cap hit, a timeout, bad JSON, a failed check and a crash all land on my desk the same way.</p>
+      <p>All of these numbers are untested starting values. Proving will tune them.</p>
+    </details>
+    <details id="tests"><summary>Test cases by routine</summary>
+      <p>Each model routine gets 20 to 30 cases, and every case will run 3 times against the real model.</p>
+      <div class="tw" role="region" aria-labelledby="cap-t" tabindex="0">
+      <table>
+        <caption id="cap-t">Test cases per model routine</caption>
+        <thead><tr><th scope="col">Routine</th><th scope="col">Seat</th><th scope="col" class="n">Cases</th><th scope="col">Must include</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Anomaly note</th><td>Analyst</td><td class="n">20</td><td>A move with no filing at all. A split mistaken for a move</td></tr>
+          <tr><th scope="row">Deep dive</th><td>Analyst</td><td class="n">20</td><td>A note that turns out to be noise, where the right answer is no memo</td></tr>
+          <tr><th scope="row">On request</th><td>Analyst</td><td class="n">20</td><td>A ticker outside the universe. A restricted ticker. A request that carries a direction</td></tr>
+          <tr><th scope="row">Weekly memo</th><td>Analyst</td><td class="n">30</td><td>Nothing passes the screen. An update that has to contradict the prior thesis</td></tr>
+          <tr><th scope="row">Risk review</th><td>Risk officer</td><td class="n">30</td><td>A memo with a planted flaw. A clean memo that still needs a dissent. Hidden sizing language</td></tr>
+          <tr><th scope="row">Chair decision</th><td>Chair</td><td class="n">30</td><td>A conceded point: publish if it breaks no pillar, decline if it does</td></tr>
+          <tr><th scope="row">Thesis check</th><td>Analyst</td><td class="n">25</td><td>One bad period that must not downgrade a pillar</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p data-gap="3">The fixed checks must pass every case, every run: the output parses, every ticker and number is in the input, claims are labeled, the dissent isn&rsquo;t empty, and there&rsquo;s no sizing or entry language.</p>
+      <p>Quality is scored per pass, over 3 passes. Any safety failure restarts all 3. A model judge grades tone only, never a must or must-not check.</p>
+      <p>Three more desk-wide tests: restricted tickers must be blocked at the pull and again at publish, schema checks must reject any edit to an existing call, and the event feed must reject a ticker in any pre-publication event.</p>
+      <p>Run 3 times each, a pass is 555 model calls: the 145 Sonnet cases times 3, about 10 injection reruns times 3, and the chair&rsquo;s 30 Opus cases times 3. Activating a seat takes at least 3 passes, so at least 1,665 calls, under their own cap and spread over days.</p>
+    </details>
+    <details id="request"><summary>Asking the desk for a specific name</summary>
+      <p>I can ask the desk to look at one ticker in a private channel. The request is a ticker and nothing else. The script rejects anything more, so I can&rsquo;t hand over a thesis, a direction or a reason, and the chair can&rsquo;t anchor on the boss.</p>
+      <p>The same checks apply. The name must be in that night&rsquo;s universe and off the restricted list. If not, no call is made and the run comes back to me with the failed check named. The publish script checks both again.</p>
+      <p>A name that falls inside the publication window for my own private holdings is held, not called. I confirm privately that this conflict check covers my own obligations before the desk goes public.</p>
+      <p>There is no shortcut. The memo goes through the risk officer, the chair and my signature like any other, and a veto ends it the same way. No seat&rsquo;s input says a memo was requested, so the seats never know.</p>
+      <p>The publish script sets an <code>origin</code> field on every call: <code>schedule</code> or <code>request</code>. No seat sets it. Each request also logs a ticker-less <code>request.made</code> event in the Sunday batch, so you can count my requests against the calls they produced and split the record by origin.</p>
+      <p>Requests are capped at 2 a week, and a second request for the same name in the same week spends nothing.</p>
+    </details>
+    <details id="switch-on"><summary>The order the seats switch on</summary>
+      <p>One at a time, so a bad memo format can&rsquo;t cascade through two untested seats. Each step has to pass its check before the next seat can depend on it.</p>
+      <ol class="sc-track">
+        <li>The scorer and the ledger checks come first. The scorer must pass its holiday, split, dividend, delisting and ticker-change tests, and the ledger checks must reject every planted bad entry.</li>
+        <li>Then the analyst: two clean scheduled runs at the proving cadence, one at the real cadence, and its tests at the bar.</li>
+        <li>Then the risk officer: the same, plus a memo with a deliberate flaw that must draw a veto.</li>
+        <li>Then the chair: the same, plus the approval test at 100%.</li>
+        <li>Going public comes last: every start-build trigger box checked and the cutover dated in writing. The public ledger starts at No. 1 (<code>C-1</code>), with no proving calls carried over.</li>
+      </ol>
+    </details>
+  </div>
+  <p class="refnote">The full spec for each seat, and the five bench roles, sit under &ldquo;Full spec&rdquo; on each stop of <a href="#path">the diagram above</a>.</p>
+  <p class="refnote">How the event feed works is on the record, under <a href="record.html#feed">Every event</a>.</p>
+</section>
 
-  <h2 id="open">Still open</h2>
-  <ul>
-    <li>Whether the publish credential can be kept unreadable to the seats on a real machine.</li>
-    <li>Whether my signature, the length caps and the deny-pattern scan are enough to keep the publisher safe once it commits reasoning text. The wording is settled; the control still needs a written decision.</li>
-    <li>Whether the risk officer should run on Opus, like the chair. The planted-flaw tests will show whether Sonnet is enough.</li>
-    <li>Whether two decisions a week is the right ceiling once proving ends.</li>
-    <li>Every threshold, cap and time estimate above, until real runs measure them.</li>
-  </ul>
-</div>
-</div>
+<p class="endrow"><a class="btn" href="record.html">See the record</a> <a href="https://www.linkedin.com/in/iamsiddharthshah">Message me on LinkedIn</a></p>
 </main>
 
 <footer class="foot">
-  <p>Sample data, not advice. Paper calls only. Built by <a href="https://siddharthshah.me">Siddharth Shah</a> &middot; <a href="https://www.linkedin.com/in/iamsiddharthshah">LinkedIn</a></p>
+  <p>Sample data, not advice. Paper money only. Built by <a href="https://siddharthshah.me">Siddharth Shah</a> &middot; <a href="https://www.linkedin.com/in/iamsiddharthshah">LinkedIn</a></p>
 </footer>
-<script src="assets/floor.js?v=e13054ef"></script>
-<script src="assets/vignette.js?v=17f087f5"></script>
-<script src="assets/nav.js?v=1555a769"></script>
+<script src="assets/sample.js?v=d8291a02"></script>
+<script src="assets/floor.js?v=9d3bfbda"></script>
+<script src="assets/seats.js?v=63cd83b5"></script>
+<script src="assets/nav.js?v=57650d35"></script>
 </body>
 </html>

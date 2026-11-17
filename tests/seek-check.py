@@ -1,6 +1,6 @@
 """Seek check for the homepage replay: nothing from Sidd's signature may show before the stamp lands,
 whichever direction the playhead arrives from. The clips and reduced motion both seek backward.
-Run: python3 site/tests/seek-check.py   (needs Playwright with Chromium)"""
+Run: python3 tests/seek-check.py   (needs Playwright with Chromium)"""
 import json, pathlib, sys
 from playwright.sync_api import sync_playwright
 page = (pathlib.Path(__file__).resolve().parent.parent / 'docs' / 'index.html').as_uri()

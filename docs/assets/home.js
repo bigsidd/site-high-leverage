@@ -7,17 +7,17 @@
   var whenEl = document.querySelector('.now .when'), whatEl = document.querySelector('.now .what');
   var pp = document.getElementById('pp'), nx = document.getElementById('nx'), stepsEl = document.getElementById('steps');
   var mq = matchMedia('(prefers-color-scheme: dark)'), reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var CLIP = document.body.getAttribute('data-clip'); // set on the HyperFrames compositions in site/clip: the renderer drives the timeline, frame by frame
+  var CLIP = document.body.getAttribute('data-clip'); // set on the HyperFrames compositions in clip/: the renderer drives the timeline, frame by frame
   if (CLIP) reduce = false;
   var P = FLOOR.P, AN = FLOOR.anchors, SM = window.SAMPLE, lede = document.querySelector('.lede');
-  var svg, full, base, cw = 0, ch = 0, phone = false, focus = null, tagW = [], ledeBox = null;
+  var svg, full, base, cw = 0, ch = 0, phone = false, focus = null, tagW = [], ledeBox = null, nowBox = null, nowNode = document.querySelector('.now'), chipW = 24, loOn = false;
   var weekStart = SM ? SM.week.start.slice(0, 10) : '';
   var vetoesBefore = SM ? SM.events.filter(function (e) { return e.type === 'chain.dropped' && e.ts < weekStart; }).length : 0;
 
   var TAGS = [
     { k: 'analyst', n: 1, t: 'Analyst' },
     { k: 'risk', n: 2, t: 'Risk officer' },
-    { k: 'committee', n: 3, t: 'Committee chair', s: 'Chair' },
+    { k: 'committee', n: 3, t: 'Chair' },
     { k: 'sidd', n: 4, t: 'Sidd · portfolio manager', s: 'Sidd · signs' },
     { k: 'record', n: 5, t: 'The record' },
     { k: 'bench', t: 'The bench · no seat yet', quiet: true },
@@ -33,6 +33,8 @@
   function draw() {
     full = FLOOR.build(art, mq.matches, { vetoes: vetoesBefore }).vb.map(Number);
     svg = art.querySelector('svg');
+    var ttl = svg.querySelector('title'); if (ttl) ttl.remove(); // a title shows as a hover tooltip over the replay; the week list carries the detail
+    svg.removeAttribute('aria-labelledby'); svg.setAttribute('aria-label', 'The office on two floors, where the sample week plays');
     svg.style.overflow = 'visible'; svg.style.transformOrigin = '0 0';
     shown = '';
   }
@@ -54,7 +56,7 @@
     var z = 0.95, nw = full[2] * z, nh = full[3] * z; // pushed in: the building sits right of the headline and the empty front floor crops away
     return fit([full[0] + (full[2] - nw) * 0.35 - full[2] * 0.19, full[1] + (full[3] - nh) * 0.3, nw, nh]);
   }
-  var ZOOM = { record: [0.32, 0.3], veto: [0.3, 0.38], desks: [0.55, 0.66], committee: [0.42, 0.52], sidd: [0.22, 0.3] };
+  var ZOOM = { record: [0.32, 0.3], veto: [0.3, 0.3], desks: [0.55, 0.53], committee: [0.42, 0.52], sidd: [0.22, 0.3] };
   function focusView(k) {
     var desk = P.apply(null, FLOOR.spots.sidd); // the stamp shot frames Sidd and the card he signs
     var p = k === 'desks' ? [(AN.analyst[0] + AN.risk[0]) / 2, (AN.analyst[1] + AN.risk[1]) / 2] : k === 'veto' ? AN.risk : k === 'sidd' ? [(AN.sidd[0] + desk[0]) / 2, (AN.sidd[1] + desk[1]) / 2] : AN[k];
@@ -94,18 +96,35 @@
     placed.filter(function (t) { return !t.li.hidden && !t.li.classList.contains('dim'); }).sort(function (a, b) { return a.y - b.y; }).forEach(function (t, j, arr) {
       for (var m = 0; m < j; m++) { var o = arr[m]; if (Math.abs(o.x - t.x) < (o.w + t.w) / 2 + 6 && Math.abs(o.y - t.y) < 30) t.y = o.y + 30; }
     });
-    // the headline block wins: a tag it would cover stays hidden while the headline shows (read from the cached box, never per frame)
+    // the headline, the caption and the call chip win: a tag they would cover stays hidden (boxes are cached; only the chip is computed, from the camera)
     var lo = ledeBox && lede && !phone ? +(window.gsap ? gsap.getProperty(lede, 'opacity') : 1) : 0;
-    if (lo > 0.05) placed.forEach(function (t) {
+    if ((lo > 0.05) !== loOn) { loOn = lo > 0.05; if (loOn) readBoxes(); } // the headline's opacity just crossed: refresh its box
+    var hide = [];
+    if (lo > 0.05) hide.push(ledeBox);
+    if (nowBox) hide.push(nowBox);
+    var cb = chipBox(k); if (cb) hide.push(cb);
+    if (hide.length) placed.forEach(function (t) {
       if (t.li.hidden) return;
       var edge = t.li.classList.contains('edge'), top = edge ? t.y - 12 : t.y - 40, bot = edge ? t.y + 12 : t.y - 16;
-      if (t.x - t.w / 2 < ledeBox[2] && t.x + t.w / 2 > ledeBox[0] && top < ledeBox[3] && bot > ledeBox[1]) t.li.hidden = true;
+      for (var m = 0; m < hide.length; m++) { var b = hide[m]; if (t.x - t.w / 2 < b[2] && t.x + t.w / 2 > b[0] && top < b[3] && bot > b[1]) { t.li.hidden = true; return; } }
     });
     placed.forEach(function (t) { t.li.style.left = t.x.toFixed(1) + 'px'; t.li.style.top = t.y.toFixed(1) + 'px'; });
   }
+  function readBoxes() { // headline and caption boxes, relative to the art; read on layout changes, never per frame
+    var box = art.getBoundingClientRect(), pad = function (n) { var r = n.getBoundingClientRect(); return [r.left - box.left - 6, r.top - box.top - 6, r.right - box.left + 6, r.bottom - box.top + 6]; };
+    if (lede) ledeBox = pad(lede);
+    if (nowNode) nowBox = pad(nowNode);
+  }
+  function chipBox(k) { // the call chip is a fixed-size label on the card: its box follows from the card's place and the camera
+    if (!window.gsap || !svg || typeof pos === 'undefined') return null;
+    var card = svg.querySelector('#fx-card'), cg = svg.querySelector('#fx-chip');
+    if (!card || !cg || gsap.getProperty(card, 'opacity') < 0.05 || gsap.getProperty(cg, 'opacity') < 0.05) return null;
+    var p = P(pos.x, pos.y, pos.bz + pos.lift), u = (CLIP === 'feed' ? 20 : CLIP ? 13 : 11) / 5.6, cx = (p[0] - cam.x) * k + chipAt.x * u, cy = (p[1] - cam.y) * k + chipAt.y * u;
+    return [cx - chipW / 2 * u - 6, cy - 6 * u - 6, cx + chipW / 2 * u + 6, cy + 3 * u + 6];
+  }
   function measure() {
     var box = art.getBoundingClientRect();
-    if (lede) { var lb = lede.getBoundingClientRect(); ledeBox = [lb.left - box.left - 6, lb.top - box.top - 6, lb.right - box.left + 6, lb.bottom - box.top + 6]; }
+    readBoxes();
     cw = box.width; ch = box.height; phone = cw < 640;
     tags.style.left = art.offsetLeft + 'px'; tags.style.top = art.offsetTop + 'px'; tags.style.width = cw + 'px'; tags.style.height = ch + 'px';
     tags.classList.toggle('phone', phone);
@@ -125,15 +144,15 @@
     return new Date(ts).toLocaleString('en-US', { timeZone: 'America/New_York', weekday: 'short', hour: 'numeric', minute: '2-digit' }).replace(',', '') + ' ET';
   }
   var SAY = {
-    'row.closed': function (e, r) { return 'No. ' + r.id.slice(2) + ' reaches its ' + r.months + '-month horizon and closes as a ' + r.outcome + '. It stays on the wall, the same size as a win.'; },
-    'note.drafted': function () { return 'The analyst flags an unusual move in a short note. Its ticker stays private unless a call publishes.'; },
-    'chain.dropped': function (e) { return (e.stage === 'risk' ? 'The risk officer vetoes an idea.' : 'The committee chair turns an idea down.') + ' It goes in the No tray. Its ticker is never published.'; },
+    'row.closed': function (e, r) { return 'No. ' + r.id.slice(2) + ' closes as a ' + r.outcome + '. It stays up, full size.'; },
+    'note.drafted': function () { return 'The analyst flags an unusual move. Its ticker stays private.'; },
+    'chain.dropped': function (e) { return (e.stage === 'risk' ? 'The risk officer vetoes an idea.' : 'The chair turns an idea down.') + ' Its ticker is never published.'; },
     'memo.drafted': function (e, r) { return 'The analyst writes a memo on ' + r.ticker + '.'; },
-    'memo.forwarded': function () { return 'A script forwards it. The risk officer sees every memo, unfiltered.'; },
-    'risk.reviewed': function () { return 'The risk officer lets it through, with a written dissent attached.'; },
-    'decision.made': function (e, r) { return 'The committee chair decides: ' + r.ticker + ' to ' + r.direction + ' SPY and its sector fund over ' + r.months + ' months.'; },
-    'approval.stamped': function () { return 'I sign it. No call publishes without my signature.'; },
-    'row.published': function (e, r) { return 'Published as No. ' + r.id.slice(2) + ', sealed before anyone knows the outcome.'; }
+    'memo.forwarded': function () { return 'A script hands it to the risk officer.'; },
+    'risk.reviewed': function () { return 'The risk officer passes it, with a written dissent.'; },
+    'decision.made': function (e, r) { return 'The chair decides to publish: ' + r.ticker + ', ' + r.direction + ', ' + r.months + ' months.'; },
+    'approval.stamped': function () { return 'I sign it. Nothing publishes without my signature.'; },
+    'row.published': function (e, r) { return 'Published as No. ' + r.id.slice(2) + ', before anyone knows the outcome.'; }
   };
   var SHORT = { // the clip's captions: one idea each, readable in a phone feed
     'row.closed': 'A call closes at a loss. It stays up.', 'chain.dropped': 'Vetoed. Its ticker stays private.',
@@ -145,8 +164,8 @@
   var beats = all.filter(function (s) { return s.e.type !== 'note.drafted'; }); // a note leads nowhere on screen; it stays in the list
   var by = function (t) { return beats.filter(function (s) { return s.e.type === t; }); };
   var lossN = by('row.closed').filter(function (s) { return s.r.outcome === 'loss'; }).length, closeN = by('row.closed').length;
-  var intro = { when: 'Nov 2–8', what: 'One week, Monday to Sunday.', short: 'One week, Monday to Sunday.' };
-  var plural = function (n, one, many) { return n + ' ' + (n === 1 ? one : many); }, vetoN = by('chain.dropped').length, signN = by('approval.stamped').length;
+  var intro = { when: 'Mon', what: 'One sample week, Monday to Sunday.', short: 'One week, Monday to Sunday.' };
+  var plural = function (n, one, many) { return n + '\u00a0' + (n === 1 ? one : many); }, vetoN = by('chain.dropped').length, signN = by('approval.stamped').length;
   var outro = { when: 'The week', what: 'This week: ' + plural(vetoN, 'idea', 'ideas') + ' vetoed, ' +
     (lossN ? plural(lossN, 'loss', 'losses') + ' left up' : plural(closeN, 'call', 'calls') + ' closed') + ', ' + plural(signN, 'call', 'calls') + ' signed.' };
   stepsEl.innerHTML = all.map(function (s) { return '<li><span class="mono">' + s.when + '</span> ' + s.what + ' <span class="muted xs">' + s.e.type + ' &middot; ' + s.e.id + '</span></li>'; }).join('');
@@ -185,7 +204,7 @@
   function el(id) { return svg.querySelector('#' + id); }
   function chip(txt, redact) {
     var t = el('fx-tk'), bg = el('fx-chip-bg'), w = Math.max(24, (redact ? 18 : txt.length * 3.45) + 10);
-    t.textContent = txt; bg.setAttribute('x', -w / 2); bg.setAttribute('width', w); el('fx-redact').setAttribute('opacity', redact ? 1 : 0);
+    chipW = w; t.textContent = txt; bg.setAttribute('x', -w / 2); bg.setAttribute('width', w); el('fx-redact').setAttribute('opacity', redact ? 1 : 0);
   }
   var pos = { x: 0, y: 0, bz: 1.5, lift: 0 }, grip = { v: 0 };
   function CARD() { return phone ? 1.6 : 1.4; } // the memo card is drawn larger than the furniture so its stamp reads
@@ -235,7 +254,7 @@
     if (nowEl) nowEl.setAttribute('aria-live', tl && !tl.paused() && !done ? 'off' : 'polite');
     var n = s.e ? STN[s.e.type] || 0 : 0;
     [].forEach.call(ticks, function (li, i) { li.className = i + 1 === n ? 'on' : i + 1 < n ? 'past' : ''; });
-    whenEl.innerHTML = s.when + ' <span>Sample week · preview</span>'; whatEl.textContent = (CLIP && s.short) || s.what;
+    whenEl.innerHTML = s.when + ' <span>Nov 2–8, 2026 · sample</span>'; whatEl.textContent = (CLIP && s.short) || s.what;
     if (!reduce && tl && !tl.paused()) gsap.fromTo(whatEl, { opacity: 0, y: 4 }, { opacity: 1, y: 0, duration: 0.15 });
   }
   function say(s) { return function () { show(s); }; }
@@ -277,7 +296,7 @@
     if (tl) tl.kill();
     done = false; ended(false); focus = null; rest(base);
     caps = []; capOn = null;
-    tl = gsap.timeline({ paused: true, onUpdate: function () { sync(); armSync(); idle(); }, onComplete: function () { done = true; btn('replay'); ended(true); } });
+    tl = gsap.timeline({ paused: true, onUpdate: function () { sync(); armSync(); idle(); placeTags(); }, onComplete: function () { done = true; btn('replay'); ended(true); } });
     var c3 = FLOOR.centers['C-3'], c6 = FLOOR.centers['C-6'];
     // the week opens before any of its events: No. 3 still open, No. 6 not yet on the wall, no memo on any desk
     if (lede) tl.set(lede, { opacity: 1 }, 0);
@@ -410,7 +429,12 @@
   }
   var rz;
   addEventListener('resize', function () { clearTimeout(rz); rz = setTimeout(function () { rebuild(false); }, 150); });
-  if (window.ResizeObserver) { var seen = cw; new ResizeObserver(function () { var w = art.getBoundingClientRect().width; if (w && w !== seen) { seen = w; clearTimeout(rz); rz = setTimeout(function () { rebuild(false); }, 150); } }).observe(art); } // a tab opened in the background lays out at 0 first
+  if (window.ResizeObserver) { // a tab opened in the background lays out at 0 first; a height change (the end card) re-frames too
+    var seen = cw + 'x' + ch;
+    new ResizeObserver(function () { var r = art.getBoundingClientRect(), z = r.width + 'x' + r.height; if (r.width && z !== seen) { seen = z; clearTimeout(rz); rz = setTimeout(function () { rebuild(false); }, 150); } }).observe(art);
+    var ro2 = new ResizeObserver(function () { readBoxes(); }); [lede, nowNode].forEach(function (n) { if (n) ro2.observe(n); });
+  }
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
   if (mq.addEventListener) mq.addEventListener('change', function () { rebuild(true); }); else if (mq.addListener) mq.addListener(function () { rebuild(true); });
   window.HLR = { get tl() { return tl; }, get labels() { return LB; }, beats: beats, steps: all };
 })();

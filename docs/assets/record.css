@@ -1,0 +1,113 @@
+/* The record page only. Loaded after site.css, so it overrides what the other pages share. */
+main.rec{max-width:50rem}
+.rec p,.rec li{max-width:34rem}
+.rec h2{margin-bottom:var(--s2)}
+.rec .tagline{max-width:40rem}
+.rec section.blk{margin-top:var(--s5)}
+.rec .hd p[data-gap]{max-width:34rem}
+.rec p.muted+.calls,.rec .calls{max-width:none}
+
+/* scoreboard strip: numbers, meter, heartbeat, claim */
+.strip{border-top:2px solid var(--muted);padding-top:var(--s4)}
+.score{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s5);max-width:none!important;font:400 var(--fs-base)/1.4 var(--font-mono)}
+.score>span{display:flex;flex-direction:column}
+.score b{font:600 1.75rem/1.1 var(--font-mono)}
+.score .lbl{font-size:.875rem;color:var(--muted)}
+.strip .meter{margin-top:var(--s3)}
+.strip .beat{display:grid;gap:1px;margin-top:var(--s3)}
+.strip .beat i{width:auto;height:14px;border-radius:0}
+.strip .beat i.gap{box-shadow:inset 0 0 0 1px var(--loss)}
+.strip .run{margin-top:var(--s2);color:var(--muted)}
+.strip .claim{margin-top:var(--s4);font-size:1rem}
+
+/* weekly note: serif, no left bar */
+.rec .note{border-left:0;padding:0;max-width:34rem}
+.rec .note p{max-width:none;margin:0 0 var(--s2);font:400 1.125rem/1.55 var(--font-display)}
+.rec .note .note-lbl{font:500 .875rem/1.4 var(--font-mono);color:var(--muted);margin-bottom:var(--s3)}
+.rec .note .note-by{font:italic 400 1.125rem/1 var(--font-display);color:var(--muted);margin:0}
+
+/* calls */
+.rec .calls{margin-top:var(--s3)}
+.rec .call summary{padding:var(--s2) 0}
+.rec .cl{font-size:var(--fs-sm)}
+.rec .call details>.rs-h{margin-left:calc(1ch + var(--s3))}
+.rec .calls>li,.rec .call li{max-width:none}
+.rec .call summary{justify-content:flex-start}
+.rec .call .st{margin-left:auto}
+.rec .call .steps{margin:0 0 var(--s3) calc(1ch + var(--s3));padding-left:var(--s4)}
+.rec .call .steps li{grid-template-columns:13rem minmax(0,1fr);max-width:none;font-size:1rem;padding:2px 0}
+.rec .call .steps p{max-width:34rem}
+.rec .call .steps time,.rec .rs-tag,.rec .st{font-size:.875rem}
+.rec .rs-two{gap:var(--s6)}
+.rec .rs-two p{max-width:none;margin:0 0 var(--s3);font-size:1rem}
+.rec .rs-lab{display:block;margin-bottom:2px;font:500 .875rem/1.4 var(--font-mono);color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.rec .rs-h{font-size:var(--fs-base)}
+.rec .rs-how{margin-top:var(--s2)}
+.rec .rs-brk{margin:0 0 var(--s2)}
+.rec .rs-brk summary,.rec .dt summary{cursor:pointer}
+.rec .call .rs-brk summary{min-height:var(--touch);display:flex;justify-content:flex-start;align-items:center;gap:var(--s2);padding:0;font:600 var(--fs-sm)/1.3 var(--font-body);color:var(--ink)}
+.rec .rs-brk{margin-left:calc(1ch + var(--s3))}
+.rec .rs-brk p{margin-top:var(--s2);font-size:.875rem}
+.rec .rs-brk p.muted{font-size:1rem}
+.rec .rs-brk .tw{margin-top:0}
+.rec .call details .rs-brk>summary::before{content:"+"}
+.rec .call details .rs-brk[open]>summary::before{content:"\2212"}
+.rec .rs-brk summary:hover,.rec .dt summary:hover{text-decoration:underline}
+.rec .rs-p{font-size:var(--fs-sm)}
+.rec .call.day0{padding-top:var(--s3)}
+.rec .call.day0 p.muted{max-width:34rem}
+
+/* the four rules: plain numbered sentences */
+.rules{margin:0;padding:0;list-style:none;counter-reset:r;border-top:1px solid var(--line)}
+.rules li{counter-increment:r;position:relative;padding:var(--s2) 0 var(--s2) var(--s5);border-bottom:1px solid var(--line);max-width:none}
+.rules li::before{content:counter(r);position:absolute;left:0;top:var(--s2);font:500 var(--fs-sm)/1.55 var(--font-mono);color:var(--ink)}
+
+/* closed detail */
+.more>h2{margin-bottom:var(--s3)}
+.dt{border-top:1px solid var(--line)}
+.dt:last-child{border-bottom:1px solid var(--line)}
+.dt>summary{min-height:var(--touch);display:flex;align-items:center;gap:var(--s2);padding:var(--s2) 0;list-style:none;font:600 var(--fs-lg)/1.25 var(--font-display);color:var(--ink)}
+.dt>summary::-webkit-details-marker{display:none}
+.dt>summary::before{content:"+";flex:none;width:1ch;font:500 var(--fs-sm)/1 var(--font-mono);color:var(--muted)}
+.dt[open]>summary::before{content:"\2212"}
+.dt-body{padding:var(--s2) 0 var(--s5)}
+.dt-body p{margin-top:var(--s3)}
+.dt-body .sub{margin:var(--s5) 0 0;font:600 var(--fs-base)/1.3 var(--font-body)}
+.dt-body ul.plain{margin:var(--s3) 0 0;padding-left:var(--s5);max-width:34rem}
+.dt-body ul.plain li{margin-bottom:var(--s2)}
+.dt-body .tlctl{margin-top:0}
+.dt-body .weeks .wk{margin-top:var(--s4)}
+.dt-body .rail li{max-width:none}
+.dt-body details.list{margin-top:var(--s3)}
+.dt-body details.list summary{font-size:1rem}
+.dt-body .gate{margin-top:0}
+.dt-body .preview{display:inline-block}
+.dt-body .muted,.dt-body .empty{font-size:1rem}
+.dt-body .tlctl .muted{font-size:var(--fs-sm)}
+
+.end{margin-top:var(--s6);max-width:none}
+.end a{display:inline-flex;align-items:center;min-height:var(--touch)}
+
+.rs-seg,.rs-dline{display:none}
+@media (max-width:40rem){
+  .rec .call .steps li{grid-template-columns:1fr}
+  .rec .call .steps{margin-left:0}
+  .rec .call details>.rs-h,.rec .rs-brk{margin-left:0}
+  .strip .beat i{height:12px}
+  .rec .note p{font-size:1.0625rem}
+  .score{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s3) var(--s2)}
+  .score b{font-size:1.5rem}
+  .score .lbl{font-size:.875rem;line-height:1.3}
+  /* call reasoning: one column at a time, the dissent never fully out of view */
+  .rs-seg{display:grid;grid-template-columns:1fr 1fr;margin:0 0 var(--s3)}
+  .rs-seg button{min-height:var(--touch);padding:var(--s1) var(--s2);background:transparent;color:var(--ink);border:1px solid var(--ink);font:600 var(--fs-sm)/1.2 var(--font-body);cursor:pointer;border-radius:var(--radius)}
+  .rs-seg button+button{margin-left:-1px}
+  .rs-seg button[aria-selected=true]{background:var(--ink);color:var(--bg)}
+  .rs-dline{margin:0 0 var(--s3);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  .rs-dline .rs-lab{display:inline;margin:0}
+  .rs[data-tab=dis] .rs-dline,.rs[data-tab=dis] .rs-case,.rs:not([data-tab=dis]) .rs-dis{display:none}
+  .rs-two h3.rs-h{display:none}
+  .rs-dis{border-left:0;padding-left:0}
+}
+
+.rec .day0 .st{margin-left:var(--s2)}

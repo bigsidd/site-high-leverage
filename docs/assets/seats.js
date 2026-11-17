@@ -1,7 +1,17 @@
-/* The desk page: the desk as tabs over the office. One seat at a time sits in a hard-edged spotlight
+/* How it works: one call's path as tabs over the office. One stop at a time sits in a hard-edged spotlight
    (an SVG mask, no gradient) and its card comes forward. Without JS, every card is listed in order and the
-   office stays hidden. No timeline and no autoplay: the camera moves only when the reader picks a tab. */
+   office stays hidden. No timeline and no autoplay: the camera moves only when the reader picks a tab.
+   The clip (clip/seats.html) reuses SEAT and drives the camera through window.HLR_SEATS. */
 (function () {
+  // A link to a closed <details> (or to something inside one) opens it: #schedule, #tests, #request.
+  function openHash() {
+    var id = decodeURIComponent((location.hash || '').slice(1)), el = id && document.getElementById(id), d;
+    if (!el) return;
+    for (d = el.closest('details'); d; d = d.parentElement && d.parentElement.closest('details')) d.open = true;
+    if (el.closest('details')) el.scrollIntoView();
+  }
+  openHash(); addEventListener('hashchange', openHash);
+
   var root = document.querySelector('[data-seats]');
   if (!root || !window.FLOOR) return;
   var F = window.FLOOR, NS = 'http://www.w3.org/2000/svg';
@@ -10,15 +20,16 @@
   var dark = matchMedia('(prefers-color-scheme: dark)'), reduce = matchMedia('(prefers-reduced-motion: reduce)');
   // [anchor, label, camera width in scene px, spotlight rx, ry]
   var SEAT = {
-    scripts: ['scripts', 'Scripts · not AI', 380, 120, 120],
-    m1: ['analyst', 'M1 · the analyst', 300, 70, 60],
-    m2: ['risk', 'M2 · the risk officer', 300, 70, 60],
-    m3: ['committee', 'M3 · the chair', 340, 120, 80],
-    pm: ['sidd', 'Sidd · portfolio manager', 340, 110, 80],
-    bench: ['bench', 'The bench · no seat yet', 460, 190, 110],
-    record: ['record', 'The record', 440, 150, 130] // no tab: the clip ends its walk here
+    scripts: ['scripts', 'Scripts · no model', 380, 120, 120],
+    m1: ['analyst', '1 · the analyst', 300, 70, 60],
+    m2: ['risk', '2 · the risk officer', 300, 70, 60],
+    m3: ['committee', '3 · the chair', 340, 120, 80],
+    pm: ['sidd', '4 · Sidd, portfolio manager', 340, 110, 80],
+    publish: ['record', '5 · the record', 440, 150, 130],
+    bench: ['bench', 'The bench · no seat yet', 460, 190, 110]
   };
-  var svg, hole, cam, spot, cur = 'm1', raf = 0;
+  var svg, hole, cam, spot, cur = 'm1', raf = 0, first = tabs.length > 1 ? tabs[0].dataset.k : 'm1';
+  var bar = tabs.length ? tabs[0].parentNode : null;
   document.documentElement.classList.add('js-seats');
 
   function draw() {
@@ -66,13 +77,29 @@
       var on = b.dataset.k === k;
       b.setAttribute('aria-selected', String(on)); b.tabIndex = on ? 0 : -1;
       if (on && focus) b.focus();
-      if (on) { var bar = b.parentNode, L = b.offsetLeft - bar.offsetLeft, R = L + b.offsetWidth; // keep the chosen tab in view on a phone
-        if (L < bar.scrollLeft) bar.scrollLeft = L; else if (R > bar.scrollLeft + bar.clientWidth) bar.scrollLeft = R - bar.clientWidth; }
+      if (on) centre(b, instant);
       var p = document.getElementById(b.getAttribute('aria-controls')); if (p) p.hidden = !on;
     });
     lab.textContent = SEAT[k][1];
     move(k, instant);
   }
+  // On a phone the tabs are one scrolling row. Scroll the row itself, so the page never jumps to bring it into view.
+  function centre(b, instant) {
+    if (bar.scrollWidth <= bar.clientWidth) return;
+    bar.scrollTo({ left: b.offsetLeft - (bar.clientWidth - b.offsetWidth) / 2, behavior: instant || reduce.matches ? 'auto' : 'smooth' });
+  }
+  function fade() { // the right-edge fade shows only while there is more to scroll to
+    var more = bar.scrollLeft + bar.clientWidth < bar.scrollWidth - 2;
+    bar.classList.toggle('more-r', more); bar.classList.toggle('more-l', bar.scrollLeft > 2);
+  }
+  if (bar) { bar.addEventListener('scroll', fade, { passive: true }); addEventListener('resize', fade); }
+  [].forEach.call(root.querySelectorAll('[data-next]'), function (n) {
+    n.addEventListener('click', function () {
+      var k = n.dataset.next, p = document.getElementById(k);
+      select(k); if (history.replaceState) history.replaceState(null, '', '#' + k);
+      if (p) { p.scrollIntoView({ block: 'start', behavior: reduce.matches ? 'auto' : 'smooth' }); p.focus({ preventScroll: true }); } // .sc's scroll-margin-top is respected
+    });
+  });
   tabs.forEach(function (b, i) {
     b.addEventListener('click', function () { select(b.dataset.k); if (history.replaceState) history.replaceState(null, '', '#' + b.dataset.k); });
     b.addEventListener('keydown', function (e) {
@@ -84,7 +111,8 @@
   });
   var start = (location.hash || '').slice(1);
   draw();
-  select(SEAT[start] ? start : 'm1', false, true);
+  select(SEAT[start] ? start : first, false, true);
+  fade();
   addEventListener('hashchange', function () { var k = location.hash.slice(1); if (SEAT[k]) select(k, false); });
   function redraw() { if (draw()) select(cur, false, true); }
   if (dark.addEventListener) dark.addEventListener('change', redraw); else if (dark.addListener) dark.addListener(redraw);

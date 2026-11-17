@@ -1,4 +1,4 @@
-/* The record page: scoreboard, numbered calls, heartbeat, event log, paper book and raw feed, all from sample.js.
+/* The record page: scoreboard strip with heartbeat, numbered calls, and the closed detail (event log, paper book, confidence counts), all from sample.js.
    Every time on the page is New York time, marked ET. */
 (function () {
   var MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -28,20 +28,21 @@
     return new Date(t - off * 3600000).toISOString().slice(0, 10);
   }
   var long = function (iso) { return PX.fmtDate(iso) + ', ' + iso.slice(0, 4); };
-  var stepWhen = function (ts) { return DOW[new Date(etDate(ts) + 'T12:00:00Z').getUTCDay()] + ' ' + PX.et(ts); };
+  var stepWhen = function (ts) { return DOW[new Date(etDate(ts) + 'T12:00:00Z').getUTCDay()] + ', ' + PX.et(ts); };
+  var dayLong = function (iso) { return DOW[new Date(iso + 'T12:00:00Z').getUTCDay()] + ', ' + long(iso); };
+  var plural = function (n, one, many) { return n + ' ' + (n === 1 ? one : many); };
 
-  function trayCount() { return EV.filter(function (e) { return e.type === 'chain.dropped'; }).length; } // the No tray: the scoreboard count and the sheets drawn beside it
+  function trayCount() { return EV.filter(function (e) { return e.type === 'chain.dropped'; }).length; } // the No tray: the count of ideas stopped before publishing
 
   // scoreboard: counts, and per-confidence counts until 30 calls have closed (design/07)
   function scoreboard(on) {
     var rows = on ? ROWS : [], closed = rows.filter(function (r) { return r.outcome; });
-    $('n-closed').textContent = closed.length;
-    $('n-month').textContent = 'Month ' + (on ? D.monthsElapsed : 0) + ' of 6.';
+    var wins = closed.filter(function (r) { return r.outcome === 'win'; }).length, losses = closed.length - wins;
+    var sc = $('score'); sc.textContent = '';
+    [[closed.length, 'closed of 100'], [wins, wins === 1 ? 'win' : 'wins'], [losses, losses === 1 ? 'loss' : 'losses'], [rows.length - closed.length, 'open'], [on ? trayCount() : 0, 'stopped before publishing']]
+      .forEach(function (x, i) { var sp = el('span'); sp.appendChild(el('b', '', String(x[0]))); sp.appendChild(el('span', 'lbl', x[1])); sc.appendChild(sp); });
+    var mo = el('span'); mo.appendChild(el('b', '', String(on ? D.monthsElapsed : 0))); mo.appendChild(el('span', 'lbl', 'of 6 months' + (on ? ' (sample)' : ''))); sc.appendChild(mo);
     $('meter').style.width = closed.length + '%';
-    $('n-win').textContent = closed.filter(function (r) { return r.outcome === 'win'; }).length;
-    $('n-loss').textContent = closed.filter(function (r) { return r.outcome === 'loss'; }).length;
-    $('n-open').textContent = rows.length - closed.length;
-    $('n-tray').textContent = on ? trayCount() : 0;
     var tb = $('cal'); tb.textContent = '';
     ['high', 'standard'].forEach(function (b) {
       var rs = rows.filter(function (r) { return r.confidence_bucket === b; }), cs = rs.filter(function (r) { return r.outcome; });
@@ -50,7 +51,7 @@
         .forEach(function (n) { tr.appendChild(el('td', 'n', String(n))); });
       tb.appendChild(tr);
     });
-    $('cal-note').textContent = 'Hit rate by confidence shows once 30 calls have closed (' + closed.length + ' so far). Until then, counts only.';
+    $('cal-note').textContent = 'Hit rate by confidence shows once 30 calls have closed (' + closed.length + ' so far). Until then, these are counts only.';
   }
 
   // calls: one line each, newest first; the dated steps fold underneath as the proof
@@ -58,23 +59,49 @@
     'memo.drafted': 'The analyst drafted the memo',
     'memo.forwarded': 'A script passed it to the risk officer',
     'risk.reviewed': 'The risk officer passed it, with a dissent attached',
-    'decision.made': 'The committee chair decided to publish',
-    'approval.stamped': 'Sidd signed it. The call carries this event id as its approval',
+    'decision.made': 'The chair decided to publish',
+    'approval.stamped': 'Sidd signed it, and the call carries this event id as its approval',
     'row.published': 'Published and sealed'
   };
   // the published reasoning for one call (design/07): the case, the case against it, and what would prove each wrong
+  var tabSeq = 0;
   function reasoning(w) {
     var box = el('div', 'rs');
     box.appendChild(el('p', 'rs-tag', 'Sample reasoning \u00b7 hand-written placeholder, not model output'));
     var two = el('div', 'rs-two'), a = el('section', 'rs-case'), b = el('section', 'rs-dis');
     a.appendChild(el('h3', 'rs-h', 'The case'));
     a.appendChild(el('p', '', w.thesis));
-    var wn = el('p', 'small'); wn.appendChild(el('b', '', 'Why now. ')); wn.appendChild(document.createTextNode(w.why_now)); a.appendChild(wn);
+    var wn = el('p'); wn.appendChild(el('span', 'rs-lab', 'Why now')); wn.appendChild(document.createTextNode(w.why_now)); a.appendChild(wn);
     b.appendChild(el('h3', 'rs-h', 'The risk officer\u2019s dissent'));
     b.appendChild(el('p', '', w.dissent.counter_case));
-    var cf = el('p', 'small'); cf.appendChild(el('b', '', 'The dissent is right if: ')); cf.appendChild(document.createTextNode(w.dissent.counter_falsifier)); b.appendChild(cf);
+    var cf = el('p'); cf.appendChild(el('span', 'rs-lab', 'The dissent is right if')); cf.appendChild(document.createTextNode(w.dissent.counter_falsifier)); b.appendChild(cf);
+    // phones: one column at a time (CSS hides the control and shows both columns from 640px up)
+    var dl = el('p', 'rs-dline'); dl.appendChild(el('span', 'rs-lab', 'The dissent is right if: ')); dl.appendChild(document.createTextNode(w.dissent.counter_falsifier));
+    var seg = el('div', 'rs-seg'), tabs = [];
+    seg.setAttribute('role', 'tablist'); seg.setAttribute('aria-label', 'Show one column');
+    var uid = 't' + (++tabSeq);
+    [['case', 'The case', a], ['dis', 'The risk officer\u2019s dissent', b]].forEach(function (t, i) {
+      var bt = el('button', '', t[1]); bt.type = 'button'; bt.id = uid + t[0];
+      bt.setAttribute('role', 'tab'); bt.setAttribute('aria-controls', uid + 'p' + t[0]);
+      t[2].id = uid + 'p' + t[0]; t[2].setAttribute('role', 'tabpanel'); t[2].setAttribute('aria-labelledby', bt.id);
+      tabs.push(bt); seg.appendChild(bt);
+    });
+    function pick(i, focus) {
+      box.dataset.tab = i ? 'dis' : 'case';
+      tabs.forEach(function (t, j) { t.setAttribute('aria-selected', String(j === i)); t.tabIndex = j === i ? 0 : -1; });
+      if (focus) tabs[i].focus();
+    }
+    tabs.forEach(function (t, i) {
+      t.addEventListener('click', function () { pick(i); });
+      t.addEventListener('keydown', function (e) {
+        var n = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: 0, ArrowUp: 0, Home: 0, End: 1 }[e.key];
+        if (n == null) return; e.preventDefault(); pick(n, true);
+      });
+    });
+    pick(0);
+    box.appendChild(dl); box.appendChild(seg);
     two.appendChild(a); two.appendChild(b); box.appendChild(two);
-    box.appendChild(el('h3', 'rs-h', 'What would break it'));
+    var brk = el('details', 'rs-brk'); brk.appendChild(el('summary', '', 'What would break it'));
     var tw = el('div', 'tw'), tb = el('table', 'rs-p'), hd = el('tr');
     ['Pillar', 'Must stay true', 'Breaks if', 'Proved wrong by'].forEach(function (h) { var th = el('th', '', h); th.setAttribute('scope', 'col'); hd.appendChild(th); });
     var th0 = el('thead'); th0.appendChild(hd); tb.appendChild(th0);
@@ -84,12 +111,15 @@
       [p.id, p.must_remain_true, p.would_break_if, f].forEach(function (t, i) { tr.appendChild(el(i ? 'td' : 'th', '', t)); });
       tr.firstChild.setAttribute('scope', 'row'); bd.appendChild(tr);
     });
-    tb.appendChild(bd); tw.appendChild(tb); box.appendChild(tw);
-    box.appendChild(el('p', 'xs muted', 'On the real ledger this text is ledger/reasoning/C-n.json, published in the same commit as the row. Its public_sha256 lets you recompute, from the ledger alone, that this is the text Sidd signed. In this preview there is nothing to verify.'));
+    tb.appendChild(bd); tw.appendChild(tb); brk.appendChild(tw);
+    brk.appendChild(el('p', 'muted', 'On the real ledger this text is ledger/reasoning/C-n.json, published in the same commit as the row. Its public_sha256 lets you recompute, from the ledger alone, that this is the text Sidd signed.'));
+    box.appendChild(brk);
     return box;
   }
   function openFromHash() { // record.html#C-6 opens that call
-    var id = location.hash.slice(1); if (!/^C-\d+$/.test(id)) return;
+    var id = location.hash.slice(1);
+    if (id === 'feed') { var fd = document.getElementById('feed'); if (fd) { fd.open = true; fd.scrollIntoView({ block: 'start' }); } return; }
+    if (!/^C-\d+$/.test(id)) return;
     var li = document.getElementById(id); if (!li) return;
     var d = li.querySelector('details'); if (d) d.open = true;
     li.scrollIntoView({ block: 'start' });
@@ -105,78 +135,81 @@
       sum.appendChild(line);
       sum.appendChild(el('span', 'st ' + (r.outcome ? 's-' + r.outcome : 's-open'), r.outcome ? (r.outcome === 'win' ? 'Win' : 'Loss') : 'Open'));
       det.appendChild(sum);
+      if (r === ROWS[ROWS.length - 1]) det.open = true; // the newest call opens by default
       var why = (D.reasoning || {})[r.id];
       if (why) det.appendChild(reasoning(why));
-      if (why) det.appendChild(el('h3', 'rs-h', 'How it got here'));
-      var ol = el('ol', 'steps');
+      det.appendChild(el('p', 'rs-lab rs-how', 'How it got here'));
+      var ol = el('ol', 'steps'), ids = [];
       r.chain.forEach(function (id) {
         var e = evOf(id), s = el('li'), t = el('time', '', stepWhen(e.ts)), p = el('p');
         t.setAttribute('datetime', e.ts);
         p.textContent = STEP[e.type] + (e.type === 'row.published' ? ' (commit ' + r.sha + ', placeholder)' : '') + '.';
-        p.appendChild(el('span', 'eid', ' ' + e.type + ' · ' + e.id));
+        ids.push(e.type + ' · ' + e.id);
         s.appendChild(t); s.appendChild(p); ol.appendChild(s);
       });
       var last = el('li', r.outcome ? '' : 'later'), lt = el('time'), lp = el('p');
       if (r.outcome) { lt.textContent = stepWhen(r.closed_at); lt.setAttribute('datetime', r.closed_at); lp.textContent = 'Closed at its ' + r.months + '-month horizon: a ' + r.outcome + ' against both benchmarks.'; }
-      else { lt.textContent = long(r.horizon_end); lp.textContent = 'Closes at that day’s close, ' + r.months + ' months after publishing. Not known yet.'; }
+      else { lt.textContent = long(r.horizon_end); lp.textContent = 'Closes at that day’s close, ' + r.months + ' months after publishing; the result isn’t known yet.'; }
       last.appendChild(lt); last.appendChild(lp); ol.appendChild(last);
       det.appendChild(ol);
-      det.appendChild(el('p', 'xs muted', 'On the real ledger each step links to its commit and timestamp proof. In this preview there is nothing to verify.'));
+      var pr = el('details', 'rs-brk'); pr.appendChild(el('summary', '', 'Event ids and proof'));
+      pr.appendChild(el('p', 'mono', ids.join(' → ')));
+      pr.appendChild(el('p', 'muted', 'On the real ledger each step links to its commit and timestamp proof. In this preview there is nothing to verify.'));
+      det.appendChild(pr);
       li.appendChild(det); box.appendChild(li);
     });
-    else box.appendChild(el('li', 'call none', 'No calls yet. No. 1 appears only after the committee chair decides and Sidd signs. The model never publishes.'));
+    else box.appendChild(el('li', 'call none', 'No calls yet. No. 1 appears only after the chair decides and Sidd signs.'));
     // day 0: the rules are sealed before the first call (design/16)
     var d0 = el('li', 'call day0'), dl = el('p', 'cl');
     dl.appendChild(el('b', 'cn', 'Day 0'));
-    dl.appendChild(document.createTextNode(on ? ' · ' + long(D.cutover) + ' · rules sealed' : ' · not dated yet · rules seal here'));
+    dl.appendChild(document.createTextNode(on ? ' · ' + long(D.cutover) : ' · not dated yet'));
     d0.appendChild(dl);
-    d0.appendChild(el('p', 'small muted', on
-      ? 'The prompts, the test suite, the scoring rule and the 100-call rule were committed and anchored before No. 1. Changing any of them adds a new dated entry. Nothing here is rewritten.'
-      : 'The prompts, the test suite, the scoring rule and the 100-call rule get committed and anchored before No. 1. Any later change adds a new dated entry.'));
+    if (on) dl.appendChild(el('span', 'st s-open', 'Rules sealed'));
+    d0.appendChild(el('p', 'muted', on
+      ? 'The prompts, the tests, the scoring rule and the 100-call rule were committed and anchored before No. 1. Any change adds a new dated entry.'
+      : 'The prompts, the tests, the scoring rule and the 100-call rule get committed before No. 1. Any later change adds a new dated entry.'));
     box.appendChild(d0);
   }
 
   // heartbeat: one dot per night since day 0, gaps for missed nights (design/16)
   function heartbeat(on) {
-    var box = $('beat'); box.textContent = '';
+    var box = $('beat'); box.textContent = ''; box.style.gridTemplateColumns = '';
     if (!on) {
-      box.setAttribute('aria-label', 'No nights yet.'); $('t0').textContent = 'Day 0'; $('t1').textContent = 'Today';
-      $('beat-note').textContent = 'The first dot appears the night after cutover.'; return;
+      $('beat-note').textContent = 'No nights yet. The first dot appears the night after day 0.'; return;
     }
     var ran = {}, days = [];
     EV.forEach(function (e) { if (e.type === 'day.ran') ran[etDate(e.ts)] = 1; });
     for (var d = D.cutover; d <= D.week.sunday; d = D.add(d, 1)) days.push(d);
     var missed = days.filter(function (x) { return !ran[x]; });
     days.forEach(function (x) { var i = el('i', ran[x] ? '' : 'gap'); i.title = PX.fmtDate(x) + (ran[x] ? ': ran' : ': missed'); box.appendChild(i); });
-    $('t0').textContent = 'Day 0 · ' + PX.fmtDate(days[0]); $('t1').textContent = PX.fmtDate(days[days.length - 1]);
-    var txt = (days.length - missed.length) + ' of ' + days.length + ' nights since ' + long(days[0]) + '. Missed: ' + (missed.length ? missed.map(function (x) { return PX.fmtDate(x); }).join(' and ') : 'none') + '.';
-    box.setAttribute('aria-label', txt);
-    $('beat-note').textContent = txt + ' Each night is one dated event with no tickers in it.';
+    var txt = 'Ran ' + (days.length - missed.length) + ' of ' + days.length + ' nights since ' + long(days[0]) + '.' + (missed.length ? ' Missed ' + missed.map(function (x) { return PX.fmtDate(x); }).join(' and ') + '.' : ' Missed none.');
+    box.style.gridTemplateColumns = 'repeat(' + days.length + ',1fr)';
+    $('beat-note').textContent = txt + ' A filled dot is a night the nightly run completed; an outlined gap is a night it didn\u2019t run.';
   }
 
   // the full event log
   var ROUTINE = { 'digest.sent': 1, 'week.quiet': 1, 'row.scored': 1, 'anomaly.flagged': 1, 'thesis.checked': 1, 'day.ran': 1 };
   var FOLD = { 'anomaly.flagged': 1, 'row.scored': 1, 'thesis.checked': 1, 'day.ran': 1 };
-  var STAGE = { note: 'the note', risk: 'the risk officer', committee: 'the committee chair', sidd: 'Sidd' };
+  var STAGE = { note: 'the note', risk: 'the risk officer', committee: 'the chair', sidd: 'Sidd' };
   function text(e, n) {
     var r = e.ref && rowOf(e.ref);
     switch (e.type) {
-      case 'day.ran': return 'The desk ran ' + n + (n > 1 ? ' nights' : ' night') + '. Date and status only.';
-      case 'anomaly.flagged': return n + (n > 1 ? ' anomalies' : ' anomaly') + ' flagged by threshold. Count only.';
-      case 'row.scored': return 'Scorer ran ' + n + (n > 1 ? ' nights' : ' night') + '. Scores are recomputed; calls never change.';
-      case 'thesis.checked': return n + ' open ' + (n > 1 ? 'calls' : 'call') + ' re-checked against the memo. Count only.';
-      case 'note.drafted': return 'The analyst wrote a note on a flag. No ticker.';
+      case 'day.ran': return 'The desk ran ' + plural(n, 'night', 'nights') + ', logged by date and status only.';
+      case 'anomaly.flagged': return plural(n, 'anomaly', 'anomalies') + ' flagged by threshold, logged as a count only.';
+      case 'row.scored': return 'The scorer ran ' + plural(n, 'night', 'nights') + '; it recomputes scores and never changes a call.';
+      case 'thesis.checked': return plural(n, 'open call', 'open calls') + ' re-checked against the memo, logged as a count only.';
+      case 'note.drafted': return 'The analyst wrote a note on a flag, with no ticker.';
       case 'note.decided': return 'Sidd read the week’s notes.';
       case 'memo.drafted': return 'The analyst drafted a memo from a script screen.';
       case 'memo.forwarded': return 'A script passed the memo to the risk officer.';
-      case 'risk.reviewed': return 'Passed, with a dissent attached.';
-      case 'decision.made': var dr = rowOf(e._row); return 'The committee chair decided to publish: ' + dr.months + ' months, ' + dr.confidence_bucket + ' confidence.';
+      case 'risk.reviewed': return 'The risk officer passed the memo with a dissent attached.';
+      case 'decision.made': var dr = rowOf(e._row); return 'The chair decided to publish: ' + dr.months + ' months, ' + dr.confidence_bucket + ' confidence.';
       case 'approval.stamped': return 'Sidd signed ' + no(r) + '.';
       case 'row.published': return no(r) + ' · ' + r.ticker + ', ' + r.direction + ', ' + r.months + ' months, ' + r.confidence_bucket + ' confidence.';
-      case 'chain.dropped': return 'A memo stopped at ' + (STAGE[e.stage] || e.stage) + '. Stage and date only, no ticker.';
-      case 'row.closed': return no(r) + ' · ' + r.ticker + ' closed at its horizon. ' + (r.outcome === 'win' ? 'Win.' : 'Loss.');
-      case 'digest.sent': return 'Weekly digest sent. The week’s events went out in one batch.';
-      case 'week.quiet': return 'Quiet week. Nothing reached the chair.';
+      case 'chain.dropped': return 'A memo stopped at ' + (STAGE[e.stage] || e.stage) + ', recorded with its stage and date and no ticker.';
+      case 'row.closed': return no(r) + ' · ' + r.ticker + ' closed at its horizon as a ' + (r.outcome === 'win' ? 'win.' : 'loss.');
+      case 'digest.sent': return 'The weekly digest went out, with the week’s events in one batch.';
+      case 'week.quiet': return 'A quiet week: nothing reached the chair.';
     }
     return '';
   }
@@ -197,7 +230,7 @@
       (weeks[sun] = weeks[sun] || []).push(e);
     });
     Object.keys(weeks).sort().reverse().forEach(function (sun) {
-      var li = el('li', 'wk' + (sun === D.week.sunday ? '' : ' earlier')), h = el('h3', '', 'Week ending Sunday ' + long(sun)), ol = el('ol', 'rail');
+      var li = el('li', 'wk' + (sun === D.week.sunday ? '' : ' earlier')), h = el('h3', '', 'Week ending ' + dayLong(sun)), ol = el('ol', 'rail');
       var list = weeks[sun].slice().reverse(), seen = {};
       list.forEach(function (e) {
         if (FOLD[e.type] && seen[e.type]) { seen[e.type].n++; seen[e.type].first = e; return; }
@@ -206,7 +239,7 @@
         item.render = function () {
           var x = item.e, t = el('time'), body = el('div'), tg = tag(x), p = el('p', tg && tg[1] !== 't-drop' ? 'big' : '');
           t.setAttribute('datetime', x.ts);
-          t.textContent = item.n > 1 ? PX.fmtDate(etDate(item.first.ts)) + (etDate(item.first.ts) === etDate(x.ts) ? '' : ' to ' + PX.fmtDate(etDate(x.ts))) : PX.fmtDate(x.ts, true) + (x.ts.length === 10 ? ' · date only' : '');
+          t.textContent = item.n > 1 ? PX.fmtDate(etDate(item.first.ts)) + (etDate(item.first.ts) === etDate(x.ts) ? '' : '–' + PX.fmtDate(etDate(x.ts))) : PX.fmtDate(x.ts, true) + (x.ts.length === 10 ? ' · date only' : '');
           if (tg) p.appendChild(el('span', 'tag ' + tg[1], tg[0]));
           p.appendChild(el('code', '', x.type + (item.n > 1 ? ' ×' + item.n : '')));
           p.appendChild(document.createTextNode(text(x, item.n)));
@@ -236,7 +269,7 @@
     be.setAttribute('aria-expanded', String(showEarlier));
     be.textContent = showEarlier ? 'Hide ' + older + ' earlier weeks' : 'Show ' + older + ' earlier weeks';
     br.setAttribute('aria-pressed', String(showRoutine));
-    $('tl-note').textContent = (showEarlier ? 'Showing all ' + (older + 1) + ' weeks' : 'Showing the sample week, ' + PX.fmtDate(etDate(D.week.start)) + ' to ' + PX.fmtDate(D.week.sunday)) + (showRoutine ? ', with routine events.' : ', without routine events (nightly runs, digest, scorer, counts).');
+    $('tl-note').textContent = (showEarlier ? 'Showing all ' + (older + 1) + ' weeks' : 'Showing the sample week, ' + PX.fmtDate(etDate(D.week.start)) + '–' + (+D.week.sunday.slice(8)) + ', ' + D.week.sunday.slice(0, 4)) + (showRoutine ? ', with routine events.' : ', without routine events (nightly runs, digest, scorer, counts).');
   }
   $('b-earlier').addEventListener('click', function () { showEarlier = !showEarlier; view(); });
   $('b-routine').addEventListener('click', function () { showRoutine = !showRoutine; view(); });
@@ -254,7 +287,7 @@
     });
     $('bk-total').textContent = '$' + total.toLocaleString('en-US');
     var f = D.fills;
-    $('fills').textContent = 'Broker paper fills: ' + f.mirrored + ' calls copied, ' + (f.queued ? f.queued + ' waiting for the next open, ' : '') + f.notMirrored + ' underperform calls not copied. Paper P&L ' + PX.money(f.pl) + '. The same dollars in SPY over the same dates: ' + PX.money(f.spy) + '. Sample.';
+    $('fills').textContent = 'Broker paper fills: ' + f.mirrored + ' calls copied, ' + (f.queued ? f.queued + ' waiting for the next open, ' : '') + f.notMirrored + ' underperform calls not copied. Paper P&L ' + PX.money(f.pl) + '. The same dollars in SPY over the same dates: ' + PX.money(f.spy) + '. These are sample values.';
   }
 
   function feed() {
@@ -267,7 +300,6 @@
     document.documentElement.dataset.state = s;
     [].forEach.call(document.querySelectorAll('[data-set]'), function (b) { b.setAttribute('aria-pressed', String(b.dataset.set === s)); });
     scoreboard(on); calls(on); heartbeat(on);
-    if (window.HLRVignette) window.HLRVignette(on ? { vetoes: trayCount() } : { vetoes: 0, empty: true }); // the real wall is empty too
     if (on && !built) { timeline(); book(); feed(); built = true; }
   }
   [].forEach.call(document.querySelectorAll('[data-set]'), function (b) { b.addEventListener('click', function () { apply(b.dataset.set); }); });
