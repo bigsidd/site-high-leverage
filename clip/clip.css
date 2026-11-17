@@ -3,7 +3,7 @@ html,body{margin:0;overflow:hidden;background:var(--bg)}
 #hf{position:relative;overflow:hidden;background:var(--bg);--u:calc(var(--w, 1080) * 1px)}
 #hf .stage{position:absolute;inset:0;min-height:0;display:block}
 #hf .art{position:absolute;inset:0;margin:0;min-height:0}
-#hf .now-btn,#hf .legend{display:none}
+#hf .now-btn{display:none}
 #hf .tag{transition:none}
 #hf .now{grid-template-columns:1fr;box-shadow:0 2px 0 rgba(0,0,0,.04)}
 #hf .now .when,#hf .now .what,#hf .now .ticks{grid-row:auto}

@@ -39,9 +39,9 @@
     var rows = on ? ROWS : [], closed = rows.filter(function (r) { return r.outcome; });
     var wins = closed.filter(function (r) { return r.outcome === 'win'; }).length, losses = closed.length - wins;
     var sc = $('score'); sc.textContent = '';
-    [[closed.length, ' of 100 calls closed'], [wins, wins === 1 ? ' win' : ' wins'], [losses, losses === 1 ? ' loss' : ' losses'], [rows.length - closed.length, ' open'], [on ? trayCount() : 0, ' stopped before publishing']]
-      .forEach(function (x, i) { var sp = el('span'); sp.appendChild(el('b', '', String(x[0]))); sp.appendChild(document.createTextNode(x[1])); sc.appendChild(sp); });
-    sc.appendChild(el('span', 'muted', 'month ' + (on ? D.monthsElapsed : 0) + ' of 6' + (on ? ' (sample)' : '')));
+    [[closed.length, 'closed of 100'], [wins, wins === 1 ? 'win' : 'wins'], [losses, losses === 1 ? 'loss' : 'losses'], [rows.length - closed.length, 'open'], [on ? trayCount() : 0, 'stopped before publishing']]
+      .forEach(function (x, i) { var sp = el('span'); sp.appendChild(el('b', '', String(x[0]))); sp.appendChild(el('span', 'lbl', x[1])); sc.appendChild(sp); });
+    var mo = el('span'); mo.appendChild(el('b', '', String(on ? D.monthsElapsed : 0))); mo.appendChild(el('span', 'lbl', 'of 6 months' + (on ? ' (sample)' : ''))); sc.appendChild(mo);
     $('meter').style.width = closed.length + '%';
     var tb = $('cal'); tb.textContent = '';
     ['high', 'standard'].forEach(function (b) {
@@ -59,11 +59,12 @@
     'memo.drafted': 'The analyst drafted the memo',
     'memo.forwarded': 'A script passed it to the risk officer',
     'risk.reviewed': 'The risk officer passed it, with a dissent attached',
-    'decision.made': 'The committee chair decided to publish',
+    'decision.made': 'The chair decided to publish',
     'approval.stamped': 'Sidd signed it, and the call carries this event id as its approval',
     'row.published': 'Published and sealed'
   };
   // the published reasoning for one call (design/07): the case, the case against it, and what would prove each wrong
+  var tabSeq = 0;
   function reasoning(w) {
     var box = el('div', 'rs');
     box.appendChild(el('p', 'rs-tag', 'Sample reasoning \u00b7 hand-written placeholder, not model output'));
@@ -74,6 +75,31 @@
     b.appendChild(el('h3', 'rs-h', 'The risk officer\u2019s dissent'));
     b.appendChild(el('p', '', w.dissent.counter_case));
     var cf = el('p'); cf.appendChild(el('span', 'rs-lab', 'The dissent is right if')); cf.appendChild(document.createTextNode(w.dissent.counter_falsifier)); b.appendChild(cf);
+    // phones: one column at a time (CSS hides the control and shows both columns from 640px up)
+    var dl = el('p', 'rs-dline'); dl.appendChild(el('span', 'rs-lab', 'The dissent is right if: ')); dl.appendChild(document.createTextNode(w.dissent.counter_falsifier));
+    var seg = el('div', 'rs-seg'), tabs = [];
+    seg.setAttribute('role', 'tablist'); seg.setAttribute('aria-label', 'Show one column');
+    var uid = 't' + (++tabSeq);
+    [['case', 'The case', a], ['dis', 'The risk officer\u2019s dissent', b]].forEach(function (t, i) {
+      var bt = el('button', '', t[1]); bt.type = 'button'; bt.id = uid + t[0];
+      bt.setAttribute('role', 'tab'); bt.setAttribute('aria-controls', uid + 'p' + t[0]);
+      t[2].id = uid + 'p' + t[0]; t[2].setAttribute('role', 'tabpanel'); t[2].setAttribute('aria-labelledby', bt.id);
+      tabs.push(bt); seg.appendChild(bt);
+    });
+    function pick(i, focus) {
+      box.dataset.tab = i ? 'dis' : 'case';
+      tabs.forEach(function (t, j) { t.setAttribute('aria-selected', String(j === i)); t.tabIndex = j === i ? 0 : -1; });
+      if (focus) tabs[i].focus();
+    }
+    tabs.forEach(function (t, i) {
+      t.addEventListener('click', function () { pick(i); });
+      t.addEventListener('keydown', function (e) {
+        var n = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: 0, ArrowUp: 0, Home: 0, End: 1 }[e.key];
+        if (n == null) return; e.preventDefault(); pick(n, true);
+      });
+    });
+    pick(0);
+    box.appendChild(dl); box.appendChild(seg);
     two.appendChild(a); two.appendChild(b); box.appendChild(two);
     var brk = el('details', 'rs-brk'); brk.appendChild(el('summary', '', 'What would break it'));
     var tw = el('div', 'tw'), tb = el('table', 'rs-p'), hd = el('tr');
@@ -86,12 +112,14 @@
       tr.firstChild.setAttribute('scope', 'row'); bd.appendChild(tr);
     });
     tb.appendChild(bd); tw.appendChild(tb); brk.appendChild(tw);
-    brk.appendChild(el('p', 'muted', 'On the real ledger this text is ledger/reasoning/C-n.json, published in the same commit as the row. Its public_sha256 lets you recompute, from the ledger alone, that this is the text Sidd signed. In this preview there is nothing to verify.'));
+    brk.appendChild(el('p', 'muted', 'On the real ledger this text is ledger/reasoning/C-n.json, published in the same commit as the row. Its public_sha256 lets you recompute, from the ledger alone, that this is the text Sidd signed.'));
     box.appendChild(brk);
     return box;
   }
   function openFromHash() { // record.html#C-6 opens that call
-    var id = location.hash.slice(1); if (!/^C-\d+$/.test(id)) return;
+    var id = location.hash.slice(1);
+    if (id === 'feed') { var fd = document.getElementById('feed'); if (fd) { fd.open = true; fd.scrollIntoView({ block: 'start' }); } return; }
+    if (!/^C-\d+$/.test(id)) return;
     var li = document.getElementById(id); if (!li) return;
     var d = li.querySelector('details'); if (d) d.open = true;
     li.scrollIntoView({ block: 'start' });
@@ -110,7 +138,7 @@
       if (r === ROWS[ROWS.length - 1]) det.open = true; // the newest call opens by default
       var why = (D.reasoning || {})[r.id];
       if (why) det.appendChild(reasoning(why));
-      det.appendChild(el('h3', 'rs-h rs-how', 'How it got here'));
+      det.appendChild(el('p', 'rs-lab rs-how', 'How it got here'));
       var ol = el('ol', 'steps'), ids = [];
       r.chain.forEach(function (id) {
         var e = evOf(id), s = el('li'), t = el('time', '', stepWhen(e.ts)), p = el('p');
@@ -130,23 +158,23 @@
       det.appendChild(pr);
       li.appendChild(det); box.appendChild(li);
     });
-    else box.appendChild(el('li', 'call none', 'No calls yet. No. 1 appears only after the committee chair decides and Sidd signs. The model never publishes.'));
+    else box.appendChild(el('li', 'call none', 'No calls yet. No. 1 appears only after the chair decides and Sidd signs.'));
     // day 0: the rules are sealed before the first call (design/16)
     var d0 = el('li', 'call day0'), dl = el('p', 'cl');
     dl.appendChild(el('b', 'cn', 'Day 0'));
     dl.appendChild(document.createTextNode(on ? ' · ' + long(D.cutover) : ' · not dated yet'));
     d0.appendChild(dl);
+    if (on) dl.appendChild(el('span', 'st s-open', 'Rules sealed'));
     d0.appendChild(el('p', 'muted', on
-      ? 'The prompts, the tests, the scoring rule and the 100-call rule were committed before No. 1. Any change adds a new dated entry.'
+      ? 'The prompts, the tests, the scoring rule and the 100-call rule were committed and anchored before No. 1. Any change adds a new dated entry.'
       : 'The prompts, the tests, the scoring rule and the 100-call rule get committed before No. 1. Any later change adds a new dated entry.'));
     box.appendChild(d0);
   }
 
   // heartbeat: one dot per night since day 0, gaps for missed nights (design/16)
   function heartbeat(on) {
-    var box = $('beat'); box.textContent = '';
+    var box = $('beat'); box.textContent = ''; box.style.gridTemplateColumns = '';
     if (!on) {
-      box.setAttribute('aria-label', 'No nights yet.');
       $('beat-note').textContent = 'No nights yet. The first dot appears the night after day 0.'; return;
     }
     var ran = {}, days = [];
@@ -155,14 +183,14 @@
     var missed = days.filter(function (x) { return !ran[x]; });
     days.forEach(function (x) { var i = el('i', ran[x] ? '' : 'gap'); i.title = PX.fmtDate(x) + (ran[x] ? ': ran' : ': missed'); box.appendChild(i); });
     var txt = 'Ran ' + (days.length - missed.length) + ' of ' + days.length + ' nights since ' + long(days[0]) + '.' + (missed.length ? ' Missed ' + missed.map(function (x) { return PX.fmtDate(x); }).join(' and ') + '.' : ' Missed none.');
-    box.setAttribute('aria-label', txt);
-    $('beat-note').textContent = txt;
+    box.style.gridTemplateColumns = 'repeat(' + days.length + ',1fr)';
+    $('beat-note').textContent = txt + ' A filled dot is a night the nightly run completed; an outlined gap is a night it didn\u2019t run.';
   }
 
   // the full event log
   var ROUTINE = { 'digest.sent': 1, 'week.quiet': 1, 'row.scored': 1, 'anomaly.flagged': 1, 'thesis.checked': 1, 'day.ran': 1 };
   var FOLD = { 'anomaly.flagged': 1, 'row.scored': 1, 'thesis.checked': 1, 'day.ran': 1 };
-  var STAGE = { note: 'the note', risk: 'the risk officer', committee: 'the committee chair', sidd: 'Sidd' };
+  var STAGE = { note: 'the note', risk: 'the risk officer', committee: 'the chair', sidd: 'Sidd' };
   function text(e, n) {
     var r = e.ref && rowOf(e.ref);
     switch (e.type) {
@@ -175,7 +203,7 @@
       case 'memo.drafted': return 'The analyst drafted a memo from a script screen.';
       case 'memo.forwarded': return 'A script passed the memo to the risk officer.';
       case 'risk.reviewed': return 'The risk officer passed the memo with a dissent attached.';
-      case 'decision.made': var dr = rowOf(e._row); return 'The committee chair decided to publish: ' + dr.months + ' months, ' + dr.confidence_bucket + ' confidence.';
+      case 'decision.made': var dr = rowOf(e._row); return 'The chair decided to publish: ' + dr.months + ' months, ' + dr.confidence_bucket + ' confidence.';
       case 'approval.stamped': return 'Sidd signed ' + no(r) + '.';
       case 'row.published': return no(r) + ' · ' + r.ticker + ', ' + r.direction + ', ' + r.months + ' months, ' + r.confidence_bucket + ' confidence.';
       case 'chain.dropped': return 'A memo stopped at ' + (STAGE[e.stage] || e.stage) + ', recorded with its stage and date and no ticker.';

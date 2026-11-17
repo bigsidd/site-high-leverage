@@ -17,8 +17,8 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="assets/favicon.svg?v=e6431b43" type="image/svg+xml">
 <link rel="stylesheet" href="assets/fonts.css?v=cc6ba290">
-<link rel="stylesheet" href="assets/tokens.css?v=8e6ab7ad">
-<link rel="stylesheet" href="assets/site.css?v=f9b10273">
+<link rel="stylesheet" href="assets/tokens.css?v=758c9adf">
+<link rel="stylesheet" href="assets/site.css?v=bd8da3ad">
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -38,14 +38,15 @@
   <h1>How it works</h1>
   <div class="bar1"><span class="preview">Design preview · not running yet</span></div>
   <p class="lede">Scripts do every step that can be code. A model is called only where a judgment has to be written down: one call, no tools, an answer in JSON that a script checks before anything moves.</p>
-  <p class="lede2">Three models hold seats, one person signs, and only a script can publish.</p>
+  <p class="lede2">Three models hold seats, one person signs, and a script publishes.</p>
 </header>
 
 <section class="blk sc-seats" id="path" aria-labelledby="h-path" data-seats><span id="one-call" class="old-anchor"></span><span id="h-c" class="old-anchor"></span>
   <h2 id="h-path">One call, start to finish</h2>
-  <div class="sc-tabs" role="tablist" aria-label="One call, in the order it moves"><button type="button" role="tab" id="t-scripts" aria-controls="scripts" aria-selected="true" tabindex="0" data-k="scripts" data-lab="Scripts · pull and screen"><small>script</small>Scripts</button><button type="button" role="tab" id="t-m1" aria-controls="m1" aria-selected="false" tabindex="-1" data-k="m1" data-lab="1 · the analyst"><small>1 · model</small>Analyst</button><button type="button" role="tab" id="t-m2" aria-controls="m2" aria-selected="false" tabindex="-1" data-k="m2" data-lab="2 · the risk officer"><small>2 · model</small>Risk officer</button><button type="button" role="tab" id="t-m3" aria-controls="m3" aria-selected="false" tabindex="-1" data-k="m3" data-lab="3 · the chair"><small>3 · model</small>Chair</button><button type="button" role="tab" id="t-pm" aria-controls="pm" aria-selected="false" tabindex="-1" data-k="pm" data-lab="4 · Sidd, portfolio manager"><small>4 · person</small>Sidd</button><button type="button" role="tab" id="t-publish" aria-controls="publish" aria-selected="false" tabindex="-1" data-k="publish" data-lab="5 · scripts publish and score"><small>5 · script</small>Publish and score</button><button type="button" role="tab" id="t-bench" aria-controls="bench" aria-selected="false" tabindex="-1" data-k="bench" data-lab="The bench · no seat yet"><small>no seat yet</small>The bench</button></div>
+  <div class="sc-tabs" role="tablist" aria-label="One call, in the order it moves"><button type="button" role="tab" id="t-scripts" aria-controls="scripts" aria-selected="true" tabindex="0" data-k="scripts">Scripts</button><button type="button" role="tab" id="t-m1" aria-controls="m1" aria-selected="false" tabindex="-1" data-k="m1"><small>1</small>Analyst</button><button type="button" role="tab" id="t-m2" aria-controls="m2" aria-selected="false" tabindex="-1" data-k="m2"><small>2</small>Risk officer</button><button type="button" role="tab" id="t-m3" aria-controls="m3" aria-selected="false" tabindex="-1" data-k="m3"><small>3</small>Chair</button><button type="button" role="tab" id="t-pm" aria-controls="pm" aria-selected="false" tabindex="-1" data-k="pm"><small>4</small>Sidd</button><button type="button" role="tab" id="t-publish" aria-controls="publish" aria-selected="false" tabindex="-1" data-k="publish"><small>5</small>The record</button><button type="button" role="tab" id="t-bench" aria-controls="bench" aria-selected="false" tabindex="-1" data-k="bench">The bench</button></div>
   <div class="sc-grid">
-    <div class="sc-stage" aria-hidden="true"><div class="sc-floor"></div><span class="sc-lab"></span></div>
+    <div class="sc-fig"><div class="sc-stage" aria-hidden="true"><div class="sc-floor"></div><span class="sc-lab"></span></div>
+    <p class="sc-legend">Blue face plates: the three model seats. Grey: the bench. Sidd is the one person.</p></div>
     <div class="sc-panels">
     <article class="sc" id="scripts" role="tabpanel" aria-labelledby="t-scripts" tabindex="0">
       <span class="sc-badge b-script"><i></i>Script · no model</span>
@@ -62,6 +63,7 @@
     </tbody>
   </table>
   </div></details>
+      <button type="button" class="btn sc-next" data-next="m1">Next: Analyst &rarr;</button>
     </article>
     <article class="sc" id="m1" role="tabpanel" aria-labelledby="t-m1" tabindex="0">
       <span class="sc-badge b-model"><i></i>AI model · Sonnet 5.5</span>
@@ -72,16 +74,17 @@
       <details class="sc-spec"><summary>Full spec</summary><dl>
           <dt>Model</dt><dd>Sonnet 5.5</dd>
           <dt>Runs</dt><dd>The weekly memo (Saturday, 10:00 AM ET), anomaly notes (up to 3 a week), a deep dive when I pick &ldquo;dig in&rdquo; on a note, a memo on a ticker I name, and the monthly thesis check (the 1st, 10:00 AM ET).</dd>
-          <dt>Reads</dt><dd>Facts from filings, built by script. Ratio colors (green, yellow, red). The script&rsquo;s intrinsic-value range and a valuation bucket in place of a price. Filing excerpts, passed in as quoted data. The prior memo and pillar states, if the name has a history.</dd>
+          <dt>Reads</dt><dd>Facts from filings built by script, ratio colors (green, yellow, red), the script&rsquo;s intrinsic-value range and a valuation bucket in place of a price, filing excerpts passed in as quoted data, and the prior memo and pillar states if the name has a history.</dd>
           <dt>Writes</dt><dd>A memo: a thesis of up to 120 words, what the market has wrong, a value range inside the script&rsquo;s, a 3-month horizon, exactly three risks, pillars that must stay true and what would break each, bull, base and bear weights that sum to 100, unknowns, and claims labeled sourced, estimated or unverified. Anomaly notes are 60 words at most, and &ldquo;no cause found&rdquo; is a valid answer.</dd>
-          <dt>Refuses</dt><dd>Sizing, entry zones, price targets and &ldquo;buy at&rdquo; language. Any ticker that isn&rsquo;t in its input. Instructions hidden in filing text. Any claim without a label.</dd>
+          <dt>Refuses</dt><dd>It refuses to write sizing, entry zones, price targets or &ldquo;buy at&rdquo; language, to name a ticker that isn&rsquo;t in its input, to follow instructions hidden in filing text, or to make a claim without a label.</dd>
           <dt>Test plan</dt><dd>Will be tested on 115 cases across its five routines, each run 3 times, plus at least 2 planted instructions and 2 detector misses per routine.</dd>
-          <dt>Can&rsquo;t</dt><dd>Publish, use tools, see a price, start its own deep dive, move a thesis&rsquo;s state (it proposes and a script moves it), or know whether a memo was requested.</dd>
+          <dt>Can&rsquo;t</dt><dd>It can&rsquo;t publish, use tools, see a price or start its own deep dive. It proposes a change to a thesis&rsquo;s state and a script makes it, and it never knows whether a memo was requested.</dd>
           <dt>Will cover</dt><dd>The market-sentinel, value-scout and thesis-tracker jobs while those roles are on the bench.</dd>
         </dl></details>
+      <button type="button" class="btn sc-next" data-next="m2">Next: Risk officer &rarr;</button>
     </article>
     <article class="sc" id="m2" role="tabpanel" aria-labelledby="t-m2" tabindex="0">
-      <span class="sc-badge b-model"><i></i>AI model · Sonnet 5.5, separate context</span>
+      <span class="sc-badge b-model"><i></i>AI model · Sonnet 5.5</span>
       <h3><span class="sc-no">2</span>The risk officer</h3>
       <p class="sc-job">Argues against every memo and can veto it.</p>
       <dl class="sc-facts"><dt>Reads</dt><dd>The memo and numbers a script pulled from the filings. Not the filings themselves.</dd><dt>Writes</dt><dd>Pass or veto, with a written dissent even on a pass.</dd><dt>Stops if</dt><dd>It vetoes, or a script&rsquo;s red-flag rule does. The idea&rsquo;s ticker is never published.</dd></dl>
@@ -89,45 +92,48 @@
       <details class="sc-spec"><summary>Full spec</summary><dl>
           <dt>Model</dt><dd>Sonnet 5.5, a separate seat. Whether it should run on Opus is open, and the planted-flaw tests will inform it.</dd>
           <dt>Runs</dt><dd>Whenever the analyst drafts a memo. A script hands it over, with no step from me.</dd>
-          <dt>Reads</dt><dd>The memo, numbers a script pulled from filings, script flags and the scoring rubric. Not the raw filing text, so the untrusted surface doesn&rsquo;t double.</dd>
-          <dt>Writes</dt><dd>Pass or veto. A dissent that argues against the call, required even on a pass. Scores from 1 to 5 on the thesis, loss risk and direction. Checks for hard red flags such as accounting problems or dilution to survive.</dd>
+          <dt>Reads</dt><dd>The memo, numbers a script pulled from filings, script flags and the scoring rubric, but not the raw filing text, so the untrusted surface doesn&rsquo;t double.</dd>
+          <dt>Writes</dt><dd>A pass or a veto, a dissent that argues against the call (required even on a pass), scores from 1 to 5 on the thesis, loss risk and direction, and a check for hard red flags such as accounting problems or dilution to survive.</dd>
           <dt>Then a script</dt><dd>Forces a veto if any hard red flag fires, scores the valuation gap itself from the price, and decides which direction the call is eligible for. A script can turn a pass into a veto, never a veto into a pass.</dd>
-          <dt>Refuses</dt><dd>Approving its own memo. An empty dissent: a dissent under 40 characters, or one that copies the thesis, is withheld. Reading raw filings.</dd>
+          <dt>Refuses</dt><dd>It refuses to approve its own memo or read raw filings, and a dissent under 40 characters, or one that copies the thesis, is withheld as empty.</dd>
           <dt>Test plan</dt><dd>Will be tested on 30 cases, each run 3 times: a memo with a planted flaw that must draw a veto 3 of 3 times, a clean memo that still needs a real dissent, hidden sizing language, and a value range outside the script&rsquo;s.</dd>
-          <dt>Can&rsquo;t</dt><dd>Publish, approve anything, see a price, or score valuation.</dd>
+          <dt>Can&rsquo;t</dt><dd>It can&rsquo;t publish, approve anything, see a price or score valuation.</dd>
         </dl></details>
+      <button type="button" class="btn sc-next" data-next="m3">Next: Chair &rarr;</button>
     </article>
     <article class="sc" id="m3" role="tabpanel" aria-labelledby="t-m3" tabindex="0">
       <span class="sc-badge b-model"><i></i>AI model · Opus 5.5</span>
       <h3><span class="sc-no">3</span>The chair</h3>
       <p class="sc-job">Decides whether a call that survived risk is worth publishing.</p>
-      <dl class="sc-facts"><dt>Reads</dt><dd>The memo with its dissent, the script&rsquo;s eligibility check and the calls already open.</dd><dt>Writes</dt><dd>Publish or not, outperform or underperform, the horizon, standard or high confidence, and an answer to the dissent.</dd><dt>Stops if</dt><dd>It declines. It can decline any call, but it can&rsquo;t push one past the script&rsquo;s check. Up to 2 decisions a week.</dd></dl>
+      <dl class="sc-facts"><dt>Reads</dt><dd>The memo with its dissent, the script&rsquo;s eligibility check and the calls already open.</dd><dt>Writes</dt><dd>Publish or not, outperform or underperform, standard or high confidence, and an answer to the dissent.</dd><dt>Stops if</dt><dd>It declines. It can decline any call, but it can&rsquo;t push one past the script&rsquo;s check.</dd><dt>Limit</dt><dd>Up to 2 decisions a week.</dd></dl>
       <p class="sc-wk"><b>Sample week</b>Sat 10:40 AM ET · publish SMPL, underperform, 3 months</p>
       <details class="sc-spec"><summary>Full spec</summary><dl>
           <dt>Model</dt><dd>Opus 5.5, the only Opus seat.</dd>
           <dt>Runs</dt><dd>When the risk officer passes a memo. Up to 2 decisions a week.</dd>
           <dt>Reads</dt><dd>The memo with the dissent attached, the script&rsquo;s eligibility check, and the calls already open on the public ledger. Never a memo without the dissent: the script won&rsquo;t build that input.</dd>
-          <dt>Writes</dt><dd>Publish or not. Outperform or underperform, with the same weight either way. The horizon, 3 months unless there&rsquo;s a reason for 6 or 12. A standard or high confidence bucket, in either direction. A written answer to the dissent&rsquo;s strongest point, marked accepted, rebutted or partly accepted. A reason code, such as no edge or dissent stands.</dd>
-          <dt>Then a script</dt><dd>Rejects any call past the check: it can decline, never upgrade. It caps the confidence bucket, requires the horizon and value range to match the memo, and allows one open call per company.</dd>
-          <dt>Refuses</dt><dd>Deciding without the dissent attached. Any sizing; its output has no field for it. Publishing: it outputs a decision, and only my approval plus a script can publish.</dd>
+          <dt>Writes</dt><dd>Publish or not. Outperform or underperform, with the same weight either way. A standard or high confidence bucket, in either direction. A written answer to the dissent&rsquo;s strongest point, marked accepted, rebutted or partly accepted, and a reason code such as no edge or dissent stands. It doesn&rsquo;t write a horizon: every call runs 3 months, and only I can move one to 6 or 12 when I sign.</dd>
+          <dt>Then a script</dt><dd>Rejects any call past the check: it can decline, never upgrade. It caps the confidence bucket, requires the value range to match the memo and the horizon to be the fixed 3 months, and allows one open call per company.</dd>
+          <dt>Refuses</dt><dd>It refuses to decide without the dissent attached, and it can&rsquo;t size anything because its output has no field for sizing, a horizon or publishing.</dd>
           <dt>Test plan</dt><dd>Will be tested on 30 cases, each run 3 times, including a risk veto it can&rsquo;t override quietly, split benchmarks, and a conceded point that does or doesn&rsquo;t break a pillar. With the risk veto forced off, it must still decline the planted-flaw memo in at least 2 of 3 runs.</dd>
-          <dt>Can&rsquo;t</dt><dd>Publish, re-estimate the value range, see a price, or see my private holdings.</dd>
+          <dt>Can&rsquo;t</dt><dd>It can&rsquo;t publish, re-estimate the value range, see a price or see my private holdings.</dd>
         </dl></details>
+      <button type="button" class="btn sc-next" data-next="pm">Next: Sidd &rarr;</button>
     </article>
     <article class="sc" id="pm" role="tabpanel" aria-labelledby="t-pm" tabindex="0">
       <span class="sc-badge b-human"><i></i>Person · signs</span>
       <h3><span class="sc-no">4</span>Sidd, portfolio manager</h3>
       <p class="sc-job">Signs each call, or doesn&rsquo;t.</p>
-      <dl class="sc-facts"><dt>Reads</dt><dd>The call and its reasoning exactly as they would publish.</dd><dt>Can</dt><dd>Approve, discard, pick another fixed horizon, or lower the confidence.</dd><dt>Can&rsquo;t</dt><dd>Change the direction, raise the confidence, relax a check or size a position.</dd><dt>Stops if</dt><dd>I discard it, or don&rsquo;t sign within 72 hours. About 37 minutes a week, by my estimate.</dd></dl>
+      <dl class="sc-facts"><dt>Reads</dt><dd>The call and its reasoning exactly as they would publish.</dd><dt>Can</dt><dd>Approve, discard, move the horizon to 6 or 12 months, or lower the confidence.</dd><dt>Can&rsquo;t</dt><dd>Change the direction, raise the confidence, relax a check or size a position.</dd><dt>Stops if</dt><dd>I discard it, or don&rsquo;t sign within 72 hours.</dd><dt>Time</dt><dd>About 37 minutes a week, my estimate.</dd></dl>
       <p class="sc-wk"><b>Sample week</b>Sun 6:14 PM ET · signed No. 6</p>
       <details class="sc-spec"><summary>Full spec</summary><dl>
-        <dt>Signs</dt><dd>Each call the chair wants to publish, once, from its own approval email. A reminder comes at 48 hours. I see the call and its reasoning file exactly as the script would commit them, and my signature covers both.</dd>
-        <dt>Choices</dt><dd>Approve, discard, move the horizon to another of its fixed options, or lower the confidence from high to standard. Never up.</dd>
-        <dt>Also decides</dt><dd>&ldquo;Dig in&rdquo; or skip on anomaly notes. Any proposed upgrade to a thesis pillar, since upgrades are the direction that flatters the desk. Early closes, after the chair. Which tickers to request, one bare ticker at a time.</dd>
-        <dt>Time</dt><dd>The weekly estimate above hasn&rsquo;t been measured yet.</dd>
+        <dt>Signs</dt><dd>Each call the chair wants to publish, once. I&rsquo;m asked by email, with a summary and a one-tap link, and the signature of record is a GitHub approving review on a private approvals repo. A reminder comes at 48 hours. I see the call and its reasoning file exactly as the script would commit them, and my signature covers both.</dd>
+        <dt>Choices</dt><dd>I can approve, discard, move the horizon from 3 months to 6 or 12, or lower the confidence from high to standard, but never raise it.</dd>
+        <dt>Also decides</dt><dd>Whether to dig in on an anomaly note, whether to accept a proposed upgrade to a thesis pillar (upgrades are the direction that flatters the desk), early closes after the chair has weighed in, and which tickers to request, one bare ticker at a time.</dd>
+        <dt>Time</dt><dd>The weekly figure in the summary above is an estimate and hasn&rsquo;t been measured yet.</dd>
         <dt>Can&rsquo;t</dt><dd>Change a call&rsquo;s direction, relax a check, or size a position. Every call is the same $10,000 on paper. I can&rsquo;t pass a thesis to the seats through a request, and my own holdings stay in a private tool that never publishes.</dd>
-        <dt>Doesn&rsquo;t sign</dt><dd>Scores and horizon closes. Those run by rule.</dd>
+        <dt>Doesn&rsquo;t sign</dt><dd>I don&rsquo;t sign scores or horizon closes, which run by rule.</dd>
       </dl><p class="small" data-gap="3">The portfolio manager is a person. An AI portfolio manager is off the table.</p></details>
+      <button type="button" class="btn sc-next" data-next="publish">Next: The record &rarr;</button>
     </article>
     <article class="sc" id="publish" role="tabpanel" aria-labelledby="t-publish" tabindex="0">
       <span class="sc-badge b-script"><i></i>Script · no model</span>
@@ -140,12 +146,13 @@
     <caption id="cap-p">The scripts after I sign</caption>
     <thead><tr><th scope="col">Script</th><th scope="col">Does</th><th scope="col">When</th></tr></thead>
     <tbody>
-      <tr><th scope="row" class="mono">Publish</th><td>Commits a signed call, its capped reasoning file and its events in one commit with an outside timestamp anchor. Re-checks the universe and the restricted list. Refuses anything without my signature, and sends a restricted, out-of-universe or already published ticker back to me.</td><td>After I sign</td></tr>
+      <tr><th scope="row" class="mono">Publish</th><td>Commits a signed call, its capped reasoning file and its events in one commit with an outside timestamp anchor. Re-checks the universe and the restricted list. Sends a restricted, out-of-universe or already published ticker back to me.</td><td>After I sign</td></tr>
       <tr><th scope="row" class="mono">Scorer</th><td>Scores every call against SPY and its sector fund. Closes calls at their horizon.</td><td>Trading days, 10:00 PM ET</td></tr>
       <tr><th scope="row" class="mono">Digest</th><td>Counts, calls against the cap and how many approvals are open, never the approvals themselves. Releases the week&rsquo;s ticker-less events.</td><td>Sunday, 6:00 PM ET</td></tr>
     </tbody>
   </table>
   </div><p class="small" data-gap="3">A monthly analyst check can propose an early close, but that goes back through the chair and me, and lands as a new close entry. The original call never changes. Their output lands on <a href="record.html">the record</a>.</p></details>
+      <button type="button" class="btn sc-next" data-next="bench">Next: The bench &rarr;</button>
     </article>
     <article class="sc" id="bench" role="tabpanel" aria-labelledby="t-bench" tabindex="0">
       <span class="sc-badge b-bench"><i></i>No seat yet</span>
@@ -175,15 +182,15 @@
   <h2 id="h-stop">Who can stop a call</h2>
   <p>The writer, the checker and the decider are separate, and none of them can publish.</p>
   <div class="tw" role="region" aria-labelledby="cap-stop" tabindex="0">
-  <table class="sc-matrix">
+  <table class="sc-matrix" role="table">
     <caption id="cap-stop" class="sr">What each part of the desk can and can&rsquo;t do</caption>
-    <thead><tr><th scope="col"><span class="sr">Ability</span></th><th scope="col">Analyst</th><th scope="col">Risk officer</th><th scope="col">Chair</th><th scope="col">Sidd</th><th scope="col">Scripts</th></tr></thead>
-    <tbody>
-      <tr><th scope="row">Can stop a call</th><td class="c-no">No<small>it can only fail a check</small></td><td class="c-yes">Yes<small>by veto</small></td><td class="c-yes">Yes<small>by declining</small></td><td class="c-yes">Yes<small>by not signing</small></td><td class="c-yes">Yes<small>by a failed check or the restricted list</small></td></tr>
-      <tr><th scope="row">Can publish</th><td class="c-no">No</td><td class="c-no">No</td><td class="c-no">No</td><td class="c-no">No<small>he signs; a script publishes</small></td><td class="c-yes">Yes<small>only after the signature</small></td></tr>
-      <tr><th scope="row">Sees a price</th><td class="c-no">No</td><td class="c-no">No</td><td class="c-no">No</td><td class="c-yes">Yes</td><td class="c-yes">Yes<small>in the screen and the scorer</small></td></tr>
-      <tr><th scope="row">Holds the write key</th><td class="c-no">No</td><td class="c-no">No</td><td class="c-no">No</td><td class="c-no">No</td><td class="c-yes">Yes<small>the publish script only</small></td></tr>
-      <tr><th scope="row">Uses tools</th><td class="c-no">No</td><td class="c-no">No</td><td class="c-no">No</td><td class="c-no">n/a</td><td class="c-yes">Yes</td></tr>
+    <thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader"><span class="sr">Ability</span></th><th scope="col" role="columnheader">Analyst</th><th scope="col" role="columnheader">Risk officer</th><th scope="col" role="columnheader">Chair</th><th scope="col" role="columnheader">Sidd</th><th scope="col" role="columnheader">Scripts</th></tr></thead>
+    <tbody role="rowgroup">
+      <tr role="row"><th scope="row" role="rowheader">Can stop a call</th><td role="cell" data-seat="Analyst" class="c-no">No<small>it can only fail a check</small></td><td role="cell" data-seat="Risk officer" class="c-yes">Yes<small>by veto</small></td><td role="cell" data-seat="Chair" class="c-yes">Yes<small>by declining</small></td><td role="cell" data-seat="Sidd" class="c-yes">Yes<small>by not signing</small></td><td role="cell" data-seat="Scripts" class="c-yes">Yes<small>by a failed check or the restricted list</small></td></tr>
+      <tr role="row"><th scope="row" role="rowheader">Can publish</th><td role="cell" data-seat="Analyst" class="c-no">No</td><td role="cell" data-seat="Risk officer" class="c-no">No</td><td role="cell" data-seat="Chair" class="c-no">No</td><td role="cell" data-seat="Sidd" class="c-no">No<small>he signs; a script publishes</small></td><td role="cell" data-seat="Scripts" class="c-yes">Yes<small>only after the signature</small></td></tr>
+      <tr role="row"><th scope="row" role="rowheader">Sees a price</th><td role="cell" data-seat="Analyst" class="c-no">No</td><td role="cell" data-seat="Risk officer" class="c-no">No</td><td role="cell" data-seat="Chair" class="c-no">No</td><td role="cell" data-seat="Sidd" class="c-yes">Yes</td><td role="cell" data-seat="Scripts" class="c-yes">Yes<small>in the screen and the scorer</small></td></tr>
+      <tr role="row"><th scope="row" role="rowheader">Holds the write key</th><td role="cell" data-seat="Analyst" class="c-no">No</td><td role="cell" data-seat="Risk officer" class="c-no">No</td><td role="cell" data-seat="Chair" class="c-no">No</td><td role="cell" data-seat="Sidd" class="c-no">No</td><td role="cell" data-seat="Scripts" class="c-yes">Yes<small>the publish script only</small></td></tr>
+      <tr role="row"><th scope="row" role="rowheader">Uses tools</th><td role="cell" data-seat="Analyst" class="c-no">No</td><td role="cell" data-seat="Risk officer" class="c-no">No</td><td role="cell" data-seat="Chair" class="c-no">No</td><td role="cell" data-seat="Sidd" class="c-no">n/a</td><td role="cell" data-seat="Scripts" class="c-yes">Yes</td></tr>
     </tbody>
   </table>
   </div>
@@ -216,7 +223,7 @@
 
 <section class="blk txt" id="open" aria-labelledby="h-open"><span id="edge" class="old-anchor"></span>
   <h2 id="h-open">Not proven yet</h2>
-  <p>None of this has run. If a behavior isn&rsquo;t in a test case, I don&rsquo;t promise it.</p>
+  <p>If a behavior isn&rsquo;t in a test case, I don&rsquo;t promise it.</p>
   <div class="tw" role="region" aria-labelledby="cap-bar" tabindex="0">
   <table class="bars">
     <caption id="cap-bar" class="sr">What has to pass before the desk runs</caption>
@@ -256,7 +263,7 @@
           <tr><th scope="row">Deep dive</th><td>Analyst</td><td>When I pick &ldquo;dig in&rdquo; on a note</td><td>Inside the daily cap</td></tr>
           <tr><th scope="row">On request</th><td>Analyst</td><td>When I name a ticker</td><td>2 a week</td></tr>
           <tr><th scope="row">Risk review</th><td>Risk officer</td><td>When a memo is drafted</td><td>One call per memo</td></tr>
-          <tr><th scope="row">Committee chair</th><td>Chair</td><td>When the risk officer passes</td><td>Up to 2 a week</td></tr>
+          <tr><th scope="row">Chair decision</th><td>Chair</td><td>When the risk officer passes</td><td>Up to 2 a week</td></tr>
           <tr><th scope="row">Thesis check</th><td>Analyst</td><td>1st of the month, 10:00 AM ET</td><td>Up to 8 open calls a run</td></tr>
           <tr><th scope="row">Publish</th><td>Script</td><td>After I sign</td><td>No model calls</td></tr>
           <tr><th scope="row">Scorer</th><td>Script</td><td>Trading days, 10:00 PM ET</td><td>No model calls</td></tr>
@@ -271,7 +278,7 @@
       <p>All of these numbers are untested starting values. Proving will tune them.</p>
     </details>
     <details id="tests"><summary>Test cases by routine</summary>
-      <p>Each model routine gets 20 to 30 cases, and every case will run 3 times against the real model. None has run yet.</p>
+      <p>Each model routine gets 20 to 30 cases, and every case will run 3 times against the real model.</p>
       <div class="tw" role="region" aria-labelledby="cap-t" tabindex="0">
       <table>
         <caption id="cap-t">Test cases per model routine</caption>
@@ -282,7 +289,7 @@
           <tr><th scope="row">On request</th><td>Analyst</td><td class="n">20</td><td>A ticker outside the universe. A restricted ticker. A request that carries a direction</td></tr>
           <tr><th scope="row">Weekly memo</th><td>Analyst</td><td class="n">30</td><td>Nothing passes the screen. An update that has to contradict the prior thesis</td></tr>
           <tr><th scope="row">Risk review</th><td>Risk officer</td><td class="n">30</td><td>A memo with a planted flaw. A clean memo that still needs a dissent. Hidden sizing language</td></tr>
-          <tr><th scope="row">Committee chair</th><td>Chair</td><td class="n">30</td><td>A conceded point: publish if it breaks no pillar, decline if it does</td></tr>
+          <tr><th scope="row">Chair decision</th><td>Chair</td><td class="n">30</td><td>A conceded point: publish if it breaks no pillar, decline if it does</td></tr>
           <tr><th scope="row">Thesis check</th><td>Analyst</td><td class="n">25</td><td>One bad period that must not downgrade a pillar</td></tr>
         </tbody>
       </table>
@@ -290,7 +297,7 @@
       <p data-gap="3">The fixed checks must pass every case, every run: the output parses, every ticker and number is in the input, claims are labeled, the dissent isn&rsquo;t empty, and there&rsquo;s no sizing or entry language.</p>
       <p>Quality is scored per pass, over 3 passes. Any safety failure restarts all 3. A model judge grades tone only, never a must or must-not check.</p>
       <p>Three more desk-wide tests: restricted tickers must be blocked at the pull and again at publish, schema checks must reject any edit to an existing call, and the event feed must reject a ticker in any pre-publication event.</p>
-      <p>Run 3 times each, the 175 cases are 525 model calls per pass, and at least 1,575 across three passes for all three seats. Those run under their own cap, spread over days.</p>
+      <p>Run 3 times each, a pass is 555 model calls: the 145 Sonnet cases times 3, about 10 injection reruns times 3, and the chair&rsquo;s 30 Opus cases times 3. Activating a seat takes at least 3 passes, so at least 1,665 calls, under their own cap and spread over days.</p>
     </details>
     <details id="request"><summary>Asking the desk for a specific name</summary>
       <p>I can ask the desk to look at one ticker in a private channel. The request is a ticker and nothing else. The script rejects anything more, so I can&rsquo;t hand over a thesis, a direction or a reason, and the chair can&rsquo;t anchor on the boss.</p>
@@ -306,24 +313,24 @@
         <li>The scorer and the ledger checks come first. The scorer must pass its holiday, split, dividend, delisting and ticker-change tests, and the ledger checks must reject every planted bad entry.</li>
         <li>Then the analyst: two clean scheduled runs at the proving cadence, one at the real cadence, and its tests at the bar.</li>
         <li>Then the risk officer: the same, plus a memo with a deliberate flaw that must draw a veto.</li>
-        <li>Then the chair: the same, plus &ldquo;nothing published without approval&rdquo; at 100%.</li>
-        <li>Going public comes last: every start-build gate checked and the cutover dated in writing. The public ledger starts at No. 1 (<code>C-1</code>), with no proving calls carried over.</li>
+        <li>Then the chair: the same, plus the approval test at 100%.</li>
+        <li>Going public comes last: every start-build trigger box checked and the cutover dated in writing. The public ledger starts at No. 1 (<code>C-1</code>), with no proving calls carried over.</li>
       </ol>
     </details>
   </div>
   <p class="refnote">The full spec for each seat, and the five bench roles, sit under &ldquo;Full spec&rdquo; on each stop of <a href="#path">the diagram above</a>.</p>
-  <p class="refnote" id="events">How the event feed works is on <a href="record.html">the record</a>, under Every event.</p>
+  <p class="refnote">How the event feed works is on the record, under <a href="record.html#feed">Every event</a>.</p>
 </section>
 
 <p class="endrow"><a class="btn" href="record.html">See the record</a> <a href="https://www.linkedin.com/in/iamsiddharthshah">Message me on LinkedIn</a></p>
 </main>
 
 <footer class="foot">
-  <p>Sample data, not advice. Paper calls only. Built by <a href="https://siddharthshah.me">Siddharth Shah</a> &middot; <a href="https://www.linkedin.com/in/iamsiddharthshah">LinkedIn</a></p>
+  <p>Sample data, not advice. Paper money only. Built by <a href="https://siddharthshah.me">Siddharth Shah</a> &middot; <a href="https://www.linkedin.com/in/iamsiddharthshah">LinkedIn</a></p>
 </footer>
 <script src="assets/sample.js?v=d8291a02"></script>
-<script src="assets/floor.js?v=e13054ef"></script>
-<script src="assets/seats.js?v=fce26c4b"></script>
-<script src="assets/nav.js?v=1555a769"></script>
+<script src="assets/floor.js?v=9d3bfbda"></script>
+<script src="assets/seats.js?v=63cd83b5"></script>
+<script src="assets/nav.js?v=57650d35"></script>
 </body>
 </html>

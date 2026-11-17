@@ -1,4 +1,4 @@
-/* High Leverage Research: design tokens (D15). Editorial ledger + one 8-bit layer.
+/* High Leverage Research: design tokens. Editorial ledger.
    Contrast ratios computed 2026-11-13 (WCAG relative luminance), text vs bg / surface. */
 :root{
   /* type: Newsreader (display, editorial serif) / Public Sans (body) / IBM Plex Mono (ledger numbers, nameplates) */
@@ -20,10 +20,8 @@
   --win:#2F6B3A;    /* 5.67 / 6.08 */
   --loss:#A3361F;   /* 6.00 / 6.43  also the No tray */
   --warn:#7A4F00; --warn-bg:#F3E6C8; /* 5.76  "design preview" label */
-  /* motion */
-  --dur-fast:120ms; --dur-base:200ms; --dur-step:1600ms; /* replay step */
-  --ease-out:cubic-bezier(.2,.7,.2,1); --ease-stamp:cubic-bezier(.3,1.6,.5,1);
-  --idle-loop:2400ms; /* the one loop: both sprites share a 2-frame breath, steps(2) */
+  --seat:#2F64C4; --on-seat:#fff; /* model-seat marker: badge square, station number */
+  --scrim:#141413; /* the spotlight dim over the office on How it works */
 }
 @media (prefers-color-scheme:dark){:root{
   --bg:#141413; --surface:#1D1C1A; --line:#3A3833;
@@ -33,8 +31,6 @@
   --win:#8FC79B;    /* 9.49 / 8.77 */
   --loss:#EE9A84;   /* 8.42 / 7.78 */
   --warn:#E9C46A; --warn-bg:#3A2E12; /* 7.96 */
+  --seat:#8FB0EA; --on-seat:#141413;
 }}
-@media (prefers-reduced-motion:reduce){:root{--dur-fast:0ms;--dur-base:0ms;--idle-loop:0ms}}
-/* Rules: no gradients, no glass, no shadows except a 1px ink focus ring; wins and losses share size and weight;
-   no pixel-art type. */
-.lev{margin:0 0 var(--s3);color:var(--muted);font:400 var(--fs-sm)/var(--lh-body) var(--font-body)}
+/* Rules: no gradients, no glass, no shadows except a 1px ink focus ring; wins and losses share size and weight. */

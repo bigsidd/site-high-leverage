@@ -14,7 +14,7 @@
   function hex(c) { c = c.replace('#', ''); return [0, 2, 4].map(function (i) { return parseInt(c.substr(i, 2), 16); }); }
   function mix(a, b, t) { var x = hex(a), y = hex(b); return '#' + x.map(function (v, i) { return ('0' + Math.round(v + (y[i] - v) * t).toString(16)).slice(-2); }).join(''); }
   function dk(c, t) { return mix(c, '#1a1410', t); }
-  var rnd; void (function (s) { return function () { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; }; })(7);
+  var rnd; // seeded in build()
 
   var items = [], L0 = 0; // L0 is the draw layer: under the mezzanine, the mezzanine, then the open floor in front
   var BODY_FIRST = ''; // a figure facing us hands its body over here, so its desk draws between the body and the forearms
@@ -202,7 +202,7 @@
     if (front) BODY_FIRST = wrap(draw(parts.filter(function (p) { return !p.fore; }))); // facing us: body under the desk's layer, forearms over it
     var s = draw(front ? parts.filter(function (p) { return p.fore; }) : parts);
     if (o.ring) { var hc = Q(bx, by, hz + HH / 2); s += '<circle id="' + o.ring + '" cx="' + f1(hc[0]) + '" cy="' + f1(hc[1]) + '" r="' + f1(S * 0.62) + '" fill="none" stroke="' + K.plate + '" stroke-width="2" opacity="0"/>'; }
-    if (o.arm) s += '<g id="fl-arm">' + armSVG(ARM.rest[0], ARM.rest[1]) + '</g>'; // at rest until the replay poses it (the inner-page vignettes never do)
+    if (o.arm) s += '<g id="fl-arm">' + armSVG(ARM.rest[0], ARM.rest[1]) + '</g>'; // at rest until the replay poses it
     return wrap(s);
   }
   // Sidd's posed arm, from his shoulder to a hand point: upper arm and forearm as two-tone bars of a fixed length (never stretched), a cuff, a hand

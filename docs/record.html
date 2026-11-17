@@ -17,9 +17,9 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="assets/favicon.svg?v=e6431b43" type="image/svg+xml">
 <link rel="stylesheet" href="assets/fonts.css?v=cc6ba290">
-<link rel="stylesheet" href="assets/tokens.css?v=8e6ab7ad">
-<link rel="stylesheet" href="assets/site.css?v=f9b10273">
-<link rel="stylesheet" href="assets/record.css?v=e3ac0c05">
+<link rel="stylesheet" href="assets/tokens.css?v=758c9adf">
+<link rel="stylesheet" href="assets/site.css?v=bd8da3ad">
+<link rel="stylesheet" href="assets/record.css?v=8ac787be">
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -39,7 +39,7 @@
   <h1>The record</h1>
   <p class="tagline">Every call, numbered and dated. Losses stay up at the same size as wins.</p>
   <div class="bar1">
-    <span class="preview sw" role="note">Sample week &middot; invented calls, not results</span>
+    <span class="preview sw" role="note">Sample week &middot; not running yet</span>
     <span class="preview d0">Real ledger &middot; empty</span>
     <div class="tog" role="group" aria-label="Show the record as">
       <button type="button" data-set="sample" aria-pressed="true">Sample week</button>
@@ -53,7 +53,7 @@
 <section class="blk strip" aria-label="Scoreboard and heartbeat">
   <p class="score" id="score"></p>
   <div class="meter" aria-hidden="true"><i id="meter"></i></div>
-  <div class="beat" id="beat" role="img" aria-label="No nights yet."></div>
+  <div class="beat" id="beat" aria-hidden="true"></div>
   <p class="run" id="beat-note">No nights yet. The first dot appears the night after day&nbsp;0.</p>
   <p class="claim">I claim no edge until 100 calls have closed and 6 months have passed, whichever is later. At no more than 2 decisions a week, that takes over a year.</p>
 </section>
@@ -82,14 +82,14 @@
     <li>Each call is committed with an outside timestamp before anyone can know how it ends.</li>
     <li>A close is a new entry. Nothing already written is edited.</li>
     <li>An idea that never publishes shows only the stage it stopped at and the date. Its ticker stays private.</li>
-    <li>Every call is the same $10,000 of pretend money against SPY, whatever its confidence. Anyone can recompute the book from the ledger and public prices.</li>
+    <li>Every call is the same $10,000 of paper money, whatever its confidence. It is scored against SPY and its sector fund; the paper book holds it against SPY.</li>
   </ol>
 </section>
 
 <section class="blk more" aria-labelledby="h-more">
   <h2 id="h-more">More detail</h2>
 
-  <details class="dt" id="events">
+  <details class="dt" id="feed">
     <summary>Every event, newest first</summary>
     <div class="dt-body">
       <div class="tlctl sw" id="tlctl">
@@ -100,7 +100,7 @@
       <p class="empty d0">No events yet. The real feed is empty.</p>
       <p class="sw">Each night the desk runs is one dated event with no tickers in it.</p>
       <ol class="weeks sw" id="weeks"></ol>
-      <h3 class="sub" id="feed">How the event feed works</h3>
+      <h3 class="sub">How the event feed works</h3>
       <p>The homepage office replays a public event feed called <code>events.v1</code>. The same <a href="desk.html#scripts">scripts</a> that write the ledger write it, under the same checks, and it&rsquo;s append-only. Each event is one JSON line, and the real feed uses the same types and fields as the sample.</p>
       <pre class="jsonl" tabindex="0">{"v":1,"id":"E-n","ts":"&lt;UTC time&gt;","type":"approval.stamped","actor":"sidd","role":null,"sha":"&lt;commit&gt;"}</pre>
       <p>Ids run in sequence, <code>E-1</code>, <code>E-2</code> and on. The actor is a script, one of the three seats, or me. A published row lists the event ids that led to it, so you can walk the chain backwards.</p>
@@ -118,7 +118,7 @@
   <details class="dt" id="book">
     <summary>The paper book</summary>
     <div class="dt-body">
-      <p>The rule, set in advance: $100,000 of pretend money, $10,000 per call, bought at the first official close after the call is committed and held to its horizon. An outperform call holds the stock against SPY. An underperform call holds SPY against the stock. Confidence never changes the amount. Anyone can recompute it from the ledger and public prices.</p>
+      <p>The rule, set in advance: $100,000 of paper money, $10,000 per call, bought at the first official close after the call is committed and held to its horizon. An outperform call holds the stock against SPY. An underperform call holds SPY against the stock. Confidence never changes the amount. Anyone can recompute it from the ledger and public prices.</p>
       <p class="empty d0" data-gap="3">Nothing in the book yet. It starts at $100,000.</p>
       <div class="sw">
         <div class="tw" role="region" aria-labelledby="cap-b" tabindex="0">
@@ -156,7 +156,7 @@
     <summary>Held-out weeks the models never saw (R-n)</summary>
     <div class="dt-body">
       <p class="gate"><span class="preview">Held for the leakage checks</span></p>
-      <p data-gap="2">This is a backtest: the same desk, run once on each week after the models&rsquo; training cutoff and before day&nbsp;0, using only data dated before that week&rsquo;s Friday. Its calls get their own numbers (R-n) and are counted, not scored, until 30 have closed. They never count toward the 100, and I don&rsquo;t sign them one by one, because I already know how those weeks ended.</p>
+      <p data-gap="2">A planned backtest: the same desk, run once on each week after the models&rsquo; training cutoff and before day&nbsp;0, using only data dated before that week&rsquo;s Friday. Its calls get their own numbers (R-n) and are counted, not scored, until 30 have closed. They never count toward the 100, and I don&rsquo;t sign them one by one, because I already know how those weeks ended.</p>
       <p class="empty" data-gap="2">Nothing published yet. The method and the leakage checks come first; results follow as counts.</p>
     </div>
   </details>
@@ -166,10 +166,10 @@
 </main>
 
 <footer class="foot">
-  <p>Sample data, not advice. Paper calls only. Built by <a href="https://siddharthshah.me">Siddharth Shah</a> &middot; <a href="https://www.linkedin.com/in/iamsiddharthshah">LinkedIn</a></p>
+  <p>Sample data, not advice. Paper money only. Built by <a href="https://siddharthshah.me">Siddharth Shah</a> &middot; <a href="https://www.linkedin.com/in/iamsiddharthshah">LinkedIn</a></p>
 </footer>
 <script src="assets/sample.js?v=d8291a02"></script>
-<script src="assets/record.js?v=7ca7d8f3"></script>
-<script src="assets/nav.js?v=1555a769"></script>
+<script src="assets/record.js?v=2d1bb954"></script>
+<script src="assets/nav.js?v=57650d35"></script>
 </body>
 </html>

@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Renders the clips from the live scene code with HyperFrames (pinned; see site/README.md).
+# Renders the clips from the live scene code with HyperFrames (pinned; see README.md).
 # HyperFrames' lint reports a missing timeline registry and several root compositions: both are expected here,
 # since home.js registers the timeline at runtime and each file is rendered on its own with -c.
-# Usage: site/clip/render.sh [out-dir]   Needs Node 22+, ffmpeg and a local Chrome or chrome-headless-shell.
+# Usage: clip/render.sh [out-dir]   Needs Node 22+, ffmpeg and a local Chrome or chrome-headless-shell.
 set -euo pipefail
 HF_VERSION=0.8.218
 here="$(cd "$(dirname "$0")" && pwd)"; site="$(dirname "$here")"
