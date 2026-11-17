@@ -50,7 +50,7 @@
     slabL: '#A99C86', slabR: '#8F826D', wallBack: '#E7E0D3', cap: '#3F3A33', capSide: '#57514A', leg: '#C9C2B5',
     zSrv: '#D6D4CE', zCom: '#CFC3B0', zSidd: '#C9B79C', zLobby: '#DCD2C1', brand: '#2B2925', brandRule: '#9C8F7A',
     // morning sky over a cool city; dark mode swaps in a night sky and lets the lit windows carry the scene
-    plate: '#3D7BE0', visor: '#BFD6FF', modelBody: '#2E3542', benchBody: '#C8C2B8', benchHead: '#D6D1C9', benchLine: '#8A8479',
+    plate: '#3D7BE0', visor: '#E6F0FF', modelBody: '#2E3542', casing: '#22262E',
     night: 0, glassOp: 0.26,
     mezz: '#D2BFA3', mezzLine: '#C4B092', mezzFront: '#3F3A33', mezzSide: '#2F2B26', under: '#3a2a18', rug: '#D9CDB9', rugEdge: '#C8BBA4',
     slat: '#5B3F2B', slatLine: '#4A3222', brass: '#E3C27E', recordWall: '#2E3036', slot: '#4A4D55', book: ['#7A3B2E', '#2B3A55', '#5E6F63', '#C9A45C', '#8A6A4A', '#4A4F58', '#B9785A'],
@@ -62,14 +62,14 @@
     floor: '#3A352E', floorLine: '#443E36', slab: '#1E1B18', wall: '#38332D', wallTrim: '#2F2B26', desk: '#4A453E',
     slabL: '#1E1B18', slabR: '#171512', wallBack: '#332E28', cap: '#151311', capSide: '#100F0D', leg: '#3A362F',
     zSrv: '#24282A', zCom: '#332C25', zSidd: '#3A3026', zLobby: '#302B25', brand: '#E9E1D3', brandRule: '#6B6152', paper: '#E9E3D6',
-    night: 1, glassOp: 0.07, modelBody: '#3A4456', benchBody: '#4A463F', benchHead: '#57534C', benchLine: '#8F887C',
+    night: 1, glassOp: 0.07, modelBody: '#3A4456', casing: '#14171C',
     mezz: '#3A322A', mezzLine: '#433A31', mezzFront: '#151311', mezzSide: '#100F0D', under: '#000000', rug: '#332E28', rugEdge: '#3D372F',
     slat: '#3A2A1E', slatLine: '#2C1F16', recordWall: '#1F2126', slot: '#3A3D44', sofa: '#3E474D', sofaDk: '#30383D',
     sky: ['#121726', '#141A2B', '#1B2236', '#21273D', '#252B42', '#30344B'],
     cityTop: ['#2F3448', '#3A3E52'], cityL: ['#20243A', '#2B2F44'], cityR: ['#1A1D30', '#262A3E'], lit: 0.45, litC: '#FFD27A', shaft: 0, glow: '#4FB8AA'
   };
   var KL = {};
-  KD.plate = '#4C8BEF'; KD.visor = '#CFE0FF';
+  KD.plate = '#4C8BEF'; KD.visor = '#EAF2FF';
   for (var kk in KD) KL[kk] = K[kk];
   function theme(dark) { var src = dark ? KD : KL; for (var k in src) K[k] = src[k]; }
 
@@ -128,16 +128,14 @@
     }
     return s;
   }
-  // a seated figure. o.kind: 'human' (Sidd, the only person on the floor), 'model' (a model seat: a flat signal-blue
-  // face plate and its seat number), or 'bench' (an unbuilt seat: ghosted and outlined, no seat). o.reach: desk points the hands rest on.
   var ARM = {}; // Sidd's stamping arm: its shoulder and resting hand, so the replay can pose it
   // a seated figure, built from the furniture's own three-face boxes so it shares the projection and the light. About six heads tall,
-  // shoulders wider than the waist, a bevelled head. o.kind: 'human' (Sidd, the only person, and the only face), 'model' (a voting
-  // model seat: a faceless plate-blue head with a flat visor line), or 'bench' (an unbuilt seat: pale, outlined, no vote).
+  // shoulders wider than the waist, a bevelled head. o.kind: 'human' (Sidd, the only person) or 'model' (a model seat: its head
+  // is a small blue screen: a dark face with two lit eyes where it faces, and a status light on its back).
   // view: 'front' faces +y (toward us); 'back' faces -y, or -x with o.face '-x'. o.reach: the desk points the hands rest on.
   function personSeated(x, y, view, o) {
-    var kind = o.kind || 'human', model = kind === 'model', bench = kind === 'bench', human = !model && !bench, front = view === 'front';
-    var shirt = model ? K.modelBody : bench ? K.benchBody : o.shirt, skin = model ? K.plate : bench ? K.benchHead : o.skin;
+    var kind = o.kind || 'human', model = kind === 'model', human = !model, front = view === 'front';
+    var shirt = model ? K.modelBody : o.shirt, skin = model ? K.casing : o.skin;
     var fd = front ? [0, 1] : o.face === '-x' ? [-1, 0] : [0, -1], pd = [Math.abs(fd[1]), Math.abs(fd[0])], parts = [], FORE = false;
     function part(cx, cy, z, along, across, h, col, extra) { // a box centred on (cx, cy); 'along' is its size in the facing direction
       var w = fd[0] ? along : across, d = fd[0] ? across : along, x0 = cx - w / 2, y0 = cy - d / 2;
@@ -148,7 +146,7 @@
     // sit within reach: a desk further than a forearm pulls the figure in, so hands land on the desk, never in the air
     var gap = o.reach && o.reach[0] ? (o.reach[0][0] - x) * fd[0] + (o.reach[0][1] - y) * fd[1] : 0.7, pull = Math.max(0, gap - 0.72);
     var bx = x + fd[0] * (pull - 0.05), by = y + fd[1] * (pull - 0.05), zt = Z0 + LH + UH, hz = zt + 0.08;
-    part(bx + fd[0] * 0.3, by + fd[1] * 0.3, Z0 - 0.2, 0.62, LW - 0.04, 0.22, model ? dk(K.modelBody, 0.25) : bench ? K.benchBody : '#2C2F35'); // thighs, under the desk
+    part(bx + fd[0] * 0.3, by + fd[1] * 0.3, Z0 - 0.2, 0.62, LW - 0.04, 0.22, model ? dk(K.modelBody, 0.25) : '#2C2F35'); // thighs, under the desk
     part(bx, by, Z0, LD, LW, LH, shirt);
     part(bx, by, Z0 + LH, UD, UW, UH, shirt, function (x0, y0, w, d) { // chest: lapels, shirt and tie on the face toward us
       if (!front || !human) return '';
@@ -159,14 +157,22 @@
         poly([[c + 0.16, yf, zt], [c + 0.2, yf, zt - 0.02], [c + 0.02, yf, zt - 0.4], [c, yf, zt - 0.34]], dk(shirt, 0.12));
     });
     if (!model) part(bx, by, zt, 0.14, 0.14, 0.08, dk(skin, 0.12));
-    part(bx, by, hz, HW, HW, HH, skin, function (x0, y0, w, d) {
+    else part(bx, by, zt, 0.07, 0.07, 0.1, K.casing);
+    if (model) part(bx, by, hz - 0.02, 0.2, 0.48, 0.36, K.plate, function (x0, y0, w, d) { // the screen head: blue casing, a dark screen with lit eyes
+      var s = '', t = hz + 0.34, e = 0.05, D = 0.3;
+      if (fd[1] > 0) { // facing us: the lit screen and two eyes
+        var yf = y0 + d + 0.002;
+        s += poly([[x0 + e, yf, hz + e - 0.02], [x0 + w - e, yf, hz + e - 0.02], [x0 + w - e, yf, t - e], [x0 + e, yf, t - e]], K.casing);
+        [0.36, 0.64].forEach(function (f) { var ex = x0 + w * f; s += poly([[ex - 0.035, yf + 0.001, hz + 0.15], [ex + 0.035, yf + 0.001, hz + 0.15], [ex + 0.035, yf + 0.001, hz + 0.23], [ex - 0.035, yf + 0.001, hz + 0.23]], K.visor); });
+      } else if (fd[1] < 0) s += poly([[x0 + w * 0.5 - 0.035, y0 + d + 0.002, t - 0.1], [x0 + w * 0.5 + 0.035, y0 + d + 0.002, t - 0.1], [x0 + w * 0.5 + 0.035, y0 + d + 0.002, t - 0.17], [x0 + w * 0.5 - 0.035, y0 + d + 0.002, t - 0.17]], K.visor); // status light on its back
+      else s += poly([[x0 + w + 0.002, y0 + d * 0.5 - 0.035, t - 0.1], [x0 + w + 0.002, y0 + d * 0.5 + 0.035, t - 0.1], [x0 + w + 0.002, y0 + d * 0.5 + 0.035, t - 0.17], [x0 + w + 0.002, y0 + d * 0.5 - 0.035, t - 0.17]], K.visor);
+      // the screen's dark bezel along the top, seen from above
+      var edge = fd[1] > 0 ? [[x0, y0 + d - 0.05], [x0 + w, y0 + d - 0.05], [x0 + w, y0 + d], [x0, y0 + d]] : fd[1] < 0 ? [[x0, y0], [x0 + w, y0], [x0 + w, y0 + 0.05], [x0, y0 + 0.05]] : [[x0, y0], [x0 + 0.05, y0], [x0 + 0.05, y0 + d], [x0, y0 + d]];
+      s += poly(edge.map(function (q) { return [q[0], q[1], t + 0.001]; }), K.casing, ' opacity="' + (0.6 + D) + '"');
+      return s;
+    });
+    else part(bx, by, hz, HW, HW, HH, skin, function (x0, y0, w, d) {
       var s = '', yf = y0 + d + 0.002;
-      if (model) { // faceless: a flat visor line when it faces us, a seam when it doesn't
-        if (front) s += poly([[x0 + 0.05, yf, hz + 0.17], [x0 + w - 0.05, yf, hz + 0.17], [x0 + w - 0.05, yf, hz + 0.22], [x0 + 0.05, yf, hz + 0.22]], K.visor);
-        else if (fd[0]) s += poly([[x0 + w + 0.002, y0 + 0.05, hz + 0.19], [x0 + w + 0.002, y0 + d - 0.05, hz + 0.19], [x0 + w + 0.002, y0 + d - 0.05, hz + 0.21], [x0 + w + 0.002, y0 + 0.05, hz + 0.21]], dk(K.plate, 0.22));
-        return s + box(x0 + 0.035, y0 + 0.035, hz + HH, w - 0.07, d - 0.07, BV, K.plate);
-      }
-      if (bench) return box(x0 + 0.035, y0 + 0.035, hz + HH, w - 0.07, d - 0.07, BV, skin);
       var hair = o.hair, ink = dk(skin, 0.6);
       if (front) {
         [x0 + w * 0.3, x0 + w * 0.7].forEach(function (ex) {
@@ -181,7 +187,7 @@
       if (front) s += poly([[x0 - 0.015, y0 + d + 0.017, hz + HH - 0.05], [x0 + w * 0.62, y0 + d + 0.017, hz + HH - 0.05], [x0 + w * 0.45, y0 + d + 0.017, hz + HH - 0.1], [x0 - 0.015, y0 + d + 0.017, hz + HH - 0.09]], hair); // side-parted fringe
       return s;
     });
-    var hand = model ? K.plate : skin, sl = dk(shirt, 0.05);
+    var hand = model ? dk(K.modelBody, 0.2) : skin, sl = dk(shirt, 0.05);
     [-1, 1].forEach(function (sd, i) {
       var off = UW / 2 + 0.075, ax = bx + pd[0] * sd * off, ay = by + pd[1] * sd * off;
       if (o.arm && i === 0) { // the stamping arm is posed by the replay through armSVG, in the effects layer
@@ -197,7 +203,7 @@
       FORE = false;
     });
     parts.sort(function (a, b) { return a.k - b.k || a.z - b.z; });
-    var wrap = function (t) { return bench ? '<g stroke="' + K.benchLine + '" stroke-width="0.6" stroke-linejoin="round">' + t + '</g>' : t; };
+    var wrap = function (t) { return t; };
     var draw = function (list) { return list.map(function (p) { return p.ih ? '<g class="ih">' + p.s + '</g>' : p.s; }).join(''); };
     if (front) BODY_FIRST = wrap(draw(parts.filter(function (p) { return !p.fore; }))); // facing us: body under the desk's layer, forearms over it
     var s = draw(front ? parts.filter(function (p) { return p.fore; }) : parts);
@@ -392,7 +398,7 @@
 
     // ---------- floor zones ----------
     floor += poly([[0, 0, 0], [W, 0, 0], [W, MD, 0], [0, MD, 0]], K.under, ' opacity="0.12"'); // the floor under the mezzanine sits in its shade
-    floor += poly([[11.6, 10.0, 0], [30.4, 10.0, 0], [30.4, 18.2, 0], [11.6, 18.2, 0]], K.rug, ' stroke="' + K.rugEdge + '" stroke-width="2"');
+    floor += poly([[19.4, 10.8, 0], [30.6, 10.8, 0], [30.6, 18.2, 0], [19.4, 18.2, 0]], K.rug, ' stroke="' + K.rugEdge + '" stroke-width="2"');
     floor += poly([[0.6, 19.2, 0], [9.0, 19.2, 0], [9.0, 23.0, 0], [0.6, 23.0, 0]], K.zLobby);
     // late sun through the upper windows, falling past the mezzanine edge onto the floor
     var gsun = '';
@@ -481,24 +487,14 @@
     stair += '<polygon points="' + [g1, g2, g3, g4].map(function (g) { return f1(g[0]) + ',' + f1(g[1]); }).join(' ') + '" fill="' + K.glass + '" opacity="0.3"/><line x1="' + f1(g1[0]) + '" y1="' + f1(g1[1]) + '" x2="' + f1(g2[0]) + '" y2="' + f1(g2[1]) + '" stroke="' + K.frame + '" stroke-width="2"/>';
     add(33.4 + MD + 3.5, stair);
 
-    // the desk pod: six seats in two rows, the analyst's among them; the risk desk sits at its head
-    var PX = [12.4, 16.7, 21.0];
-    var far = [{ shirt: '#4E5D6C', skin: K.skin2, hair: K.hair1 }, { shirt: '#6B4F3A', skin: K.skin3, hair: K.hair2 }, { shirt: '#2F4A3E', skin: K.skin1, hair: K.hair3 }];
-    var near = [{ shirt: '#5B4A6B', skin: K.skin3, hair: K.hair1 }, { shirt: '#8A7A5A', skin: K.skin2, hair: K.hair2 }, { shirt: K.ink, skin: K.skin1, hair: K.hair1 }];
-    PX.forEach(function (x, i) {
-      var o = far[i], cx = x + 2.05;
-      // far row: they face the room, so the monitors show their backs
-      add(cx + 11.05, chair(cx, 11.05, '+y'));
-      add(cx + 12.0, shadow(cx, 12.8, 2, 0.1) + box(x, 11.9, 1.36, 4.1, 1.9, 0.1, K.desk) + box(x + 0.2, 12.05, 0, 0.18, 1.6, 1.36, K.leg) + box(x + 3.72, 12.05, 0, 0.18, 1.6, 1.36, K.leg));
-      add(cx + 12.1, personSeated(cx, 11.2, 'front', { kind: 'bench', reach: [[cx - 0.35, 12.25, 1.47], [cx + 0.4, 12.25, 1.47]] }));
-      add(cx + 12.9, monitorBack(x + 0.6, 12.9, 1.46) + monitorBack(x + 2.2, 12.9, 1.46) + box(x + 1.4, 12.2, 1.46, 1.3, 0.4, 0.04, '#d9d3c7'));
-      // near row: backs to us, screens toward the room
-      var n = near[i], analyst = i === 2, ds = shadow(cx, 14.9, 2, 0.1) + box(x, 14.0, 1.36, 4.1, 1.9, 0.1, K.desk) + box(x + 0.2, 14.15, 0, 0.18, 1.6, 1.36, K.leg) + box(x + 3.72, 14.15, 0, 0.18, 1.6, 1.36, K.leg) +
+    // the analyst's desk: one seat, next to the risk desk. Roles without a seat are not drawn.
+    (function () {
+      var x = 21.0, cx = x + 2.05, ds = shadow(cx, 14.9, 2, 0.1) + box(x, 14.0, 1.36, 4.1, 1.9, 0.1, K.desk) + box(x + 0.2, 14.15, 0, 0.18, 1.6, 1.36, K.leg) + box(x + 3.72, 14.15, 0, 0.18, 1.6, 1.36, K.leg) +
         monitor(x + 0.6, 14.2, 1.46, '+y') + monitor(x + 2.2, 14.2, 1.46, '+y') + box(x + 1.4, 15.1, 1.46, 1.3, 0.45, 0.04, '#d9d3c7');
-      if (analyst) ds += box(x + 3.0, 14.4, 1.46, 0.9, 1.1, 0.16, K.paper, { left: '#d8d1c3', right: '#cbc3b4' }) + box(x + 3.05, 14.45, 1.62, 0.9, 1.1, 0.03, '#F2ECE0');
+      ds += box(x + 3.0, 14.4, 1.46, 0.9, 1.1, 0.16, K.paper, { left: '#d8d1c3', right: '#cbc3b4' }) + box(x + 3.05, 14.45, 1.62, 0.9, 1.1, 0.03, '#F2ECE0');
       add(cx + 15.0, ds);
-      add(cx + 17.0, chair(cx, 16.6, '-y', { low: true }) + personSeated(cx, 16.45, 'back', { kind: analyst ? 'model' : 'bench', seat: 'M1', reach: [[cx - 0.35, 15.6, 1.47], [cx + 0.4, 15.6, 1.47]] }));
-    });
+      add(cx + 17.0, chair(cx, 16.6, '-y', { low: true }) + personSeated(cx, 16.45, 'back', { kind: 'model', seat: 'M1', reach: [[cx - 0.35, 15.6, 1.47], [cx + 0.4, 15.6, 1.47]] }));
+    })();
     SP.analyst = [22.9, 14.95, 1.5];
     // the risk desk
     var RX = 26.0;
@@ -532,7 +528,7 @@
 
     var minX = P(0, D, 0)[0] - 30, maxX = P(W, 0, 0)[0] + 30, minY = P(0, 0, H)[1] - 30, maxY = P(W, D, -0.9)[1] + 30;
     var vb = [minX, minY, maxX - minX, maxY - minY].map(f1);
-    el.innerHTML = '<svg class="floor" xmlns="http://www.w3.org/2000/svg" viewBox="' + vb.join(' ') + '" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="fl-t"><title id="fl-t">The office, on two floors. Downstairs: the logo wall and reception, the double-height wall of every call, the desk pod where the analyst works beside the five bench roles, which will run as scripts once the desk runs, the risk desk at its head, the server room and a lounge. Upstairs on the mezzanine: the glass committee room, a library of rulebooks, and Sidd\'s corner office, where he signs as portfolio manager.</title><defs>' + defs + AOD + '</defs>' + back + floor + body + '<g id="fl-fx"></g></svg>';
+    el.innerHTML = '<svg class="floor" xmlns="http://www.w3.org/2000/svg" viewBox="' + vb.join(' ') + '" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="fl-t"><title id="fl-t">The office, on two floors. Downstairs: the logo wall and reception, the double-height wall of every call, the analyst\'s desk and the risk desk beside it, the server room and a lounge. Upstairs on the mezzanine: the glass committee room, a library of rulebooks, and Sidd\'s corner office, where he signs as portfolio manager.</title><defs>' + defs + AOD + '</defs>' + back + floor + body + '<g id="fl-fx"></g></svg>';
     return { vb: vb };
   }
 
@@ -541,7 +537,7 @@
     build: build, armSVG: armSVG, P: P, S: S, arm: ARM, slots: slots, centers: centers, spots: SP, K: K, trayTop: function () { return trayTop; },
     anchors: {
       analyst: A(23.05, 16.45, 3.35), risk: A(29.15, 13.9, 3.35), committee: A(18.5, 2.05, MZ + 3.35),
-      sidd: A(39.2, 1.95, MZ + 3.4), record: A(0, 14.0, 12.0), bench: A(14.45, 12.6, 4.4),
+      sidd: A(39.2, 1.95, MZ + 3.4), record: A(0, 14.0, 12.0),
       scripts: A(3.8, 8.6, 3.4)
     }
   };
