@@ -18,8 +18,9 @@
 <link rel="icon" href="assets/favicon.svg?v=e6431b43" type="image/svg+xml">
 <link rel="stylesheet" href="assets/fonts.css?v=cc6ba290">
 <link rel="stylesheet" href="assets/tokens.css?v=758c9adf">
-<link rel="stylesheet" href="assets/site.css?v=4267131c">
+<link rel="stylesheet" href="assets/site.css?v=77429205">
 <link rel="stylesheet" href="assets/record.css?v=cd956db9">
+<link rel="stylesheet" href="assets/funnel.css?v=c0f4f4ca">
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -30,6 +31,7 @@
     <ul>
       <li><a href="desk.html">How it works</a></li>
       <li><a href="record.html" aria-current="page">The record</a></li>
+      <li><a href="notes.html">Design notes</a></li>
     </ul>
   </nav>
 </header>
@@ -58,6 +60,11 @@
   <p class="claim">I claim no edge until 100 calls have closed and 6 months have passed, whichever is later. At no more than 2 decisions a week, that takes over a year.</p>
 </section>
 
+<section class="blk sw" aria-labelledby="h-fn">
+  <h2 id="h-fn">Where the ideas went</h2>
+  <div data-funnel></div>
+</section>
+
 <section class="blk" aria-labelledby="h-note">
   <h2 id="h-note">This week&rsquo;s note</h2>
   <div class="note sw">
@@ -82,7 +89,7 @@
     <li>Each call is committed with an outside timestamp before anyone can know how it ends.</li>
     <li>A close is a new entry. Nothing already written is edited.</li>
     <li>An idea that never publishes shows only the stage it stopped at and the date. Its ticker stays private.</li>
-    <li>Every call is the same $10,000 of paper money, whatever its confidence. It is scored against SPY and its sector fund; the paper book holds it against SPY.</li>
+    <li>Every call is the same $10,000 of paper money, whatever its confidence. It is scored against SPY and its sector fund; the paper book holds it against SPY. A closed call shows one rounded excess return against each, and never a price series.</li>
   </ol>
 </section>
 
@@ -118,23 +125,24 @@
   <details class="dt" id="book">
     <summary>The paper book</summary>
     <div class="dt-body">
-      <p>The rule, set in advance: $100,000 of paper money, $10,000 per call, bought at the first official close after the call is committed and held to its horizon. An outperform call holds the stock against SPY. An underperform call holds SPY against the stock. Confidence never changes the amount. Anyone can recompute it from the ledger and public prices.</p>
+      <p>The rule, set in advance: $100,000 of paper money, $10,000 per call, bought at the first official close after the call is committed and held to its horizon. An outperform call holds the stock against SPY. An underperform call holds SPY against the stock. Confidence never changes the amount. Anyone can recompute it from the ledger and public closing prices.</p>
+      <p>When a call closes, the record shows one number for it: the stock&rsquo;s total return minus SPY&rsquo;s, and minus its sector fund&rsquo;s, over the same dates, rounded to 0.1%. A win needs the predicted sign against both. The record never shows a price series, daily marks or a price chart, so an open call has a status and no figure.</p>
       <p class="empty d0" data-gap="3">Nothing in the book yet. It starts at $100,000.</p>
       <div class="sw">
         <div class="tw" role="region" aria-labelledby="cap-b" tabindex="0">
         <table>
-          <caption id="cap-b">Paper book, sample values</caption>
-          <thead><tr><th scope="col">Call</th><th scope="col">Position</th><th scope="col" class="n">Notional</th><th scope="col" class="n">Excess</th><th scope="col">Status</th></tr></thead>
+          <caption id="cap-b">Closed and open calls, sample values</caption>
+          <thead><tr><th scope="col">Call</th><th scope="col">Position</th><th scope="col" class="n">Notional</th><th scope="col" class="n">Stock vs SPY</th><th scope="col" class="n">Stock vs sector fund</th><th scope="col">Status</th></tr></thead>
           <tbody id="bk"></tbody>
         </table>
         </div>
-        <p class="bookline mono">Book value <b id="bk-total"></b>, from $100,000. Losses included at full size.</p>
-        <p class="muted" data-gap="2">On the real ledger, book values publish only after the price-data terms clear. Until then, counts only.</p>
+        <p class="bookline mono"><b id="bk-total"></b> Losses stay in at full size.</p>
       </div>
-      <h3 class="sub">Broker paper fills <span class="muted">(a side check, not the record)</span></h3>
-      <p>A paper brokerage account copies each published outperform call with $10,000, to see what real fills would look like. Underperform calls aren&rsquo;t copied. This one line is all it ever shows, next to the same dollars in SPY.</p>
-      <p class="bookline mono d0">Broker paper fills: nothing copied yet.</p>
-      <p class="bookline mono sw" id="fills"></p>
+      <p class="muted" data-gap="2">The returns are computed from official daily closes. If the data provider objects in writing, the record drops to win or loss only.</p>
+      <h3 class="sub">Broker paper mirror <span class="muted">(a rehearsal of the order path, not the record)</span></h3>
+      <p>A paper brokerage account places each signed outperform call by script, in whole shares worth up to $10,000, and closes it at its horizon. Underperform calls aren&rsquo;t placed. Paper trading doesn&rsquo;t model slippage, so this shows whether the order path works, not what fills would cost. It shows a count and no return: how many calls were placed and closed by script, and how many needed a manual fix.</p>
+      <p class="bookline mono d0">Broker paper mirror: nothing placed yet. Once the desk is live, this line reads &ldquo;n of n signed outperform calls placed and closed by script, 0 manual fixes.&rdquo;</p>
+      <p class="bookline mono sw" id="mirror"></p>
     </div>
   </details>
 
@@ -168,8 +176,9 @@
 <footer class="foot">
   <p>Sample data, not advice. Paper money only. Designed and built by <a href="https://siddharthshah.me">Siddharth Shah</a>.</p>
 </footer>
-<script src="assets/sample.js?v=d8291a02"></script>
-<script src="assets/record.js?v=edf4f56c"></script>
+<script src="assets/sample.js?v=3184977b"></script>
+<script src="assets/funnel.js?v=cc613f2f"></script>
+<script src="assets/record.js?v=dd2a5d9c"></script>
 <script src="assets/nav.js?v=57650d35"></script>
 </body>
 </html>

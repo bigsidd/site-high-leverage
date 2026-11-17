@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Design notes · High Leverage Research</title>
+<meta name="description" content="Eight choices behind an AI investment research desk that is designed but not yet running: why I made each one, and what it costs. Paper money only.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Design notes · High Leverage Research">
+<meta property="og:description" content="The choices behind the desk, why I made them and what each costs. Paper money, designed but not yet running.">
+<meta property="og:url" content="https://research.siddharthshah.me/notes.html">
+<meta property="og:image" content="https://research.siddharthshah.me/assets/og.png?v=10249724">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="An isometric two-floor office. Sidd, the portfolio manager, stamps a call approved at his desk.">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://research.siddharthshah.me/notes.html">
+<link rel="icon" href="assets/favicon.svg?v=e6431b43" type="image/svg+xml">
+<link rel="stylesheet" href="assets/fonts.css?v=cc6ba290">
+<link rel="stylesheet" href="assets/tokens.css?v=758c9adf">
+<link rel="stylesheet" href="assets/site.css?v=77429205">
+</head>
+
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="bar">
+  <p class="mark"><a href="index.html"><svg class="lever" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M2.5 12.6 21.5 6.4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none"/><path d="M8 11 4 19h8z" fill="currentColor"/></svg><span>High Leverage Research</span></a></p>
+  <button type="button" class="menu" aria-expanded="false" aria-controls="sitenav">Menu</button>
+  <nav aria-label="Site" id="sitenav">
+    <ul>
+      <li><a href="desk.html">How it works</a></li>
+      <li><a href="record.html">The record</a></li>
+      <li><a href="notes.html" aria-current="page">Design notes</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main id="main" class="wrap how notes" tabindex="-1">
+<header class="hd">
+  <h1>Design notes</h1>
+  <p class="preview" role="note">Designed, not yet running. Everything here is a sample.</p>
+  <p class="lede">Eight choices I made building this desk, why I made each one, and what each one costs.</p>
+</header>
+
+<section class="blk txt" id="why" aria-labelledby="h-why"><span id="workflows" class="old-anchor"></span>
+  <h2 id="h-why">Fixed steps, not an agent</h2>
+  <p>Filing text can carry a hidden instruction, and with fixed steps it never reaches anything that can act. Each step has fixed inputs, so it can be tested case by case. And models are bad at arithmetic and at remembering rules, so both live in code.</p>
+  <p>Each seat runs as its own job. Every run ends done, or waiting for me with the reason in the first line.</p>
+  <p class="cost"><b>What it costs.</b> More plumbing. An agent replaces a step only if a test fails because of the single-call shape.</p>
+</section>
+
+<section class="blk txt" id="seats" aria-labelledby="h-seats">
+  <h2 id="h-seats">Three model seats, until another earns one</h2>
+  <p>One writes the case, one argues against it, one decides. Each is a separate seat with a separate job, so the writer never grades its own memo. Only the chair runs on Opus.</p>
+  <p class="cost"><b>What it costs.</b> The analyst covers the jobs of three empty roles, which is less independent than separate seats. Whether the risk officer needs Opus is still open.</p>
+</section>
+
+<section class="blk txt" id="veto" aria-labelledby="h-veto">
+  <h2 id="h-veto">A veto the chair can&rsquo;t overrule</h2>
+  <p>The risk officer can veto. A script can turn a pass into a veto, never a veto into a pass. The chair can decline any call but can&rsquo;t push one past the script&rsquo;s check, so every path to a published call only gets harder.</p>
+  <p class="cost"><b>What it costs.</b> Good ideas die. A week where nothing clears is a normal week, and it publishes nothing.</p>
+</section>
+
+<section class="blk txt" id="price" aria-labelledby="h-price">
+  <h2 id="h-price">The models never see a price</h2>
+  <p>A script turns price into a valuation bucket. A model that never sees a price has nothing to anchor a target on, and its output has no field for sizing, entry or a target anyway.</p>
+  <p class="cost"><b>What it costs.</b> The analyst can&rsquo;t say a stock looks cheap in dollars. It works from the script&rsquo;s value range.</p>
+</section>
+
+<section class="blk txt" id="signature" aria-labelledby="h-sig">
+  <h2 id="h-sig">Nothing publishes without my signature</h2>
+  <p>I read each call exactly as it would publish. I can approve it, discard it, or lower its confidence, never raise it. Then a script publishes. No seat holds the write key, and silence for 72 hours stops the call.</p>
+  <p class="cost"><b>What it costs.</b> About 37 minutes a week, my estimate, not yet measured. It also caps the desk at 2 decisions a week.</p>
+</section>
+
+<section class="blk txt" id="losses" aria-labelledby="h-loss">
+  <h2 id="h-loss">Losses stay up, at full size</h2>
+  <p>Each call is committed with an outside timestamp before its outcome exists. A close is a new entry, and nothing already written is edited. A track record is only worth reading if it can&rsquo;t be tidied afterward.</p>
+  <p class="cost"><b>What it costs.</b> My mistakes sit on <a href="record.html">the record</a> for good.</p>
+</section>
+
+<section class="blk txt" id="paper" aria-labelledby="h-paper">
+  <h2 id="h-paper">Paper money only, and no sizing</h2>
+  <p>Every call is the same $10,000 of paper money, whatever its confidence. The record can&rsquo;t flatter itself by betting more on winners, and nothing on it reads as advice.</p>
+  <p class="cost"><b>What I left out.</b> Position sizes, entry zones, stops, price targets and my own holdings, which stay in a private tool that never publishes.</p>
+</section>
+
+<section class="blk txt" id="bench" aria-labelledby="h-bench">
+  <h2 id="h-bench">Five roles I chose not to staff</h2>
+  <p>Five more roles could join the three model seats. None has one. Scripts and the analyst cover their work until one earns a seat: two clean runs, its own tests and a written decision. The ceiling is five seats.</p>
+  <div class="tw" role="region" aria-labelledby="cap-o" tabindex="0">
+  <table>
+    <caption id="cap-o">The five bench roles</caption>
+    <thead><tr><th scope="col">Role</th><th scope="col">Covered today by</th><th scope="col">What a hire would add</th><th scope="col">Decision record</th></tr></thead>
+    <tbody>
+      <tr><th scope="row" class="mono">macro-economist<span class="sub">next likely</span></th><td>Macro data pulled by script, not interpreted</td><td>A macro read independent of the analyst&rsquo;s thesis, once macro releases earn their own routine</td><td>Yes. A fourth seat lifts the current cap</td></tr>
+      <tr><th scope="row" class="mono">market-sentinel</th><td>A script threshold, plus an analyst note</td><td>Only if anomaly triage starts needing judgment independent of the memo author</td><td>Yes</td></tr>
+      <tr><th scope="row" class="mono">value-scout</th><td>A script screen, plus an analyst memo</td><td>Only if screening needs judgment rather than rules</td><td>Yes</td></tr>
+      <tr><th scope="row" class="mono">thesis-tracker</th><td>The analyst&rsquo;s monthly check, plus a script that tracks each pillar&rsquo;s state</td><td>Only if thesis upkeep needs to be independent of the original author</td><td>Yes</td></tr>
+      <tr><th scope="row" class="mono">report-writer</th><td>The digest script</td><td>Unlikely ever: the digest is deterministic</td><td>Yes</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="cost"><b>What it costs.</b> The desk looks smaller than it could. Past five seats, coordination would cost more than the independence buys. A hire would show up as a dated <code>agent.hired</code> event.</p>
+</section>
+
+<section class="blk txt" id="unproven" aria-labelledby="h-un">
+  <h2 id="h-un">What isn&rsquo;t proven yet</h2>
+  <p>If a behavior isn&rsquo;t in a test case, I don&rsquo;t promise it. The bars the desk has to pass, and what is still open, are listed on <a href="desk.html#open">How it works</a>.</p>
+</section>
+
+<p class="colophon">Designed and built by <a href="https://siddharthshah.me">Siddharth Shah</a>. <a href="https://www.linkedin.com/in/iamsiddharthshah">Message me on LinkedIn</a></p>
+</main>
+
+<footer class="foot">
+  <p>Sample data, not advice. Paper money only. Designed and built by <a href="https://siddharthshah.me">Siddharth Shah</a>.</p>
+</footer>
+<script src="assets/nav.js?v=57650d35"></script>
+</body>
+</html>

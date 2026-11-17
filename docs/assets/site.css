@@ -283,3 +283,9 @@ ol.open li{margin-bottom:var(--s2)}
 .moved{padding-block:var(--s6)}
 @media (max-width:480px){.how .sc-facts{grid-template-columns:1fr;gap:0}.how .sc-facts dt{margin-top:var(--s2)}.how .sc-facts dt:first-child{margin-top:0}}
 @media (min-width:64rem){.how>#stop{max-width:60rem}.how>#stop>p{max-width:35rem}.how .sc-matrix thead th:first-child{width:11rem}}
+.notes>.blk{margin-top:var(--s6)}
+.how>.txt>p.cost{margin-bottom:0;font-size:var(--fs-sm);color:var(--muted)}
+.notes .cost b{font-weight:600;color:var(--text)}
+.colophon{max-width:35rem;margin-top:var(--s7);padding-top:var(--s4);border-top:1px solid var(--line);font-size:var(--fs-sm)}
+.colophon a{display:inline-flex;align-items:center;min-height:var(--touch)}
+.notes .tw+p.cost{margin-top:var(--s3)}

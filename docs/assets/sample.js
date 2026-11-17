@@ -14,12 +14,12 @@
   // Up to two committee decisions a week (one or two is the forecast); one Sidd stamp per published call, on Sunday.
   // Two confidence levels, standard and high, either direction; high on at most a quarter of calls. 3-month horizon by default.
   var ROWS = [
-    { id: 'C-1', ticker: 'XMPL', direction: 'outperform', months: 3, horizon_end: '2026-10-05', confidence_bucket: 'standard', week: '2026-07-05', outcome: 'win', book: 640 },
-    { id: 'C-2', ticker: 'PLHD', direction: 'underperform', months: 3, horizon_end: '2026-10-19', confidence_bucket: 'standard', week: '2026-07-19', outcome: 'loss', book: -410 },
-    { id: 'C-3', ticker: 'MOCK', direction: 'outperform', months: 3, horizon_end: '2026-11-02', confidence_bucket: 'standard', week: '2026-08-02', outcome: 'loss', book: -880 },
-    { id: 'C-4', ticker: 'FAUX', direction: 'outperform', months: 6, horizon_end: '2027-02-23', confidence_bucket: 'standard', week: '2026-08-23', outcome: null, book: 120 },
-    { id: 'C-5', ticker: 'DUMY', direction: 'underperform', months: 3, horizon_end: '2026-12-28', confidence_bucket: 'high', week: '2026-09-27', outcome: null, book: -60 },
-    { id: 'C-6', ticker: 'SMPL', direction: 'underperform', months: 3, horizon_end: '2027-02-08', confidence_bucket: 'standard', week: '2026-11-08', outcome: null, book: null }
+    { id: 'C-1', ticker: 'XMPL', direction: 'outperform', months: 3, horizon_end: '2026-10-05', confidence_bucket: 'standard', week: '2026-07-05', outcome: 'win', excess: { spy: 6.4, sector: 4.9 } },
+    { id: 'C-2', ticker: 'PLHD', direction: 'underperform', months: 3, horizon_end: '2026-10-19', confidence_bucket: 'standard', week: '2026-07-19', outcome: 'loss', excess: { spy: 4.1, sector: 2.6 } },
+    { id: 'C-3', ticker: 'MOCK', direction: 'outperform', months: 3, horizon_end: '2026-11-02', confidence_bucket: 'standard', week: '2026-08-02', outcome: 'loss', excess: { spy: -8.8, sector: -7.2 } },
+    { id: 'C-4', ticker: 'FAUX', direction: 'outperform', months: 6, horizon_end: '2027-02-23', confidence_bucket: 'standard', week: '2026-08-23', outcome: null, excess: null },
+    { id: 'C-5', ticker: 'DUMY', direction: 'underperform', months: 3, horizon_end: '2026-12-28', confidence_bucket: 'high', week: '2026-09-27', outcome: null, excess: null },
+    { id: 'C-6', ticker: 'SMPL', direction: 'underperform', months: 3, horizon_end: '2027-02-08', confidence_bucket: 'standard', week: '2026-11-08', outcome: null, excess: null, pending: true }
   ];
   // Week plan keyed by Sunday. drop = [stage, date the chain stopped].
   var PLAN = {
@@ -92,9 +92,11 @@
     firstRow: '2026-07-05', cutover: CUTOVER, missed: MISSED,
     trayCount: ev.filter(function (e) { return e.type === 'chain.dropped' && (e.ts.length === 10 ? e.ts + 'T12:00:00Z' : e.ts) <= utc('2026-11-08', 23, 59); }).length, // chain.dropped events up to the sample cutoff: the No tray cutover: CUTOVER, missed: MISSED,
     monthsElapsed: 4, // Jul 5 to Nov 8
+    // Sample-only count for the funnel: ideas the nightly script screen looked at from Jul 5 to Nov 8. Invented, like every number here; the ones that became memos are counted from the events, so the funnel's drops can't drift from the record.
+    funnel: { ideasScreened: 91 },
     book: { start: 100000, perCall: 10000 },
-    // design/07 "Never published": the paper account shows only as this aggregate line.
-    fills: { mirrored: 3, queued: 0, notMirrored: 3, pl: 860, spy: 510 }, // spy: the same dollars in SPY over the same dates
+    // design/07 "Never published": the paper account shows only as a reconciliation count (ADR amendment point 9), never a return.
+    mirror: { signed: 3, placed: 3, due: 2, closedByScript: 2, manualFixes: 0, notMirrored: 3 }, // signed outperform calls; due = reached their horizon
     // design/07 "Reasoning for published calls": the shape of ledger/reasoning/C-n.json, kind 'call'.
     // Hand-written placeholder text on a placeholder ticker, so a reader can see what a published call carries. Not model output.
     reasoning: {

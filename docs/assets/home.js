@@ -22,9 +22,11 @@
     { k: 'record', n: 5, t: 'The record' },
     { k: 'scripts', t: 'Scripts', quiet: true }
   ];
+  var LABEL = { analyst: 'Analyst', risk: 'Risk officer', committee: 'Chair', sidd: 'Sidd, portfolio manager', record: 'The record', scripts: 'Scripts' };
+  tags.removeAttribute('aria-hidden'); tags.setAttribute('aria-label', 'Seats in the office'); // each tag is a button now (cards.js opens the seat card)
   tags.innerHTML = TAGS.map(function (g) {
-    return '<li class="tag' + (g.quiet ? ' quiet' : '') + (g.d === 'below' ? ' below' : '') + '" data-k="' + g.k + '">' + (g.n ? '<b>' + g.n + '</b>' : '') +
-      '<span data-t="' + g.t + '"' + (g.s ? ' data-s="' + g.s + '"' : '') + '>' + g.t + '</span></li>';
+    return '<li class="tag' + (g.quiet ? ' quiet' : '') + (g.d === 'below' ? ' below' : '') + '" data-k="' + g.k + '"><button type="button" class="tagbtn" data-k="' + g.k + '" aria-haspopup="dialog" aria-expanded="false" aria-label="' + LABEL[g.k] + ': what this seat can and can\u2019t do">' + (g.n ? '<b aria-hidden="true">' + g.n + '</b>' : '') +
+      '<span data-t="' + g.t + '"' + (g.s ? ' data-s="' + g.s + '"' : '') + '>' + g.t + '</span></button></li>';
   }).join('');
   var SHOWS = { desks: ['analyst', 'risk'], veto: [] }; // in the veto close-up the caption names the desk; a tag would sit on the card
 
@@ -85,6 +87,7 @@
       var off = x < 0 || x > cw, quiet = li.classList.contains('quiet');
       li.hidden = (off && quiet) || y < 0 || y > ch || (phone && quiet) || (!!focus && off) || (!!CLIP && !!focus);
       li.classList.toggle('edge', off && !quiet && !focus);
+      li.inert = off; // a tag pinned to the frame's edge points at a seat that is off-screen: no focus, no tap
       li.classList.toggle('dim', !!show && show.indexOf(key) < 0);
       li.setAttribute('data-dir', x < 0 ? 'l' : 'r');
       var half = tagW[i] / 2, nxp = Math.max(8 + half, Math.min(cw - 8 - half, x));
@@ -436,5 +439,8 @@
   }
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
   if (mq.addEventListener) mq.addEventListener('change', function () { rebuild(true); }); else if (mq.addListener) mq.addListener(function () { rebuild(true); });
-  window.HLR = { get tl() { return tl; }, get labels() { return LB; }, beats: beats, steps: all };
+  window.HLR = { get tl() { return tl; }, pause: function () { // a seat card opened: stop the replay where it is. Closing the card never resumes it; the play control does.
+    if (!tl || CLIP || reduce || done || tl.paused()) return;
+    tl.paused(true); btn('play');
+  }, get labels() { return LB; }, beats: beats, steps: all };
 })();

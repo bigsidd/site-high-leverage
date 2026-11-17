@@ -1,0 +1,28 @@
+/* Kill funnel: one stacked bar, a labeled list under it. Neutral steps, one accent (--ink) for the published segment. The list is the accessible version. */
+.fn{margin:var(--s4) 0 0;--n1:color-mix(in srgb,var(--text) 14%,var(--bg));--n2:color-mix(in srgb,var(--text) 38%,var(--bg));--n3:color-mix(in srgb,var(--text) 58%,var(--bg));--n4:color-mix(in srgb,var(--text) 75%,var(--bg))}
+.fn-bar{display:flex;gap:2px;height:28px;border:1px solid var(--line);padding:2px;background:var(--surface)}
+.fn-seg{display:block;min-width:6px;flex-basis:0}
+.t-a{--c:var(--n1)}.t-b{--c:var(--n2)}.t-c{--c:var(--n3)}.t-d{--c:var(--n4)}.t-pub{--c:var(--ink)}.t-in{--c:var(--line)}
+.fn-seg{background:var(--c)}
+.fn-list{list-style:none;margin:var(--s4) 0 0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s4) var(--s4)}
+.fn-it{display:flex;flex-direction:column;gap:2px;min-width:0}
+.fn-m{order:-1;display:block;height:4px;width:100%;background:var(--c);margin-bottom:var(--s2)}
+.fn-n{font:400 var(--fs-base)/1.2 var(--font-mono)}
+.fn-n b{font-weight:600;font-size:1.5rem}
+.fn-t{font:600 var(--fs-sm)/1.3 var(--font-body);color:var(--text)}
+.fn-w{font-size:var(--fs-sm);line-height:1.4;color:var(--muted)}
+.fn-it.t-pub .fn-t,.fn-it.t-pub .fn-n{color:var(--ink)}
+.fn-it.zero .fn-m{opacity:.5}
+.fn-cap{margin-top:var(--s4);font-size:var(--fs-sm);line-height:1.45;color:var(--muted);max-width:44rem}
+.fn.arm .fn-seg{transform:scaleX(0);transform-origin:left center}
+.fn.arm.go .fn-seg{transform:none;transition:transform .5s ease-out}
+@media (max-width:640px){
+  .fn-bar{display:none}
+  .fn-list{grid-template-columns:1fr;gap:0;margin-top:0;border-left:2px solid var(--line);margin-left:6px}
+  .fn-it{position:relative;padding:var(--s3) 0 var(--s3) var(--s4);display:grid;grid-template-columns:3.5rem 1fr;column-gap:var(--s3);align-items:baseline}
+  .fn-it::before{content:"";position:absolute;left:-7px;top:1.25rem;width:12px;height:12px;background:var(--c);border:2px solid var(--bg);outline:1px solid var(--muted)}
+  .fn-n{grid-row:1/3}
+  .fn-t,.fn-w{grid-column:2}
+  .fn-m{order:0;grid-column:2;height:6px;width:calc(var(--p)*100%);min-width:4px;margin:var(--s1) 0 0}
+  .fn-w{font-size:var(--fs-sm)}
+}
