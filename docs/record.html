@@ -18,7 +18,8 @@
 <link rel="icon" href="assets/favicon.svg?v=e6431b43" type="image/svg+xml">
 <link rel="stylesheet" href="assets/fonts.css?v=cc6ba290">
 <link rel="stylesheet" href="assets/tokens.css?v=8e6ab7ad">
-<link rel="stylesheet" href="assets/site.css?v=b024a992">
+<link rel="stylesheet" href="assets/site.css?v=f9b10273">
+<link rel="stylesheet" href="assets/record.css?v=e3ac0c05">
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -28,137 +29,147 @@
   <nav aria-label="Site" id="sitenav">
     <ul>
       <li><a href="desk.html">How it works</a></li>
-      <li><a href="committee.html">The desk</a></li>
       <li><a href="record.html" aria-current="page">The record</a></li>
     </ul>
   </nav>
 </header>
 
-<main id="main" class="wrap has-vig" tabindex="-1">
-<div class="vignette" data-vignette="record" aria-hidden="true"></div>
-<div class="col">
+<main id="main" class="wrap rec" tabindex="-1">
 <header class="hd">
   <h1>The record</h1>
-  <p class="tagline">Every call the desk makes, numbered and dated. Losses stay up at the same size as wins.</p>
+  <p class="tagline">Every call, numbered and dated. Losses stay up at the same size as wins.</p>
   <div class="bar1">
-    <span class="preview sw" role="note">Sample week &middot; made-up calls, not results</span>
+    <span class="preview sw" role="note">Sample week &middot; invented calls, not results</span>
     <span class="preview d0">Real ledger &middot; empty</span>
     <div class="tog" role="group" aria-label="Show the record as">
       <button type="button" data-set="sample" aria-pressed="true">Sample week</button>
       <button type="button" data-set="day0" aria-pressed="false">Real ledger</button>
     </div>
   </div>
-  <p class="small sw" data-gap="3">Calls No. 1 to No. 6 are invented, on invented placeholder tickers, with placeholder commit hashes. The homepage plays the same week.</p>
-  <p class="small d0" data-gap="3">The desk isn&rsquo;t running yet, so there are no calls. Nothing here is a result until a call is published and closed.</p>
+  <p class="sw" data-gap="3">Calls No.&nbsp;1&ndash;6 are invented, on placeholder tickers with placeholder commit hashes.</p>
+  <p class="d0" data-gap="3">The desk isn&rsquo;t running, so there are no calls yet.</p>
 </header>
 
+<section class="blk strip" aria-label="Scoreboard and heartbeat">
+  <p class="score" id="score"></p>
+  <div class="meter" aria-hidden="true"><i id="meter"></i></div>
+  <div class="beat" id="beat" role="img" aria-label="No nights yet."></div>
+  <p class="run" id="beat-note">No nights yet. The first dot appears the night after day&nbsp;0.</p>
+  <p class="claim">I claim no edge until 100 calls have closed and 6 months have passed, whichever is later. At no more than 2 decisions a week, that takes over a year.</p>
+</section>
+
 <section class="blk" aria-labelledby="h-note">
-  <h2 id="h-note" class="kicker">This week&rsquo;s note</h2>
+  <h2 id="h-note">This week&rsquo;s note</h2>
   <div class="note sw">
-    <p class="note-lbl">Sample text &middot; week ending Sunday, Nov 8</p>
-    <p>The desk ran every night this week. On Thursday the risk officer vetoed a memo, and it went to the No tray. You won&rsquo;t see its ticker, then or later.</p>
-    <p>A second memo got through risk on Saturday with a dissent attached. The chair decided to publish, and I signed it on Sunday evening as No.&nbsp;6.</p>
-    <p>What we got wrong: No.&nbsp;3 hit its three-month mark on Monday and closed as a loss. I signed that one too. It stays on the record.</p>
+    <p class="note-lbl">Sample text &middot; week ending Sun, Nov 8, 2026</p>
+    <p>The desk ran every night. On Thursday the risk officer vetoed a memo. You won&rsquo;t see its ticker, now or later.</p>
+    <p>A second memo got through risk on Saturday with a dissent attached. The chair chose to publish, and I signed it on Sunday evening as No.&nbsp;6.</p>
+    <p>What I got wrong: No.&nbsp;3 reached its 3-month mark on Monday and closed as a loss. I signed that one too. It stays up.</p>
     <p class="note-by">Sidd</p>
   </div>
   <p class="empty d0">No note yet. The first one goes out with the first Sunday batch, and it covers the process, never the stocks.</p>
 </section>
 
-<section class="blk" aria-labelledby="h-p">
-  <h2 id="h-p" class="kicker">Scoreboard</h2>
-  <p class="prog"><b id="n-closed">0</b> of 100 closed calls <span class="sw">(sample)</span></p>
-  <div class="meter" aria-hidden="true"><i id="meter"></i></div>
-  <p class="counts"><span>Wins <b id="n-win">0</b></span><span>Losses <b id="n-loss">0</b></span><span>Open <b id="n-open">0</b></span><span>In the No tray <b id="n-tray">0</b></span></p>
-  <p class="xs muted" data-gap="2"><span id="n-month">Month 0 of 6.</span> I claim no edge until 100 calls have closed and the desk has run six months, whichever comes later.</p>
-  <div class="tw" role="region" aria-labelledby="cap-c" tabindex="0">
-  <table class="cal">
-    <caption id="cap-c">Calls by confidence, as counts</caption>
-    <thead><tr><th scope="col">Confidence</th><th scope="col" class="n">Calls</th><th scope="col" class="n">Closed</th><th scope="col" class="n">Wins</th><th scope="col" class="n">Losses</th></tr></thead>
-    <tbody id="cal"></tbody>
-  </table>
-  </div>
-  <p class="xs muted" data-gap="2" id="cal-note">Hit rate by confidence shows once 30 calls have closed. Until then, counts only.</p>
-</section>
-
 <section class="blk" id="calls" aria-labelledby="h-l">
   <h2 id="h-l">Calls</h2>
-  <p class="small muted">Newest first. Each call is measured against SPY and its sector fund, never as buy or sell. Open one to see each step, dated.</p>
+  <p class="muted">Each call says a stock will beat or trail SPY and its sector fund by a date. It is never a buy or a sell.</p>
   <ol class="calls" id="calllist"></ol>
 </section>
 
-<section class="blk" aria-labelledby="h-hb">
-  <h2 id="h-hb" class="kicker">Heartbeat</h2>
-  <p class="small">One dot for every night the desk ran since day&nbsp;0. A gap is a night it didn&rsquo;t.</p>
-  <div class="beat" id="beat" role="img" aria-label="No nights yet."></div>
-  <div class="tl"><span id="t0">Day 0</span><span id="t1">Today</span></div>
-  <p class="xs muted" data-gap="2" id="beat-note">The first dot appears the night after cutover.</p>
-</section>
-
-<section class="blk" aria-labelledby="h-r">
-  <h2 id="h-r">Replay: weeks the models had never seen</h2>
-  <p class="gate"><span class="preview">Held for the leakage checks</span></p>
-  <p class="small" data-gap="2">Hypothetical: the same desk, run once on each week after the models&rsquo; training cutoff and before day&nbsp;0, using only data dated before that week&rsquo;s Friday. Its calls get their own numbers (R-n) and are counted, not scored, until 30 have closed. They never count toward the 100, and I don&rsquo;t sign them one by one, because I already know how those weeks ended.</p>
-  <p class="empty" data-gap="2">Nothing published yet. The method and the leakage checks come first; results follow as counts.</p>
-</section>
-
 <section class="blk" aria-labelledby="h-rules">
-  <h2 id="h-rules" class="kicker">How the record is kept</h2>
-  <ol class="commit">
-    <li><b>Sealed before the outcome.</b> Each call is committed and timestamped with an outside anchor before anyone can know how it ends.</li>
-    <li><b>Closed, never edited.</b> A close is a new row. Nothing already written changes.</li>
-    <li><b>Vetoes keep their tickers private.</b> A memo that never publishes shows only the stage it stopped at and the date.</li>
+  <h2 id="h-rules">How the record is kept</h2>
+  <ol class="rules">
+    <li>Each call is committed with an outside timestamp before anyone can know how it ends.</li>
+    <li>A close is a new entry. Nothing already written is edited.</li>
+    <li>An idea that never publishes shows only the stage it stopped at and the date. Its ticker stays private.</li>
+    <li>Every call is the same $10,000 of pretend money against SPY, whatever its confidence. Anyone can recompute the book from the ledger and public prices.</li>
   </ol>
 </section>
 
-<section class="blk" aria-labelledby="h-tl">
-  <h2 id="h-tl">Every event</h2>
-  <p class="small muted">The full log, newest first, grouped by the Sunday batch it went out in.</p>
-  <div class="tlctl sw" id="tlctl">
-    <button type="button" class="btn" id="b-earlier" aria-expanded="false" aria-controls="weeks">Show 18 earlier weeks</button>
-    <button type="button" class="btn" id="b-routine" aria-pressed="false">Show routine events</button>
-    <span class="xs muted" id="tl-note" role="status">Showing the sample week, Nov 2 to Nov 8.</span>
-  </div>
-  <p class="empty d0" data-gap="3">No events yet.</p>
-  <ol class="weeks sw" id="weeks"></ol>
-</section>
+<section class="blk more" aria-labelledby="h-more">
+  <h2 id="h-more">More detail</h2>
 
-<section class="blk" id="book" aria-labelledby="h-b">
-  <h2 id="h-b">The paper book</h2>
-  <p class="small">The rule, set in advance: $100,000 of pretend money, $10,000 per call, bought at the first official close after the call is committed and held to its horizon. An outperform call holds the stock against SPY. An underperform call holds SPY against the stock. Confidence never changes the amount. Anyone can recompute it from the ledger and public prices.</p>
-  <p class="empty d0" data-gap="3">Nothing in the book yet. It starts at $100,000.</p>
-  <div class="sw">
-    <div class="tw" role="region" aria-labelledby="cap-b" tabindex="0">
-    <table>
-      <caption id="cap-b">Paper book, sample values</caption>
-      <thead><tr><th scope="col">Call</th><th scope="col">Position</th><th scope="col" class="n">Notional</th><th scope="col" class="n">Excess</th><th scope="col">Status</th></tr></thead>
-      <tbody id="bk"></tbody>
-    </table>
+  <details class="dt" id="events">
+    <summary>Every event, newest first</summary>
+    <div class="dt-body">
+      <div class="tlctl sw" id="tlctl">
+        <button type="button" class="btn" id="b-earlier" aria-expanded="false" aria-controls="weeks">Show 18 earlier weeks</button>
+        <button type="button" class="btn" id="b-routine" aria-pressed="false">Show routine events</button>
+        <span class="muted" id="tl-note" role="status">Showing the sample week, Nov 2&ndash;8, 2026.</span>
+      </div>
+      <p class="empty d0">No events yet. The real feed is empty.</p>
+      <p class="sw">Each night the desk runs is one dated event with no tickers in it.</p>
+      <ol class="weeks sw" id="weeks"></ol>
+      <h3 class="sub" id="feed">How the event feed works</h3>
+      <p>The homepage office replays a public event feed called <code>events.v1</code>. The same <a href="desk.html#scripts">scripts</a> that write the ledger write it, under the same checks, and it&rsquo;s append-only. Each event is one JSON line, and the real feed uses the same types and fields as the sample.</p>
+      <pre class="jsonl" tabindex="0">{"v":1,"id":"E-n","ts":"&lt;UTC time&gt;","type":"approval.stamped","actor":"sidd","role":null,"sha":"&lt;commit&gt;"}</pre>
+      <p>Ids run in sequence, <code>E-1</code>, <code>E-2</code> and on. The actor is a script, one of the three seats, or me. A published row lists the event ids that led to it, so you can walk the chain backwards.</p>
+      <ul class="plain">
+        <li>A published chain&rsquo;s events ship in the same commit as its row: memo drafted, risk passed, decision made, my stamp, row published.</li>
+        <li>Dropped chains stay ticker-less forever. A veto, a no from the chair or my discard shows up only as <code>chain.dropped</code>, with the stage it stopped at and a date, released in the Sunday batch.</li>
+        <li>No ticker appears before publication, because showing that research is pending on a name would leak it.</li>
+        <li>Events never carry model prose, filing text, my private data or anything about the restricted list.</li>
+      </ul>
+      <p>Every replay animation maps to one event type, and nothing replays without a published event behind it. A veto drops a card into the No tray. My signature lands as a stamp. The only other motion is set dressing: typing hands and turning heads while the week plays, and the night sky in dark mode. Today it all plays a labeled sample week on invented placeholder tickers. <a href="index.html">Watch the sample week on the homepage.</a></p>
+      <details class="list sw"><summary>Show the sample week as <code>events.v1</code> lines</summary><pre class="jsonl" id="jsonl" tabindex="0"></pre></details>
     </div>
-    <p class="bookline mono">Book value <b id="bk-total"></b>, from $100,000. Losses included at full size.</p>
-    <p class="xs muted" data-gap="2">On the real ledger, book values publish only after the price-data terms clear. Until then, counts only.</p>
-  </div>
-  <h3 data-gap="5">Broker paper fills <span class="muted small">(a side check, not the record)</span></h3>
-  <p class="small" data-gap="2">A paper brokerage account copies each published outperform call with $10,000, to see what real fills would look like. Underperform calls aren&rsquo;t copied. This one line is all it ever shows, next to the same dollars in SPY.</p>
-  <p class="bookline mono d0">Broker paper fills: nothing copied yet.</p>
-  <p class="bookline mono sw" id="fills"></p>
+  </details>
+
+  <details class="dt" id="book">
+    <summary>The paper book</summary>
+    <div class="dt-body">
+      <p>The rule, set in advance: $100,000 of pretend money, $10,000 per call, bought at the first official close after the call is committed and held to its horizon. An outperform call holds the stock against SPY. An underperform call holds SPY against the stock. Confidence never changes the amount. Anyone can recompute it from the ledger and public prices.</p>
+      <p class="empty d0" data-gap="3">Nothing in the book yet. It starts at $100,000.</p>
+      <div class="sw">
+        <div class="tw" role="region" aria-labelledby="cap-b" tabindex="0">
+        <table>
+          <caption id="cap-b">Paper book, sample values</caption>
+          <thead><tr><th scope="col">Call</th><th scope="col">Position</th><th scope="col" class="n">Notional</th><th scope="col" class="n">Excess</th><th scope="col">Status</th></tr></thead>
+          <tbody id="bk"></tbody>
+        </table>
+        </div>
+        <p class="bookline mono">Book value <b id="bk-total"></b>, from $100,000. Losses included at full size.</p>
+        <p class="muted" data-gap="2">On the real ledger, book values publish only after the price-data terms clear. Until then, counts only.</p>
+      </div>
+      <h3 class="sub">Broker paper fills <span class="muted">(a side check, not the record)</span></h3>
+      <p>A paper brokerage account copies each published outperform call with $10,000, to see what real fills would look like. Underperform calls aren&rsquo;t copied. This one line is all it ever shows, next to the same dollars in SPY.</p>
+      <p class="bookline mono d0">Broker paper fills: nothing copied yet.</p>
+      <p class="bookline mono sw" id="fills"></p>
+    </div>
+  </details>
+
+  <details class="dt" id="confidence">
+    <summary>Calls by confidence</summary>
+    <div class="dt-body">
+      <div class="tw" role="region" aria-labelledby="cap-c" tabindex="0">
+      <table class="cal">
+        <caption id="cap-c">Calls by confidence, as counts</caption>
+        <thead><tr><th scope="col">Confidence</th><th scope="col" class="n">Calls</th><th scope="col" class="n">Closed</th><th scope="col" class="n">Wins</th><th scope="col" class="n">Losses</th></tr></thead>
+        <tbody id="cal"></tbody>
+      </table>
+      </div>
+      <p class="muted" data-gap="2" id="cal-note">Hit rate by confidence shows once 30 calls have closed. Until then, counts only.</p>
+    </div>
+  </details>
+
+  <details class="dt" id="heldout">
+    <summary>Held-out weeks the models never saw (R-n)</summary>
+    <div class="dt-body">
+      <p class="gate"><span class="preview">Held for the leakage checks</span></p>
+      <p data-gap="2">This is a backtest: the same desk, run once on each week after the models&rsquo; training cutoff and before day&nbsp;0, using only data dated before that week&rsquo;s Friday. Its calls get their own numbers (R-n) and are counted, not scored, until 30 have closed. They never count toward the 100, and I don&rsquo;t sign them one by one, because I already know how those weeks ended.</p>
+      <p class="empty" data-gap="2">Nothing published yet. The method and the leakage checks come first; results follow as counts.</p>
+    </div>
+  </details>
 </section>
 
-<section class="blk" aria-labelledby="h-f">
-  <h2 id="h-f">The raw feed</h2>
-  <p class="small muted">The homepage replay plays this feed, one JSON line per event. The real feed uses the same types and fields.</p>
-  <p class="empty d0" data-gap="2">The real feed is empty.</p>
-  <details class="list sw"><summary>Show the sample week as <code>events.v1</code> lines</summary><pre class="jsonl" id="jsonl" tabindex="0"></pre></details>
-</section>
-</div>
+<p class="end"><a href="desk.html">How it works</a> <span aria-hidden="true">&middot;</span> <a href="https://www.linkedin.com/in/iamsiddharthshah">Message me on LinkedIn</a></p>
 </main>
 
 <footer class="foot">
   <p>Sample data, not advice. Paper calls only. Built by <a href="https://siddharthshah.me">Siddharth Shah</a> &middot; <a href="https://www.linkedin.com/in/iamsiddharthshah">LinkedIn</a></p>
 </footer>
-<script src="assets/floor.js?v=e13054ef"></script>
-<script src="assets/vignette.js?v=17f087f5"></script>
 <script src="assets/sample.js?v=d8291a02"></script>
-<script src="assets/record.js?v=25d41cec"></script>
+<script src="assets/record.js?v=7ca7d8f3"></script>
 <script src="assets/nav.js?v=1555a769"></script>
 </body>
 </html>

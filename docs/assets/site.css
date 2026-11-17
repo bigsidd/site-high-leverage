@@ -19,6 +19,9 @@ code{font:var(--fs-xs) var(--font-mono)}
 .wide{max-width:76rem;margin:0 auto;padding:0 var(--s4)}
 .muted{color:var(--muted)}
 .small{font-size:var(--fs-sm)}
+/* no one-word last lines: balance short display lines, let body text pick its own breaks */
+h1,h2,h3,summary,.btn{text-wrap:balance}
+p,li,dd,td{text-wrap:pretty}
 .xs{font-size:var(--fs-xs)}
 .mono{font-family:var(--font-mono)}
 
@@ -207,14 +210,17 @@ th .sub{display:block;font:400 var(--fs-xs)/1.3 var(--font-body);color:var(--mut
   .chain li{gap:var(--s2)}
 }
 
-/* ---------- Committee: the desk as tabs over the office (seats.js) ----------
+/* ---------- How it works: one call as tabs over the office (seats.js) ----------
    Without JS every card is listed in order and the office stays hidden. */
 main.sc-main{max-width:76rem}
 .sc-main>.hd,.sc-main>.prose,.sc-main>.blk:not(.sc-seats){max-width:44rem}
 .sc-tabs,.sc-stage{display:none}
-.js-seats .sc-tabs{display:flex;overflow-x:auto;margin-top:var(--s3);border-top:1px solid var(--line);border-bottom:1px solid var(--line);scroll-snap-type:x proximity;scrollbar-width:thin}
-.sc-tabs [role=tab]{flex:1 0 auto;scroll-snap-align:start;min-height:56px;padding:var(--s2) var(--s4);background:transparent;border:0;border-right:1px solid var(--line);color:var(--text);font:600 var(--fs-sm)/1.2 var(--font-body);text-align:left;cursor:pointer;white-space:nowrap}
-.sc-tabs [role=tab]:last-child{border-right:0}
+/* tabs wrap instead of scrolling: 2 columns on a phone, 4 on a tablet, one row on a desktop. 1px gaps over the line colour draw the rules */
+.js-seats .sc-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;margin-top:var(--s3);background:var(--line);border:1px solid var(--line)}
+.sc-tabs [role=tab]{min-width:0;min-height:56px;padding:var(--s2) var(--s3);background:var(--bg);border:0;color:var(--text);font:600 var(--fs-sm)/1.2 var(--font-body);text-align:left;cursor:pointer}
+.sc-tabs [role=tab]:last-child:nth-child(odd){grid-column:span 2}
+@media (min-width:640px){.js-seats .sc-tabs{grid-template-columns:repeat(4,minmax(0,1fr))}.sc-tabs [role=tab]:last-child:nth-child(odd){grid-column:auto}.sc-tabs [role=tab]:nth-child(7):last-child{grid-column:span 2}}
+@media (min-width:64rem){.js-seats .sc-tabs{display:flex}.sc-tabs [role=tab]{flex:1 1 auto;padding:var(--s2) var(--s4)}}
 .sc-tabs [role=tab] small{display:block;font:500 var(--fs-xs)/1.4 var(--font-mono);color:var(--muted)}
 .sc-tabs [role=tab]:hover{text-decoration:underline}
 .sc-tabs [role=tab][aria-selected=true]{background:var(--text);color:var(--bg)}
@@ -273,12 +279,12 @@ table.cal{max-width:30rem}
 .cn{font-weight:600;color:var(--ink)}
 .st{flex:none;font:500 var(--fs-xs)/1.3 var(--font-mono);text-transform:uppercase;letter-spacing:.04em;border:1px solid currentColor;padding:1px var(--s1)}
 .s-win{color:var(--win)}.s-loss{color:var(--loss)}.s-open{color:var(--muted)}
-.steps{list-style:none;margin:0 0 var(--s2);padding:0 0 0 var(--s4);border-left:1px solid var(--line);margin-left:3px}
-.steps li{display:grid;grid-template-columns:13.5rem 1fr;gap:var(--s3);padding:var(--s1) 0;font-size:var(--fs-sm)}
-.steps time{font:var(--fs-xs)/1.6 var(--font-mono);color:var(--muted)}
-.steps p{margin:0}
-.steps .eid{display:block;font:var(--fs-xs)/1.4 var(--font-mono);color:var(--muted)}
-.steps .later p{color:var(--muted)}
+.call .steps{list-style:none;margin:0 0 var(--s2);padding:0 0 0 var(--s4);border-left:1px solid var(--line);margin-left:3px}
+.call .steps li{display:grid;grid-template-columns:13.5rem 1fr;gap:var(--s3);padding:var(--s1) 0;font-size:var(--fs-sm)}
+.call .steps time{font:var(--fs-xs)/1.6 var(--font-mono);color:var(--muted)}
+.call .steps p{margin:0}
+.call .steps .eid{display:block;font:var(--fs-xs)/1.4 var(--font-mono);color:var(--muted)}
+.call .steps .later p{color:var(--muted)}
 .call{scroll-margin-top:var(--s6)}
 .rs{margin:var(--s2) 0 var(--s4);padding-left:calc(1ch + var(--s3))}
 .rs-tag{display:inline-block;margin-bottom:var(--s3);font:500 11px/1.3 var(--font-mono);color:var(--warn);background:var(--warn-bg);border:1px solid var(--warn);padding:3px 8px}
@@ -299,9 +305,53 @@ table.cal{max-width:30rem}
 .beat i.gap{background:transparent;box-shadow:inset 0 0 0 1px var(--loss)}
 .gate{margin-top:var(--s2)}
 @media (max-width:40rem){
-  .steps li{grid-template-columns:1fr;gap:0}
+  .call .steps li{grid-template-columns:1fr;gap:0}
   .rs-two{grid-template-columns:1fr;gap:var(--s4)}
   .rs{padding-left:0}
   .rs-dis{padding-left:var(--s3)}
   .call summary{align-items:flex-start}
 }
+
+/* ---------- How it works (desk.html): one page, prose at ~35rem so lines run 45-75 characters, explanatory text at 16px ---------- */
+main.how{max-width:76rem;padding-bottom:var(--s6)}
+.how>.hd,.how>.txt{max-width:44rem}
+.how>.hd p,.how>.txt>p,.how .acc p,.how ol.open,.how .sc-note,.how .sc-job{max-width:35rem}
+.how .lede{margin-top:var(--s4);font:400 var(--fs-lg)/1.45 var(--font-display)}
+.how .lede2{margin-top:var(--s3);font-size:var(--fs-base)}
+.how h2{margin:0 0 var(--s3);font-size:var(--fs-xl)}
+.how>.blk{margin-top:var(--s7)}
+.how>.txt>p{margin:0 0 var(--s3)}
+.how .sc-seats{margin-top:var(--s6)}
+.how .sc-job{font:400 var(--fs-lg)/1.35 var(--font-display)}
+.how .sc-facts{grid-template-columns:5.5rem minmax(0,1fr);gap:var(--s2) var(--s3);font-size:var(--fs-base);line-height:1.5}
+.how .sc-facts dt{line-height:1.9}
+.how .sc-wk{font-size:var(--fs-sm)}
+.how .sc-spec dl{font-size:var(--fs-sm)}
+.how .sc-note{margin-top:var(--s4)}
+.sc-no.s{background:var(--muted);color:var(--bg)}
+.how .sc-matrix{font-size:var(--fs-sm)}
+.how .sc-matrix td,.how .sc-matrix th{text-wrap:pretty}
+.how table.bars{font-size:var(--fs-base)}
+.how table.bars td:first-child{width:52%}
+.how table.bars td{padding-right:var(--s4)}
+ol.open{margin:0 0 var(--s4);padding-left:var(--s5)}
+ol.open li{margin-bottom:var(--s2)}
+/* accordions: the summary is the claim, the body the evidence */
+.acc{border-top:1px solid var(--line)}
+.acc details{border-bottom:1px solid var(--line)}
+.acc summary{display:flex;align-items:baseline;gap:var(--s3);min-height:var(--touch);padding:var(--s3) 0;cursor:pointer;list-style:none;font:500 var(--fs-lg)/1.3 var(--font-display);color:var(--text)}
+.acc summary::-webkit-details-marker{display:none}
+.acc summary::before{content:"+";flex:none;width:1ch;font:500 var(--fs-base)/1 var(--font-mono);color:var(--ink)}
+.acc details[open]>summary::before{content:"\2212"}
+.acc summary:hover{text-decoration:underline;text-underline-offset:3px}
+.acc summary:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.acc details>p,.acc details>.tw,.acc details>ol{margin:0 0 var(--s3) calc(1ch + var(--s3))}
+.acc details>:last-child{margin-bottom:var(--s4)}
+.acc.ref summary{font:600 var(--fs-base)/1.3 var(--font-body)}
+.acc .sc-track{margin-top:0}
+.refnote{margin-top:var(--s3);font-size:var(--fs-sm);color:var(--muted)}
+.endrow{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3) var(--s5);margin-top:var(--s7)}
+.endrow .btn{display:inline-flex;align-items:center;text-decoration:none}
+.moved{padding-block:var(--s6)}
+@media (max-width:480px){.how .sc-facts{grid-template-columns:1fr;gap:0}.how .sc-facts dt{margin-top:var(--s2)}.how .sc-facts dt:first-child{margin-top:0}}
+@media (min-width:64rem){.how>#stop{max-width:60rem}.how>#stop>p{max-width:35rem}.how .sc-stage{aspect-ratio:16/10}.how .sc-matrix thead th:first-child{width:11rem}}

@@ -1,6 +1,7 @@
-/* The desk page: the desk as tabs over the office. One seat at a time sits in a hard-edged spotlight
+/* How it works: one call's path as tabs over the office. One stop at a time sits in a hard-edged spotlight
    (an SVG mask, no gradient) and its card comes forward. Without JS, every card is listed in order and the
-   office stays hidden. No timeline and no autoplay: the camera moves only when the reader picks a tab. */
+   office stays hidden. No timeline and no autoplay: the camera moves only when the reader picks a tab.
+   A tab's data-lab overrides the stage label below; the clip (clip/seats.html) keeps these defaults. */
 (function () {
   var root = document.querySelector('[data-seats]');
   if (!root || !window.FLOOR) return;
@@ -15,10 +16,11 @@
     m2: ['risk', 'M2 · the risk officer', 300, 70, 60],
     m3: ['committee', 'M3 · the chair', 340, 120, 80],
     pm: ['sidd', 'Sidd · portfolio manager', 340, 110, 80],
+    publish: ['record', 'Scripts · publish and score', 440, 150, 130],
     bench: ['bench', 'The bench · no seat yet', 460, 190, 110],
     record: ['record', 'The record', 440, 150, 130] // no tab: the clip ends its walk here
   };
-  var svg, hole, cam, spot, cur = 'm1', raf = 0;
+  var svg, hole, cam, spot, cur = 'm1', raf = 0, first = tabs.length > 1 ? tabs[0].dataset.k : 'm1';
   document.documentElement.classList.add('js-seats');
 
   function draw() {
@@ -69,8 +71,9 @@
       if (on) { var bar = b.parentNode, L = b.offsetLeft - bar.offsetLeft, R = L + b.offsetWidth; // keep the chosen tab in view on a phone
         if (L < bar.scrollLeft) bar.scrollLeft = L; else if (R > bar.scrollLeft + bar.clientWidth) bar.scrollLeft = R - bar.clientWidth; }
       var p = document.getElementById(b.getAttribute('aria-controls')); if (p) p.hidden = !on;
+      if (on && b.dataset.lab) lab.textContent = b.dataset.lab;
     });
-    lab.textContent = SEAT[k][1];
+    if (!tabs.some(function (b) { return b.dataset.k === k && b.dataset.lab; })) lab.textContent = SEAT[k][1];
     move(k, instant);
   }
   tabs.forEach(function (b, i) {
@@ -84,7 +87,7 @@
   });
   var start = (location.hash || '').slice(1);
   draw();
-  select(SEAT[start] ? start : 'm1', false, true);
+  select(SEAT[start] ? start : first, false, true);
   addEventListener('hashchange', function () { var k = location.hash.slice(1); if (SEAT[k]) select(k, false); });
   function redraw() { if (draw()) select(cur, false, true); }
   if (dark.addEventListener) dark.addEventListener('change', redraw); else if (dark.addListener) dark.addListener(redraw);

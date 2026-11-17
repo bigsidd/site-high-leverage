@@ -33,6 +33,8 @@
   function draw() {
     full = FLOOR.build(art, mq.matches, { vetoes: vetoesBefore }).vb.map(Number);
     svg = art.querySelector('svg');
+    var ttl = svg.querySelector('title'); if (ttl) ttl.remove(); // a title shows as a hover tooltip over the replay; the week list carries the detail
+    svg.removeAttribute('aria-labelledby'); svg.setAttribute('aria-label', 'The office on two floors, where the sample week plays');
     svg.style.overflow = 'visible'; svg.style.transformOrigin = '0 0';
     shown = '';
   }
@@ -125,15 +127,15 @@
     return new Date(ts).toLocaleString('en-US', { timeZone: 'America/New_York', weekday: 'short', hour: 'numeric', minute: '2-digit' }).replace(',', '') + ' ET';
   }
   var SAY = {
-    'row.closed': function (e, r) { return 'No. ' + r.id.slice(2) + ' reaches its ' + r.months + '-month horizon and closes as a ' + r.outcome + '. It stays on the wall, the same size as a win.'; },
-    'note.drafted': function () { return 'The analyst flags an unusual move in a short note. Its ticker stays private unless a call publishes.'; },
-    'chain.dropped': function (e) { return (e.stage === 'risk' ? 'The risk officer vetoes an idea.' : 'The committee chair turns an idea down.') + ' It goes in the No tray. Its ticker is never published.'; },
+    'row.closed': function (e, r) { return 'No. ' + r.id.slice(2) + ' closes as a ' + r.outcome + '. It stays up, full size.'; },
+    'note.drafted': function () { return 'The analyst flags an unusual move. Its ticker stays private.'; },
+    'chain.dropped': function (e) { return (e.stage === 'risk' ? 'The risk officer vetoes an idea.' : 'The chair turns an idea down.') + ' Its ticker is never published.'; },
     'memo.drafted': function (e, r) { return 'The analyst writes a memo on ' + r.ticker + '.'; },
-    'memo.forwarded': function () { return 'A script forwards it. The risk officer sees every memo, unfiltered.'; },
-    'risk.reviewed': function () { return 'The risk officer lets it through, with a written dissent attached.'; },
-    'decision.made': function (e, r) { return 'The committee chair decides: ' + r.ticker + ' to ' + r.direction + ' SPY and its sector fund over ' + r.months + ' months.'; },
-    'approval.stamped': function () { return 'I sign it. No call publishes without my signature.'; },
-    'row.published': function (e, r) { return 'Published as No. ' + r.id.slice(2) + ', sealed before anyone knows the outcome.'; }
+    'memo.forwarded': function () { return 'A script hands it to the risk officer.'; },
+    'risk.reviewed': function () { return 'The risk officer passes it, with a written dissent.'; },
+    'decision.made': function (e, r) { return 'The chair decides to publish: ' + r.ticker + ', ' + r.direction + ', ' + r.months + ' months.'; },
+    'approval.stamped': function () { return 'I sign it. Nothing publishes without my signature.'; },
+    'row.published': function (e, r) { return 'Published as No. ' + r.id.slice(2) + ', before anyone knows the outcome.'; }
   };
   var SHORT = { // the clip's captions: one idea each, readable in a phone feed
     'row.closed': 'A call closes at a loss. It stays up.', 'chain.dropped': 'Vetoed. Its ticker stays private.',
@@ -145,7 +147,7 @@
   var beats = all.filter(function (s) { return s.e.type !== 'note.drafted'; }); // a note leads nowhere on screen; it stays in the list
   var by = function (t) { return beats.filter(function (s) { return s.e.type === t; }); };
   var lossN = by('row.closed').filter(function (s) { return s.r.outcome === 'loss'; }).length, closeN = by('row.closed').length;
-  var intro = { when: 'Nov 2–8', what: 'One week, Monday to Sunday.', short: 'One week, Monday to Sunday.' };
+  var intro = { when: 'Mon', what: 'One sample week, Monday to Sunday.', short: 'One week, Monday to Sunday.' };
   var plural = function (n, one, many) { return n + ' ' + (n === 1 ? one : many); }, vetoN = by('chain.dropped').length, signN = by('approval.stamped').length;
   var outro = { when: 'The week', what: 'This week: ' + plural(vetoN, 'idea', 'ideas') + ' vetoed, ' +
     (lossN ? plural(lossN, 'loss', 'losses') + ' left up' : plural(closeN, 'call', 'calls') + ' closed') + ', ' + plural(signN, 'call', 'calls') + ' signed.' };
@@ -235,7 +237,7 @@
     if (nowEl) nowEl.setAttribute('aria-live', tl && !tl.paused() && !done ? 'off' : 'polite');
     var n = s.e ? STN[s.e.type] || 0 : 0;
     [].forEach.call(ticks, function (li, i) { li.className = i + 1 === n ? 'on' : i + 1 < n ? 'past' : ''; });
-    whenEl.innerHTML = s.when + ' <span>Sample week · preview</span>'; whatEl.textContent = (CLIP && s.short) || s.what;
+    whenEl.innerHTML = s.when + ' <span>Nov 2–8, 2026 · sample</span>'; whatEl.textContent = (CLIP && s.short) || s.what;
     if (!reduce && tl && !tl.paused()) gsap.fromTo(whatEl, { opacity: 0, y: 4 }, { opacity: 1, y: 0, duration: 0.15 });
   }
   function say(s) { return function () { show(s); }; }
