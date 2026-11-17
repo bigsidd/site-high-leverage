@@ -200,7 +200,7 @@
     var h = P(SPOT.stamp[0], SPOT.stamp[1], SPOT.stamp[2] + 0.6), sx = +gsap.getProperty(stp, 'x') || 0, sy = +gsap.getProperty(stp, 'y') || 0;
     var hx = A.rest[0] + (h[0] + sx - A.rest[0]) * grip.v, hy = A.rest[1] + (h[1] + sy - A.rest[1]) * grip.v;
     // two-bone reach: fixed upper arm and forearm, the elbow bending down and out, like a real arm
-    var L = S * 1.25, dx = hx - A.sh[0], dy = hy - A.sh[1], d = Math.min(Math.hypot(dx, dy), 2 * L - 0.01), ux = dx / (Math.hypot(dx, dy) || 1), uy = dy / (Math.hypot(dx, dy) || 1);
+    var L = S * 0.85, dx = hx - A.sh[0], dy = hy - A.sh[1], d = Math.min(Math.hypot(dx, dy), 2 * L - 0.01), ux = dx / (Math.hypot(dx, dy) || 1), uy = dy / (Math.hypot(dx, dy) || 1);
     var hgt = Math.sqrt(Math.max(0, L * L - d * d / 4)), px = -uy, py = ux; if (py < 0) { px = -px; py = -py; }
     var ex = A.sh[0] + ux * d / 2 + px * hgt, ey = A.sh[1] + uy * d / 2 + py * hgt;
     arm.setAttribute('d', 'M' + A.sh[0].toFixed(1) + ',' + A.sh[1].toFixed(1) + ' L' + ex.toFixed(1) + ',' + ey.toFixed(1) + ' L' + hx.toFixed(1) + ',' + hy.toFixed(1));

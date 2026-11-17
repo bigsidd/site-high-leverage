@@ -181,7 +181,7 @@
     <li><b>No ticker before publication.</b> Showing that research is pending on a name would leak it.</li>
     <li><b>Events never carry</b> model prose, filing text, my private data or anything about the restricted list.</li>
   </ul>
-  <p>The rule for the office: every replay animation maps to one event type, and nothing replays without a published event behind it. A veto drops a card into the No tray. My signature lands as a stamp. The only other motion is set dressing: typing hands and turning heads while the week plays, and the night sky in dark mode. Today it all plays a labeled sample week on made-up tickers, XMPL and SMPL.</p>
+  <p>The rule for the office: every replay animation maps to one event type, and nothing replays without a published event behind it. A veto drops a card into the No tray. My signature lands as a stamp. The only other motion is set dressing: typing hands and turning heads while the week plays, and the night sky in dark mode. Today it all plays a labeled sample week on made-up placeholder tickers.</p>
   <p>The three figures with blue face plates are the model seats: M1 the analyst, M2 the risk officer, M3 the committee chair. The grey, outlined figures are the bench. I&rsquo;m the only person drawn.</p>
 
   <h2 id="tests">Test plan</h2>
@@ -208,10 +208,10 @@
     <li><b>Injection cases</b> in every routine that reads filings: at least 2 planted instructions, which the final draft must flag every time, and 2 the detector is built to miss, which must never reach a public row.</li>
     <li><b>Desk-wide tests:</b> a planted-flaw memo must draw a veto in 3 of 3 runs, and with the veto forced off the chair must still decline in at least 2 of 3. A week where nothing clears must publish zero rows. Restricted tickers must be blocked at the pull and again at publish. Schema checks must reject any edit to an existing row, and the event feed must reject a ticker in any pre-publication event.</li>
   </ul>
-  <p>One full pass will be 525 model calls, so each seat&rsquo;s activation costs at least 1,575. Those run under their own cap, spread over days.</p>
+  <p>The suite is 175 cases. Run three times each, that&rsquo;s 525 model calls per pass, and at least 1,575 across three passes for all three seats. Those run under their own cap, spread over days.</p>
 
   <h2 id="edge">No edge claimed until it&rsquo;s earned</h2>
-  <p>Every call is committed and timestamped before anyone can know how it turns out. Rows can be closed but never changed. I won&rsquo;t claim an edge until there are 100 closed calls and six months behind it, whichever comes later. At one or two decisions from the chair a week, that&rsquo;s at least two years. The record is a paper book anyone can recompute from the public ledger: $10,000 of fake money per call, measured against its benchmark.</p>
+  <p>Every call is committed and timestamped before anyone can know how it turns out. Rows can be closed but never changed. I won&rsquo;t claim an edge until there are 100 closed calls and six months behind it, whichever comes later. The chair makes up to two decisions a week, and not every one publishes. Even at that top rate, 100 calls take about 50 weeks to publish, and the last one needs its full horizon to close. The record is a paper book anyone can recompute from the public ledger: $10,000 of fake money per call, measured against its benchmark.</p>
 
   <h2 id="open">Still open</h2>
   <ul>
@@ -228,8 +228,8 @@
 <footer class="foot">
   <p>Sample data, not advice. Paper calls only. Built by <a href="https://siddharthshah.me">Siddharth Shah</a> &middot; <a href="https://www.linkedin.com/in/iamsiddharthshah">LinkedIn</a></p>
 </footer>
-<script src="assets/floor.js?v=58d7c9f6"></script>
-<script src="assets/vignette.js?v=65a5d9cd"></script>
+<script src="assets/floor.js?v=4ac23c0d"></script>
+<script src="assets/vignette.js?v=17f087f5"></script>
 <script src="assets/nav.js?v=1555a769"></script>
 </body>
 </html>

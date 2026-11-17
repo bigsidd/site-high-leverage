@@ -23,7 +23,7 @@
 
   function draw() {
     if (!host.clientWidth) return false; // laid out at zero (a hidden tab): drawn on the first resize instead
-    F.build(host, dark.matches, { vetoes: 3 });
+    F.build(host, dark.matches, { vetoes: window.SAMPLE && window.SAMPLE.trayCount != null ? window.SAMPLE.trayCount : 3 });
     svg = host.querySelector('svg');
     svg.removeAttribute('role'); svg.removeAttribute('aria-labelledby'); svg.setAttribute('focusable', 'false');
     var t = svg.querySelector('title'); if (t) t.remove();
