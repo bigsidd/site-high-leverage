@@ -24,8 +24,10 @@
 .seatcard-x:hover{background:var(--bg)}
 .seatcard-x:focus-visible{outline:2px solid var(--ink);outline-offset:-4px}
 
-.seatcard.sheet{position:fixed;left:var(--s2);right:var(--s2);width:auto;max-width:none;max-height:calc(100svh - 72px);overflow:auto;z-index:40;padding:var(--s4)}
-.seatcard.sheet dd{font-size:var(--fs-base);line-height:1.4}
+.seatcard.sheet{position:fixed;left:var(--s2);right:var(--s2);width:auto;max-width:none;max-height:calc(100svh - 72px);overflow:auto;z-index:40;padding:var(--s3) var(--s4)}
+.seatcard.sheet .seatcard-t{margin-bottom:var(--s1,4px)}
+.seatcard.sheet dl{gap:var(--s1,4px) var(--s3)}
+.seatcard.sheet dd{font-size:15px;line-height:1.35}
 @media (max-width:360px){
   .seatcard dl{grid-template-columns:1fr;gap:0}
   .seatcard dd{margin-bottom:var(--s2)}
