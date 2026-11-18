@@ -1,8 +1,8 @@
 /* Seat cards on the homepage office. Each tag on the art is a button (home.js builds them); this opens a small card for the seat:
    Can't, Reads, This week. Refusal first. Facts come from the seven stops on desk.html; the "This week" line is read from sample.js.
-   Opening a card pauses the replay (HLR.pause). Closing never resumes it; the play control does.
+   Pinning a card (click, tap, Enter, a #seat= link) pauses the replay (HLR.pause); a hover preview does not. Closing never resumes it; the play control does.
    Desktop: hover or keyboard focus previews, a click pins; Esc or a click elsewhere closes.
-   Phone (coarse pointer or narrow): a bottom sheet with a close button, kept above the caption when there is room.
+   Phone (coarse pointer or narrow): a bottom sheet with a close button, over the caption card so the art stays in view.
    Deep link: #seat=analyst|risk|chair|sidd|scripts|record opens that card. */
 (function () {
   var tags = document.getElementById('tags'), stage = document.getElementById('office');
@@ -83,7 +83,7 @@
     card.style.left = card.style.top = card.style.bottom = '';
     if (sheet) {
       var now = document.querySelector('.now'), r = now && now.getBoundingClientRect(), vh = innerHeight, bottom = 8;
-      if (r && r.top > 0 && r.bottom <= vh + 1 && r.top - 56 > card.offsetHeight + 16) bottom = Math.round(vh - r.top + 8); // above the caption, so the status line stays readable
+      if (r && r.top > 0 && r.bottom <= vh + 1) bottom = Math.round(vh - r.bottom); // over the caption card (the replay is paused), so the art stays in view and the status line below stays readable
       card.style.bottom = bottom + 'px'; return;
     }
     var st = stage.getBoundingClientRect(), W0 = st.width, H0 = st.height, cw = card.offsetWidth, chh = card.offsetHeight;
@@ -110,7 +110,7 @@
     btns.forEach(function (b) { b.setAttribute('aria-expanded', String(b.getAttribute('data-k') === k)); });
     place();
     if (pin) setHash(true);
-    if (window.HLR && HLR.pause) HLR.pause();
+    if (pin && window.HLR && HLR.pause) HLR.pause(); // a hover preview never stops the replay; pinning does
     if (pin && opts && opts.focus) xBtn.focus();
   }
   function close(back) {
